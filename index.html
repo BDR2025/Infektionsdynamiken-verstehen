@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="copyright" content="© 2025 Boris Dominic Rausch">
+  <meta name="version" content="2.1">
+  <title>Kompartimentmodelle (by BDR)</title>
+  <style>
+    /* ==============================
+       Modern, clean layout & colors
+       ============================== */
+    :root{
+      --fg:#0f172a; --muted:#475569; --line:#e5e7eb; --border:#e2e8f0; --bg:#ffffff;
+      --s:#10b981; /* Susceptible - green */
+      --e:#f59e0b; /* Exposed - amber   */
+      --i:#ef4444; /* Infected - red    */
+      --r:#3b82f6; /* Recovered - blue  */
+      --d:#111827; /* Deceased - slate  */
+      --v:#8b5cf6; /* Vaccinated - violet*/
+      --accent:#2563eb;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--fg);background:var(--bg)}
+    .wrap{max-width:1140px;margin:24px auto;padding:0 16px;display:grid;gap:16px}
+    h1{font-size:28px;margin:0 0 4px}
+    .subtitle{margin:2px 0 10px;color:var(--muted);font-size:14px}
+
+    /* Modellauswahl */
+    .selectRow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding-right:20px}
+    .selectRow h2{margin:0;font-size:20px}
+    .select{display:flex;gap:8px;align-items:center}
+    .select label{font-weight:700}
+    select#modelSelect{appearance:none;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.6;min-width:280px;background:#fff;cursor:pointer;vertical-align:middle}
+    select#modelSelect option{line-height:1.6}
+    .smallNote{color:var(--muted);font-size:12px;margin-top:2px}
+
+    /* Top area: Controls left, KPIs right */
+    #closeInfoBtn{font-size:18px;line-height:1}
+    .footerNote a{color:var(--muted);text-decoration:none}
+    .footerNote a:hover{text-decoration:underline}
+    .footerNote{margin-top:24px;padding:12px 0;font-size:13px;color:var(--muted);text-align:center;border-top:1px solid var(--border)}
+
+    /* Hide everything below the chart when info is open */
+    body.info-open .belowRow{display:none !important}
+
+
+    .belowRow{display:grid;gap:16px;grid-template-columns:1fr 1fr;align-items:start}
+    .leftPanel{display:grid;gap:16px;align-content:start}
+    .rightPanel{display:grid;gap:16px;align-content:start}
+    @media (max-width: 959px){ .belowRow{grid-template-columns:1fr} }
+
+
+    .middleRow{display:grid;gap:16px;grid-template-columns:1fr 1fr;align-items:start}
+    @media (max-width: 959px){ .middleRow{grid-template-columns:1fr} }
+
+
+    /* === New layout: Chart row (chart left, info right) === */
+    .chartRow{display:grid;gap:16px;grid-template-columns: 1fr;align-items:start}
+    @media (max-width: 959px){ .chartRow{grid-template-columns:1fr} }
+    /* Info card shows at right of chart when toggled */
+    #infoCard{display:none} /* keep hidden by default */
+    /* Controls/KPIs stacked under selection */
+    .top{display:grid;gap:16px;grid-template-columns:1fr}
+
+    .top{display:grid;gap:16px;grid-template-columns:1fr}
+    @media (min-width: 960px){ .top{grid-template-columns:1fr 1fr} }
+
+    .card{border:1px solid var(--border);border-radius:16px;padding:16px;background:#fff}
+    .controls{display:grid;gap:12px}
+    .control{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:8px;
+      align-items:center;
+      padding:6px 0;
+    }
+    .control label{font-size:14px;color:var(--muted)}
+    .control input[type="text"]{border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:14px;text-align:right;width:9rem}
+    .control input[type="range"]{grid-column:1 / span 2;width:100%}
+
+    .toolbar{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+    .btn{appearance:none;background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-weight:600;cursor:pointer}
+    .btn:hover{border-color:#cbd5e1}
+
+    /* KPIs */
+    .kpiTitle{margin:0 0 8px}
+    .statsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    .stat{border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:14px}
+    .note{color:var(--muted);font-size:13px;margin-top:8px}
+
+    /* Chart card */
+    .chartCard{border:1px solid var(--border);border-radius:16px;padding:12px 12px 8px;position:relative;background:#fff}
+    .chartHeader{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 8px 4px}
+    .chartTitle{margin:0;font-size:18px}
+    .infoBtn{border:1px solid var(--border);border-radius:999px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:#fff;cursor:pointer;font-weight:700}
+    .infoBtn:hover{border-color:#cbd5e1}
+    canvas#chart{width:100%;height:480px;display:block;border-radius:8px}
+    .legend{position:static;display:flex;gap:16px;font-size:14px;background:rgba(255,255,255,.85);border:1px solid var(--border);border-radius:12px;padding:6px 10px;margin-top:8px}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px}
+    .dot.s{background:var(--s)} .dot.e{background:var(--e)} .dot.i{background:var(--i)} .dot.r{background:var(--r)} .dot.d{background:var(--d)} .dot.v{background:var(--v)}
+
+    /* Info box (collapsible) */
+    .infoCard{border:1px solid var(--border);border-radius:16px;padding:16px;background:#fff;display:none}
+    .infoHeader{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+    .infoHeader b{font-size:16px}
+    .bullets{margin:0;padding-left:18px}
+    .bullets li{margin:4px 0}
+    .infoGrid{display:grid;gap:10px;grid-template-columns:1fr}
+    @media (min-width: 960px){ .infoGrid{grid-template-columns:1.2fr 1fr 1fr} }
+    .infoSection{border:1px dashed var(--border);border-radius:12px;padding:12px}
+
+    /* Helper class for visually-hidden (accessibility) */
+    .vh{position:absolute !important;width:1px;height:1px;margin:-1px;border:0;padding:0;white-space:nowrap;clip-path:inset(100%);clip:rect(0 0 0 0);overflow:hidden}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Infektionsdynamiken verstehen</h1>
+      <div class="subtitle">SIR • SEIR • SIS • SIRD • SIRV — interaktive Modelle für Schulung und Szenarioplanung</div>
+      </header>
+
+    <!-- VISUALISIERUNG OBEN: Chart links, Info rechts -->
+    <section class="chartRow">
+      <section class="card chartCard">
+      <div class="chartHeader">
+        <h3 id="chartTitle" class="chartTitle">—</h3>
+        <button id="infoBtn" class="infoBtn" title="Info ein/aus">ℹ</button>
+      </div>
+      <canvas id="chart" aria-label="Zeitverlauf der Kompartimente"></canvas>
+      <div id="legend" class="legend"></div>
+    </section>
+<section id="infoCard" style="position:relative" class="infoCard" aria-live="polite"><button id="closeInfoBtn" class="infoBtn" title="Info schließen" style="position:absolute; top:16px; right:16px;">×</button>
+      <div class="infoHeader"><b>Modell-Info</b><span class="note">(kurzes Lernmodul)</span></div>
+      <div id="infoContent" class="infoGrid"></div>
+    </section>
+
+
+    <!-- Unterer Bereich: links Modellauswahl + Controls, rechts KPIs + Info -->
+    <section class="belowRow">
+      <div class="leftPanel">
+        <!-- Modellauswahl -->
+    <section>
+      <div class="selectRow">
+        <div>
+          <h2>Modellauswahl:</h2>
+          </div>
+        <div class="select">
+          <label for="modelSelect" class="vh">Modell</label>
+          <select id="modelSelect">
+            <!-- Options werden per JS mit Farbpunkten gefüllt -->
+          </select>
+        </div>
+      </div>
+    </section>
+        <div class="card">
+        <div id="controls" class="controls"></div>
+        <div class="toolbar">
+          <button id="reset" class="btn">Zurücksetzen</button>
+          <button id="save" class="btn">PNG speichern</button>
+        </div>
+      </div>
+      </div>
+      <div class="rightPanel"><div class="card">
+        <h3 class="kpiTitle">Kennzahlen</h3>
+        <div id="stats" class="statsGrid"></div>
+    </section>
+
+      
+
+</div>
+    </section>
+
+
+
+    <!-- Mittlere Zeile: links Controls, rechts KPIs + Info -->
+    
+
+  <footer class="footerNote">© 2025 Boris Dominic Rausch — inspiriert durch den Kurs Public Health an der IU Internationale Hochschule — <a href="mailto:borisdominnicrausch@outlook.de\">borisdominnicrausch@outlook.de</a></footer>
+</div>
+
+  <!-- ==============================
+       JavaScript – All-in-One Logic
+       ============================== -->
+  <script>
+    // =========================================================
+    // Utility helpers
+    // =========================================================
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+    const deInt = n => Number(n).toLocaleString('de-DE');
+    const deFixed = (n, d=2) => Number(n).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+    // HiDPI canvas sizing
+    function resizeCanvas(canvas, ctx){
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width  = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+
+    
+    
+    // Build a control (slider + numeric input)
+    function buildSliderRow(key, label, value, {min,max,step}, format){
+      const row = document.createElement('div');
+      row.className = 'control';
+
+      const lab = document.createElement('label');
+      lab.htmlFor = key;
+      lab.textContent = label;
+
+      // Numeric text input
+      const num = document.createElement('input');
+      num.type = 'text';
+      num.id = key + '_num';
+      num.inputMode = 'decimal';
+      num.autocomplete = 'off';
+      num.value = format(value);
+      num.title = 'Wert direkt eingeben (Enter oder Fokus verlassen)';
+      num.style.width = '6rem';
+
+      // Slider
+      const range = document.createElement('input');
+      range.type = 'range'; range.id = key; range.min = min; range.max = max; range.step = step; range.value = value;
+
+      // Helpers
+      const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+      const toNumber = (s) => {
+        if (typeof s !== 'string') s = String(s);
+        const cleaned = s.replace(/\./g,'').replace(',','.').trim();
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : null;
+      };
+      const snap = (v, stp) => {
+        const inv = 1 / (stp || 1);
+        return Math.round(v * inv) / inv;
+      };
+
+      const syncFromRange = () => {
+        const v = Number(range.value);
+        num.value = format(v);
+      };
+
+      const commitFromNum = () => {
+        const n = toNumber(num.value);
+        if (n === null) { // reset to current slider value if invalid
+          num.value = format(Number(range.value));
+          return;
+        }
+        // snap to step, clamp to bounds
+        const snapped = snap(n, step);
+        const v = clamp(snapped, Number(min), Number(max));
+        range.value = String(v);
+        num.value = format(v);
+        onAnyInput();
+      };
+
+      // Events
+      range.addEventListener('input', () => { syncFromRange(); onAnyInput(); });
+      num.addEventListener('blur', commitFromNum);
+      num.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); num.blur(); }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); const v = Math.min(Number(max), Number(range.value) + Number(step)); range.value = String(v); syncFromRange(); onAnyInput(); }
+        if (e.key === 'ArrowDown') { e.preventDefault(); const v = Math.max(Number(min), Number(range.value) - Number(step)); range.value = String(v); syncFromRange(); onAnyInput(); }
+      });
+
+      // Assemble DOM
+      row.append(lab, num, range);
+      return row;
+    }
+
+
+
+    // Legend builder
+    function buildLegend(container, compartments){
+      container.innerHTML = '';
+      compartments.forEach(c => {
+        const span = document.createElement('span');
+        const dot = document.createElement('span');
+        dot.className = 'dot ' + c.key.toLowerCase();
+        span.append(dot, document.createTextNode(' ' + c.key + ' (' + c.long + ')'));
+        container.appendChild(span);
+      });
+    }
+
+    // Model icons using emoji dots
+    const ICONS = { S:'🟢', E:'🟠', I:'🔴', R:'🔵', D:'⚫', V:'🟣' };
+    function iconsForCompartments(compartments){
+      return compartments.map(c => ICONS[c.key] || '•').join('');
+    }
+
+    // Deep clone (simple)
+    const deepClone = obj => JSON.parse(JSON.stringify(obj));
+
+    // =========================================================
+    // Simulation functions (Euler)
+    // =========================================================
+
+    // --- SIR ---
+    function simulateSIR({ N, I0, beta, D, days, dt }){
+      const gamma = 1 / D;
+      const steps = Math.max(Math.floor(days / dt), 1);
+      const Nsafe = Math.max(N, 1);
+
+      let S = Math.max(Nsafe - I0, 0), I = Math.max(I0, 0), R = 0;
+      const data = [];
+      for(let k=0;k<=steps;k++){
+        const t = +(k*dt).toFixed(6);
+        data.push({ t, S, I, R });
+        const inf = beta * S * I / Nsafe;
+        const rec = gamma * I;
+        S = Math.max(0, S - inf*dt);
+        I = Math.max(0, I + (inf - rec)*dt);
+        R = Math.max(0, R + rec*dt);
+        const sum = S+I+R; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; R*=kN; }
+      }
+      const R0 = beta / gamma;
+      const herd = R0 > 1 ? (1 - 1/R0) : null;
+      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
+      return { data, gamma, R0, herd, peakI, peakT };
+    }
+
+    // --- SEIR ---
+    function simulateSEIR({ N, E0, I0, beta, L, D, days, dt }){
+      const sigma = 1 / L, gamma = 1 / D;
+      const steps = Math.max(Math.floor(days / dt), 1);
+      const Nsafe = Math.max(N, 1);
+
+      let S = Math.max(Nsafe - E0 - I0, 0),
+          E = Math.max(E0, 0),
+          I = Math.max(I0, 0),
+          R = 0;
+
+      const data = [];
+      for(let k=0;k<=steps;k++){
+        const t = +(k*dt).toFixed(6);
+        data.push({ t, S, E, I, R });
+
+        const inf = beta * S * I / Nsafe;
+        const prog = sigma * E;
+        const rec  = gamma * I;
+
+        S = Math.max(0, S - inf*dt);
+        E = Math.max(0, E + (inf - prog)*dt);
+        I = Math.max(0, I + (prog - rec)*dt);
+        R = Math.max(0, R + rec*dt);
+
+        const sum = S+E+I+R; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; E*=kN; I*=kN; R*=kN; }
+      }
+      const R0 = beta / gamma; // einfacher SEIR-Ansatz
+      const herd = R0 > 1 ? (1 - 1/R0) : null;
+      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
+      return { data, sigma, gamma, R0, herd, peakI, peakT };
+    }
+
+    // --- SIS ---
+    function simulateSIS({ N, I0, beta, D, days, dt }){
+      const gamma = 1 / D;
+      const steps = Math.max(Math.floor(days / dt), 1);
+      const Nsafe = Math.max(N, 1);
+
+      let I = clamp(I0, 0, Nsafe);
+      let S = Nsafe - I;
+
+      const data = [];
+      for(let k=0;k<=steps;k++){
+        const t = +(k*dt).toFixed(6);
+        data.push({ t, S, I });
+
+        const inf = beta * S * I / Nsafe;
+        const rec = gamma * I;
+
+        S = Math.max(0, S + (-inf + rec) * dt);
+        I = Math.max(0, I + ( inf - rec) * dt);
+
+        const sum = S + I; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; }
+      }
+      const R0 = beta / gamma;
+      const Istar = R0 > 1 ? Nsafe * (1 - 1/R0) : 0;
+      const Sstar = R0 > 1 ? Nsafe / R0 : Nsafe;
+      let peakI = -1; for(const d of data){ if(d.I>peakI) peakI = d.I; }
+      return { data, gamma, R0, Istar, Sstar, peakI };
+    }
+
+    // --- SIRD ---
+    function simulateSIRD({ N, I0, beta, D, delta, days, dt }){
+      const gamma = 1 / D;
+      const steps = Math.max(Math.floor(days / dt), 1);
+      const Nsafe = Math.max(N, 1);
+
+      let I = clamp(I0, 0, Nsafe-1), S = Nsafe - I, R = 0, Dcum = 0;
+      const data = [];
+      for(let k=0;k<=steps;k++){
+        const t = +(k*dt).toFixed(6);
+        data.push({ t, S, I, R, D:Dcum });
+
+        const inf = beta * S * I / Nsafe;
+        const rec = gamma * I;
+        const death = delta * I;
+
+        S = Math.max(0, S - inf*dt);
+        I = Math.max(0, I + (inf - rec - death)*dt);
+        R = Math.max(0, R + rec*dt);
+        Dcum = Math.max(0, Dcum + death*dt);
+
+        const sum = S + I + R + Dcum; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; R*=kN; Dcum*=kN; }
+      }
+      const R0 = beta / (gamma + delta);
+      const herd = R0 > 1 ? (1 - 1/R0) : null;
+      const IFR_approx = (delta / (gamma + delta)) * 100; // grob über Krankheitsdauer
+      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
+      return { data, gamma, R0, herd, IFR_approx, peakI, peakT };
+    }
+
+    // --- SIRV ---
+    function simulateSIRV({ N, I0, V0, beta, D, nu, days, dt }){
+      const gamma = 1 / D;
+      const steps = Math.max(Math.floor(days / dt), 1);
+      const Nsafe = Math.max(N, 1);
+
+      let I = clamp(I0, 0, Nsafe-1);
+      let V = clamp(V0, 0, Nsafe - I);
+      let R = 0;
+      let S = Nsafe - I - R - V;
+
+      const data = [];
+      for(let k=0;k<=steps;k++){
+        const t = +(k*dt).toFixed(6);
+        data.push({ t, S, I, R, V });
+
+        const inf = beta * S * I / Nsafe;
+        const rec = gamma * I;
+        const vacc = nu * S;
+
+        S = Math.max(0, S + (-inf - vacc) * dt);
+        I = Math.max(0, I + ( inf - rec) * dt);
+        R = Math.max(0, R + ( rec ) * dt);
+        V = Math.max(0, V + ( vacc ) * dt);
+
+        const sum = S + I + R + V; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; R*=kN; V*=kN; }
+      }
+      const R0 = beta / gamma;
+      const S0 = (Nsafe - I - V); // initial susceptible (approx)
+      const Re0 = R0 * (S0 / Nsafe);
+      const herd = R0 > 1 ? (1 - 1/R0) : null;
+      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
+      return { data, gamma, R0, Re0, herd, peakI, peakT };
+    }
+
+    // =========================================================
+    // Model configurations
+    // =========================================================
+    const MODELS = {
+      SIR: {
+        id:'SIR',
+        titleLong: 'Anfällige, Infizierte, Genesene',
+        titleLongEn: 'Susceptible, Infected, Recovered',
+        
+        compartments: [
+          { key:'S', long:'Anfällige' },
+          { key:'I', long:'Infizierte' },
+          { key:'R', long:'Genesene' },
+        ],
+        paramDefs: {
+          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
+          I0:  { label:'Initial Infizierte I₀', min:1, max:10000, step:1, default:10, format:v=>deInt(v) },
+          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
+          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
+          days:{ label:'Simulationsdauer (Tage)', min:30, max:365, step:5, default:120, format:v=>deInt(v) },
+          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
+        },
+        simulate: simulateSIR,
+        kpiNote: 'Hinweis: γ = 1/D. R₀ = β/γ. Herdenschutz-Schwelle = 1 − 1/R₀.',
+        info: {
+          desc: 'Das SIR-Modell (Kermack & McKendrick, 1927) teilt die Bevölkerung in Anfällige (S), Infizierte (I) und Genesene (R) und beschreibt Übergänge abhängig von Übertragungsrate β und Krankheitsdauer D.',
+          assumptions: [
+            'Alle sind zu Beginn empfänglich (S).',
+            'Gleichmäßige Durchmischung, gleiche Anfälligkeit.',
+            'Sofortige Infektiosität nach Infektion.',
+            'Konstantes β; feste D; dauerhafte Immunität.',
+            'Geschlossene Population (keine Geburten/Migration).'
+          ],
+          limits: [
+            'Ignoriert vorhandene Immunität / Reinfektionen.',
+            'Keine realen Kontaktstrukturen oder Verhaltensänderungen.'
+          ]
+        },
+        kpis: (res, st) => [
+          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
+          `<b>R₀</b> = β/γ: ${deFixed(res.R0,2)}`,
+          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
+          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
+        ]
+      },
+
+      SEIR: {
+        id:'SEIR',
+        titleLong: 'Anfällige, Exponierte, Infizierte, Genesene',
+        titleLongEn: 'Susceptible, Exposed, Infected, Recovered',
+        
+        compartments: [
+          { key:'S', long:'Anfällige' },
+          { key:'E', long:'Exponierte' },
+          { key:'I', long:'Infizierte' },
+          { key:'R', long:'Genesene' },
+        ],
+        paramDefs: {
+          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
+          E0:  { label:'Initial Exponierte E₀', min:0, max:10000, step:1, default:5, format:v=>deInt(v) },
+          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:5, format:v=>deInt(v) },
+          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
+          L:   { label:'Latenz L (Tage) → σ = 1/L', min:1, max:21, step:1, default:3, format:v=>deInt(v) },
+          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
+          days:{ label:'Simulationsdauer (Tage)', min:30, max:400, step:5, default:160, format:v=>deInt(v) },
+          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
+        },
+        simulate: simulateSEIR,
+        kpiNote: 'Hinweis: σ = 1/L, γ = 1/D. Im einfachen SEIR beeinflusst L das Timing, nicht R₀ (≈ β/γ).',
+        info: {
+          desc: 'SEIR ergänzt SIR um die Exponierten (E): Infizierte mit Latenz, die noch nicht infektiös sind. Das verändert das zeitliche Muster (Peak später/flacher).',
+          assumptions: [
+            'Gleichmäßige Durchmischung; konstante β, σ, γ.',
+            'Sofortige Progression gemäß Raten.',
+            'Dauerhafte Immunität nach Genesung.',
+            'Geschlossene Population.'
+          ],
+          limits: [
+            'R₀-Vereinfachung (β/γ) ignoriert Latenzeinfluss auf sekundäre Effekte.',
+            'Keine Heterogenität (Alter, Cluster, Superspreader).'
+          ]
+        },
+        kpis: (res, st) => [
+          `<b>σ</b> (E→I): ${deFixed(res.sigma,3)} / Tag (L = ${deInt(st.L)} Tage)`,
+          `<b>γ</b> (I→R): ${deFixed(res.gamma,3)} / Tag (D = ${deInt(st.D)} Tage)`,
+          `<b>R₀</b> ≈ β/γ: ${deFixed(res.R0,2)}`,
+          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
+          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
+        ]
+      },
+
+      SIS: {
+        id:'SIS',
+        titleLong: 'Anfällige, Infizierte (ohne Immunität)',
+        titleLongEn: 'Susceptible, Infected, Susceptible',
+        
+        compartments: [
+          { key:'S', long:'Anfällige' },
+          { key:'I', long:'Infizierte' },
+        ],
+        paramDefs: {
+          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
+          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:10, format:v=>deInt(v) },
+          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
+          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
+          days:{ label:'Simulationsdauer (Tage)', min:30, max:400, step:5, default:160, format:v=>deInt(v) },
+          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
+        },
+        simulate: simulateSIS,
+        kpiNote: 'Hinweis: γ = 1/D. R₀ = β/γ. Bei R₀>1 → endemisches Gleichgewicht I* = N·(1 − 1/R₀), S* = N/R₀.',
+        info: {
+          desc: 'SIS modelliert Krankheiten ohne dauerhafte Immunität: Genesene werden wieder anfällig (R entfällt).',
+          assumptions: [
+            'Gleichmäßige Durchmischung; konstantes β, γ.',
+            'Keine Immunität nach Infektion.',
+            'Geschlossene Population.'
+          ],
+          limits: [
+            'Vernachlässigt partielle/temporäre Immunität.',
+            'Keine Kontakt-Heterogenität oder Verhaltenseffekte.'
+          ]
+        },
+        kpis: (res, st) => [
+          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
+          `<b>R₀</b> = β/γ: ${deFixed(res.R0,2)}`,
+          res.R0>1
+            ? `<b>Endemisches Gleichgewicht</b>: I* = ${deInt(Math.round(res.Istar))}, S* = ${deInt(Math.round(res.Sstar))}`
+            : `<b>Endemisches Gleichgewicht</b>: – (R₀ ≤ 1)`,
+          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))}`,
+        ]
+      },
+
+      SIRD: {
+        id:'SIRD',
+        titleLong: 'Anfällige, Infizierte, Genesene, Verstorbene',
+        titleLongEn: 'Susceptible, Infected, Recovered, Deceased',
+        
+        compartments: [
+          { key:'S', long:'Anfällige' },
+          { key:'I', long:'Infizierte' },
+          { key:'R', long:'Genesene' },
+          { key:'D', long:'Verstorbene (kumulativ)' },
+        ],
+        paramDefs: {
+          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
+          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:10, format:v=>deInt(v) },
+          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
+          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
+          delta:{ label:'Sterberate δ (pro Tag)', min:0, max:0.1, step:0.001, default:0.01, format:v=>deFixed(v,3) },
+          days:{ label:'Simulationsdauer (Tage)', min:30, max:400, step:5, default:160, format:v=>deInt(v) },
+          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
+        },
+        simulate: simulateSIRD,
+        kpiNote: 'Hinweis: γ = 1/D, δ Sterberate. In SIRD: R₀ = β / (γ + δ). Herdenschutz = 1 − 1/R₀.',
+        info: {
+          desc: 'SIRD erweitert SIR um die Verstorbenen (D). Infektionen enden durch Genesung (R) oder Tod (D).',
+          assumptions: [
+            'Gleichmäßige Durchmischung; konstante β, γ, δ.',
+            'Dauerhafte Immunität nach Genesung.',
+            'Geschlossene Population.'
+          ],
+          limits: [
+            'δ als konstante Tagesrate ist eine Vereinfachung.',
+            'Keine Alters-/Risikostratifizierung oder Kapazitätsgrenzen.'
+          ]
+        },
+        kpis: (res, st) => [
+          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
+          `<b>δ</b> (Sterberate): ${deFixed(st.delta,3)} / Tag`,
+          `<b>R₀</b> = β / (γ + δ): ${deFixed(res.R0,2)}`,
+          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
+          `<b>IFR (grob)</b>: ${deFixed(res.IFR_approx,1)} % über Krankheitsdauer`,
+          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
+        ]
+      },
+
+      SIRV: {
+        id:'SIRV',
+        titleLong: 'Anfällige, Infizierte, Genesene, Geimpfte',
+        titleLongEn: 'Susceptible, Infected, Recovered, Vaccinated',
+        
+        compartments: [
+          { key:'S', long:'Anfällige' },
+          { key:'I', long:'Infizierte' },
+          { key:'R', long:'Genesene' },
+          { key:'V', long:'Geimpfte' },
+        ],
+        paramDefs: {
+          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
+          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:10, format:v=>deInt(v) },
+          V0:  { label:'Initial Geimpfte V₀', min:0, max:200000, step:10, default:0, format:v=>deInt(v) },
+          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
+          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
+          nu:  { label:'Impf-Rate ν (pro Tag)', min:0, max:0.1, step:0.001, default:0.005, format:v=>deFixed(v,3) },
+          days:{ label:'Simulationsdauer (Tage)', min:30, max:500, step:5, default:200, format:v=>deInt(v) },
+          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
+        },
+        simulate: simulateSIRV,
+        kpiNote: 'Hinweis: γ = 1/D. R₀ = β/γ. Effektiv zu t=0: Rₑ₀ = R₀ · (S₀/N) bei Start-Immunität/Impfung.',
+        info: {
+          desc: 'SIRV ergänzt SIR um eine geimpfte Gruppe (V). Impfung verschiebt Personen aus S in V (sofortiger Schutz).',
+          assumptions: [
+            'Gleichmäßige Durchmischung; konstante β, γ, ν.',
+            'Impfung verleiht sofortigen und dauerhaften Schutz.',
+            'Geschlossene Population.'
+          ],
+          limits: [
+            'Kein Impfschutz-Nachlassen oder -Versagen modelliert.',
+            'Keine Priorisierung/Logistik der Impfstrategie.'
+          ]
+        },
+        kpis: (res, st) => [
+          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
+          `<b>ν</b> (Impf-Rate): ${deFixed(st.nu,3)} / Tag`,
+          `<b>R₀</b> = β/γ: ${deFixed(res.R0,2)}; <b>Rₑ₀</b>: ${deFixed(res.Re0,2)}`,
+          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
+          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
+        ]
+      },
+    };
+
+    // =========================================================
+    // Global state & initialization
+    // =========================================================
+    const chart = $('#chart');
+    const ctx = chart.getContext('2d');
+    const controlsEl = $('#controls');
+    const statsEl = $('#stats');
+    const kpiNoteEl = $('#kpiNote');
+    const legendEl = $('#legend');
+    const modelSelect = $('#modelSelect');
+    const resetBtn = $('#reset');
+    const saveBtn = $('#save');
+    const chartTitle = $('#chartTitle');
+    const infoBtn = $('#infoBtn');
+    const infoCard = $('#infoCard');
+    const infoContent = $('#infoContent');
+
+    // store per-model states so users can switch and keep choices
+    const storedStates = {};
+    let currentModelId = 'SIR';
+    let currentSimResult = null;
+
+    function defaultStateFor(model){
+      const st = {};
+      const defs = MODELS[model].paramDefs;
+      for(const k in defs) st[k] = defs[k].default;
+      return st;
+    }
+
+    function ensureValidState(model, st){
+      // Adjust dependent maxima (e.g., I0 <= N-1; E0 + I0 <= N-1; V0 <= N-I0)
+      const id = model;
+      if(id==='SIR' || id==='SIS' || id==='SIRD'){
+        st.N = clamp(st.N, MODELS[id].paramDefs.N.min, MODELS[id].paramDefs.N.max);
+        const maxI = Math.max(0, st.N - (id==='SIS'?0:1));
+        st.I0 = clamp(st.I0, MODELS[id].paramDefs.I0.min, maxI || MODELS[id].paramDefs.I0.min);
+      }
+      if(id==='SEIR'){
+        st.N = clamp(st.N, MODELS[id].paramDefs.N.min, MODELS[id].paramDefs.N.max);
+        const maxEI = Math.max(0, st.N - 1);
+        st.E0 = clamp(st.E0, 0, maxEI);
+        st.I0 = clamp(st.I0, 0, Math.max(0, st.N - st.E0 - 1));
+      }
+      if(id==='SIRV'){
+        st.N = clamp(st.N, MODELS[id].paramDefs.N.min, MODELS[id].paramDefs.N.max);
+        st.I0 = clamp(st.I0, 0, Math.max(0, st.N - 1));
+        st.V0 = clamp(st.V0, 0, Math.max(0, st.N - st.I0));
+      }
+      return st;
+    }
+
+    // Build model select options with icons
+    function buildModelSelect(){
+      modelSelect.innerHTML = '';
+      Object.values(MODELS).forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        const icons = iconsForCompartments(m.compartments);
+        opt.textContent = `${icons} ${m.id}`;
+        modelSelect.appendChild(opt);
+      });
+      modelSelect.value = currentModelId;
+      modelSelect.addEventListener('change', () => {
+        currentModelId = modelSelect.value;
+        applyModel(currentModelId, /*resetInfo*/true);
+      });
+    }
+
+    // Build controls dynamically
+    function buildControls(modelId, st){
+      controlsEl.innerHTML = '';
+      const defs = MODELS[modelId].paramDefs;
+      // sliders
+      for(const key of Object.keys(defs)){
+        const def = defs[key];
+        const row = buildSliderRow(key, def.label, st[key], def, def.format);
+        controlsEl.appendChild(row);
+      }
+    }
+
+    // Build KPIs
+    function buildKPIs(modelId, res, st){
+      const model = MODELS[modelId];
+      statsEl.innerHTML = '';
+      const items = model.kpis(res, st);
+      items.forEach(html => {
+        const div = document.createElement('div');
+        div.className = 'stat';
+        div.innerHTML = html;
+        statsEl.appendChild(div);
+      });
+      kpiNoteEl.textContent = model.kpiNote || '';
+    }
+
+    // Build Info (learn module) – compact
+    function buildInfo(modelId){
+      const info = MODELS[modelId].info;
+      infoContent.innerHTML = '';
+      const desc = document.createElement('div');
+      desc.className = 'infoSection';
+      desc.innerHTML = `<b>Beschreibung</b><br>${info.desc}`;
+
+      const assumptions = document.createElement('div');
+      assumptions.className = 'infoSection';
+      assumptions.innerHTML = `<b>Annahmen</b>`;
+      const ulA = document.createElement('ul'); ulA.className = 'bullets';
+      info.assumptions.forEach(t => { const li = document.createElement('li'); li.textContent = t; ulA.appendChild(li); });
+      assumptions.appendChild(ulA);
+
+      const limits = document.createElement('div');
+      limits.className = 'infoSection';
+      limits.innerHTML = `<b>Limitationen</b>`;
+      const ulL = document.createElement('ul'); ulL.className = 'bullets';
+      info.limits.forEach(t => { const li = document.createElement('li'); li.textContent = t; ulL.appendChild(li); });
+      limits.appendChild(ulL);
+
+      infoContent.append(desc, assumptions, limits);
+    }
+
+    // Chart drawing (axes + series + ticks)
+    function drawChart(modelId, res){
+      resizeCanvas(chart, ctx);
+      const W = chart.clientWidth, H = chart.clientHeight;
+      ctx.clearRect(0,0,W,H);
+
+      const margin = { top: 12, right: 18, bottom: 40, left: 64 };
+      const w = W - margin.left - margin.right;
+      const h = H - margin.top - margin.bottom;
+
+      // Determine tMax and yMax
+      const arr = res.data;
+      const tMax = arr.length ? arr[arr.length-1].t : 1;
+      let yMax = 0;
+      for(const d of arr){
+        MODELS[modelId].compartments.forEach(c => { const v = d[c.key]; if (typeof v === 'number') yMax = Math.max(yMax, v); });
+      }
+      yMax = Math.max(1, Math.ceil(yMax / 10) * 10);
+
+      // grid
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--line').trim() || '#e5e7eb';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      const yTicks = 5, xTicks = 10;
+      for(let i=0;i<=yTicks;i++){
+        const y = margin.top + h*(i/yTicks);
+        ctx.moveTo(margin.left, y); ctx.lineTo(margin.left + w, y);
+      }
+      for(let i=0;i<=xTicks;i++){
+        const x = margin.left + w*(i/xTicks);
+        ctx.moveTo(x, margin.top); ctx.lineTo(x, margin.top + h);
+      }
+      ctx.stroke();
+
+      // Axis titles
+      ctx.fillStyle = '#111';
+      ctx.font = '12px system-ui,-apple-system,Segoe UI,Roboto';
+      ctx.textAlign = 'center';
+      ctx.fillText('Tage', margin.left + w/2, margin.top + h + 28);
+      ctx.save(); ctx.translate(16, margin.top + h/2); ctx.rotate(-Math.PI/2); ctx.fillText('Personen', 0, 0); ctx.restore();
+
+      // Tick labels
+      ctx.fillStyle = '#666';
+      ctx.font = '12px system-ui,-apple-system,Segoe UI,Roboto';
+      // y labels
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      for(let i=0;i<=yTicks;i++){
+        const y = margin.top + h*(i/yTicks);
+        const val = Math.round(yMax * (1 - i/yTicks));
+        ctx.fillText(val.toLocaleString('de-DE'), margin.left - 10, y);
+      }
+      // x labels
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      for(let i=0;i<=xTicks;i++){
+        const x = margin.left + w*(i/xTicks);
+        const val = Math.round(tMax * (i/xTicks));
+        ctx.fillText(String(val), x, margin.top + h + 6);
+      }
+
+      const X = t => margin.left + (t / tMax) * w;
+      const Y = v => margin.top + h - (v / yMax) * h;
+
+      // draw series by compartments
+      function cssVar(name, fallback){ const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); return v || fallback; }
+      const colorMap = { S: cssVar('--s','#10b981'), E: cssVar('--e','#f59e0b'), I: cssVar('--i','#ef4444'), R: cssVar('--r','#3b82f6'), D: cssVar('--d','#111827'), V: cssVar('--v','#8b5cf6') };
+
+      MODELS[modelId].compartments.forEach(c => {
+        ctx.strokeStyle = colorMap[c.key] || '#000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        let first = true;
+        for(const d of arr){
+          const x = X(d.t), y = Y(d[c.key]);
+          if(first){ ctx.moveTo(x,y); first=false; } else { ctx.lineTo(x,y); }
+        }
+        ctx.stroke();
+      });
+    }
+
+    // Handle any slider input → recompute & redraw
+    function onAnyInput(){
+      const m = MODELS[currentModelId];
+      const st = storedStates[currentModelId];
+      // read from DOM inputs
+      for(const key of Object.keys(m.paramDefs)){
+        const el = document.getElementById(key);
+        if(!el) continue;
+        let val = Number(el.value);
+        st[key] = val;
+      }
+      ensureValidState(currentModelId, st);
+      // adjust dependent maxima in UI (e.g., I0.max)
+      if(currentModelId==='SIR' || currentModelId==='SIS' || currentModelId==='SIRD'){
+        const I0 = $('#I0'); if(I0) I0.max = String(Math.max(1, st.N - (currentModelId==='SIS'?0:1)));
+      }
+      if(currentModelId==='SEIR'){
+        const E0 = $('#E0'), I0 = $('#I0');
+        if(E0) E0.max = String(Math.max(0, st.N - 1));
+        if(I0) I0.max = String(Math.max(0, st.N - st.E0 - 1));
+      }
+      if(currentModelId==='SIRV'){
+        const V0 = $('#V0'), I0 = $('#I0');
+        if(I0) I0.max = String(Math.max(0, st.N - 1));
+        if(V0) V0.max = String(Math.max(0, st.N - st.I0));
+      }
+
+      // simulate
+      currentSimResult = runSimulation(currentModelId, st);
+      // redraw
+      drawChart(currentModelId, currentSimResult);
+      buildKPIs(currentModelId, currentSimResult, st);
+    }
+
+    function runSimulation(modelId, st){
+      const m = MODELS[modelId];
+      // Map generic state to simulate args per model
+      if(modelId==='SIR')  return m.simulate({ N:st.N, I0:st.I0, beta:st.beta, D:st.D, days:st.days, dt:st.dt });
+      if(modelId==='SEIR') return m.simulate({ N:st.N, E0:st.E0, I0:st.I0, beta:st.beta, L:st.L, D:st.D, days:st.days, dt:st.dt });
+      if(modelId==='SIS')  return m.simulate({ N:st.N, I0:st.I0, beta:st.beta, D:st.D, days:st.days, dt:st.dt });
+      if(modelId==='SIRD') return m.simulate({ N:st.N, I0:st.I0, beta:st.beta, D:st.D, delta:st.delta, days:st.days, dt:st.dt });
+      if(modelId==='SIRV') return m.simulate({ N:st.N, I0:st.I0, V0:st.V0, beta:st.beta, D:st.D, nu:st.nu, days:st.days, dt:st.dt });
+      return { data:[] };
+    }
+
+    // Apply a model: build UI, legend, info, simulate & draw
+    function applyModel(modelId, resetInfo=false){
+      const m = MODELS[modelId];
+      chartTitle.textContent = `${modelId} (${m.titleLongEn})`;
+
+      // state
+      storedStates[modelId] = ensureValidState(modelId, storedStates[modelId] || defaultStateFor(modelId));
+      const st = storedStates[modelId];
+
+      // controls
+      buildControls(modelId, st);
+
+      // legend
+      buildLegend(legendEl, m.compartments);
+
+      // info (collapsed by default or on model switch)
+      buildInfo(modelId);
+      if(resetInfo){ infoCard.style.display = 'none'; }
+
+      // simulate + render
+      currentSimResult = runSimulation(modelId, st);
+      drawChart(modelId, currentSimResult);
+      buildKPIs(modelId, currentSimResult, st);
+    }
+
+    // Save PNG
+    function savePNG(){
+      drawChart(currentModelId, currentSimResult); // ensure fresh
+      const a = document.createElement('a');
+      const fname = `${currentModelId.toLowerCase()}_simulator.png`;
+      a.download = fname;
+      a.href = chart.toDataURL('image/png');
+      a.click();
+    }
+
+    // Reset current model to defaults
+    function resetCurrent(){
+      storedStates[currentModelId] = defaultStateFor(currentModelId);
+      applyModel(currentModelId, /*resetInfo*/true);
+    }
+
+    // Info toggle
+    infoBtn.addEventListener('click', () => {
+      const isOpen = document.body.classList.contains('info-open');
+      if (isOpen){
+        infoCard.style.display = 'none';
+        infoBtn.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('info-open');
+      } else {
+        infoCard.style.display = 'block';
+        infoBtn.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('info-open');
+        infoCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+    
+    const closeInfoBtn = document.getElementById('closeInfoBtn');
+    if (closeInfoBtn){
+      closeInfoBtn.addEventListener('click', () => {
+        infoCard.style.display = 'none';
+        infoBtn.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('info-open');
+      });
+    }
+
+    // Buttons
+    resetBtn.addEventListener('click', resetCurrent);
+    saveBtn.addEventListener('click', savePNG);
+    window.addEventListener('resize', () => { if(currentSimResult) drawChart(currentModelId, currentSimResult); });
+
+    // Init
+    buildModelSelect();
+    applyModel(currentModelId, /*resetInfo*/true);
+  </script>
+</body>
+</html>
