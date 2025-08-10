@@ -1,994 +1,905 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="copyright" content="© 2025 Boris Dominic Rausch">
-  <meta name="version" content="2.1">
-  <title>Kompartimentmodelle (by BDR)</title>
-  <style>
-    /* ==============================
-       Modern, clean layout & colors
-       ============================== */
-    :root{
-      --fg:#0f172a; --muted:#475569; --line:#e5e7eb; --border:#e2e8f0; --bg:#ffffff;
-      --s:#10b981; /* Susceptible - green */
-      --e:#f59e0b; /* Exposed - amber   */
-      --i:#ef4444; /* Infected - red    */
-      --r:#3b82f6; /* Recovered - blue  */
-      --d:#111827; /* Deceased - slate  */
-      --v:#8b5cf6; /* Vaccinated - violet*/
-      --accent:#2563eb;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--fg);background:var(--bg)}
-    .wrap{max-width:1140px;margin:24px auto;padding:0 16px;display:grid;gap:16px}
-    h1{font-size:28px;margin:0 0 4px}
-    .subtitle{margin:2px 0 10px;color:var(--muted);font-size:14px}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kompartiment-Simulator V2.39</title>
+<style>
+:root{
+  --fg:#0f172a; --muted:#475569; --line:#e5e7eb; --border:#e2e8f0; --bg:#ffffff;
+  --s:#10b981; --e:#f59e0b; --i:#ef4444; --r:#3b82f6; --d:#111827; --v:#8b5cf6;
+  --accent:#2563eb;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+@supports (scrollbar-gutter: stable) { html{ scrollbar-gutter: stable both-edges; } }
+body{margin:0; overflow-y: scroll; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--fg); background:var(--bg)}
+.wrap{max-width:1140px;margin:24px auto;padding:0 16px;display:grid;gap:16px}
+h1{font-size:28px;margin:0 0 4px}
+.subtitle{margin:2px 0 10px;color:var(--muted);font-size:14px}
 
-    /* Modellauswahl */
-    .selectRow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding-right:20px}
-    .selectRow h2{margin:0;font-size:20px}
-    .select{display:flex;gap:8px;align-items:center}
-    .select label{font-weight:700}
-    select#modelSelect{appearance:none;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.6;min-width:280px;background:#fff;cursor:pointer;vertical-align:middle}
-    select#modelSelect option{line-height:1.6}
-    .smallNote{color:var(--muted);font-size:12px;margin-top:2px}
+/* Card */
+.card{border:1px solid var(--border);border-radius:16px;padding:12px;background:#fff}
+.cardHeader{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px;gap:12px}
+.cardTitle{margin:0;font-size:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 
-    /* Top area: Controls left, KPIs right */
-    #closeInfoBtn{font-size:18px;line-height:1}
-    .footerNote a{color:var(--muted);text-decoration:none}
-    .footerNote a:hover{text-decoration:underline}
-    .footerNote{margin-top:24px;padding:12px 0;font-size:13px;color:var(--muted);text-align:center;border-top:1px solid var(--border)}
+/* Tools (rechts) */
+.tools{display:flex;gap:8px;align-items:center;margin-left:auto}
+.btn{appearance:none;background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:#cbd5e1}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
 
-    /* Hide everything below the chart when info is open */
-    body.info-open .belowRow{display:none !important}
+/* Toggle */
+.toggle{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-left:4px}
+.toggle button{border:0;background:#fff;padding:8px 10px;font-weight:600;cursor:pointer}
+.toggle button.active{background:var(--accent);color:#fff}
+.toggle button:not(.active):hover{background:#f8fafc}
 
+/* Custom Dropdown */
+.modelPicker{position:relative;display:inline-block}
+.modelBtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px 10px;cursor:pointer;font-weight:600}
+.modelBtn:after{content:"▾";font-size:12px;color:#334155}
+.modelList{position:absolute;z-index:20;top:100%;left:0;min-width:340px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:6px;margin-top:6px;display:none}
+.modelItem{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer}
+.modelItem:hover,.modelItem[aria-selected="true"]{background:#f8fafc}
+.dots{display:inline-flex;gap:6px;min-width:56px;justify-content:flex-start}
+.dot{display:inline-block;width:10px;height:10px;border-radius:999px}
+.dot.s{background:var(--s)} .dot.e{background:var(--e)} .dot.i{background:var(--i)} .dot.r{background:var(--r)} .dot.d{background:var(--d)} .dot.v{background:var(--v)}
+/* Visually hidden native select (fallback & SR) */
+.vh{position:absolute !important;width:1px;height:1px;margin:-1px;border:0;padding:0;white-space:nowrap;clip-path:inset(100%);clip:rect(0 0 0 0);overflow:hidden}
 
-    .belowRow{display:grid;gap:16px;grid-template-columns:1fr 1fr;align-items:start}
-    .leftPanel{display:grid;gap:16px;align-content:start}
-    .rightPanel{display:grid;gap:16px;align-content:start}
-    @media (max-width: 959px){ .belowRow{grid-template-columns:1fr} }
+/* Chart area */
+.chartPh{
+  width:100%;
+  height:420px;
+  border:1px dashed var(--border);
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  font-size:14px;
+  position:relative;
+  overflow:hidden;
 
+  box-shadow: 0 1px 2px rgba(2,6,23,.04), 0 8px 16px rgba(2,6,23,.06);
+}
+#chartCanvas{width:100%;height:100%;display:block}
 
-    .middleRow{display:grid;gap:16px;grid-template-columns:1fr 1fr;align-items:start}
-    @media (max-width: 959px){ .middleRow{grid-template-columns:1fr} }
+/* Section Blocks */
+.section{border:1px solid var(--border);border-radius:16px;padding:16px;background:#fff}
+.section h3{margin:0 0 10px}
 
+/* Controls grid */
+.msGrid{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width: 960px){ .msGrid{grid-template-columns:1fr 1fr} }
 
-    /* === New layout: Chart row (chart left, info right) === */
-    .chartRow{display:grid;gap:16px;grid-template-columns: 1fr;align-items:start}
-    @media (max-width: 959px){ .chartRow{grid-template-columns:1fr} }
-    /* Info card shows at right of chart when toggled */
-    #infoCard{display:none} /* keep hidden by default */
-    /* Controls/KPIs stacked under selection */
-    .top{display:grid;gap:16px;grid-template-columns:1fr}
+/* Dashed boxes with soft shadow (screen only) */
+.controlsPh,.kpisPh,.noteBox,.explainBox,.infoSection{
+  border:1px dashed var(--border);
+  border-radius:12px;
+  padding:12px;
+  color:#475569;
+  background:#fff;
+  box-shadow: 0 1px 2px rgba(2,6,23,.04), 0 8px 16px rgba(2,6,23,.06);
+}
+.controlsPh{min-height:180px}
+.kpisPh{min-height:120px}
 
-    .top{display:grid;gap:16px;grid-template-columns:1fr}
-    @media (min-width: 960px){ .top{grid-template-columns:1fr 1fr} }
+#controls .ctrlRow{display:grid;grid-template-columns:170px 1fr 95px;gap:8px;align-items:center;margin-bottom:8px}
+#controls label{font-size:13px;color:#334155}
+#controls input[type="range"]{width:100%}
+#controls input[type="number"]{width:95px;padding:6px;border:1px solid var(--border);border-radius:8px}
+#controls .hint{font-size:12px;color:#64748b;margin-top:8px}
 
-    .card{border:1px solid var(--border);border-radius:16px;padding:16px;background:#fff}
-    .controls{display:grid;gap:12px}
-    .control{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:8px;
-      align-items:center;
-      padding:6px 0;
-    }
-    .control label{font-size:14px;color:var(--muted)}
-    .control input[type="text"]{border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:14px;text-align:right;width:9rem}
-    .control input[type="range"]{grid-column:1 / span 2;width:100%}
+#kpis .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+#kpis b{color:#334155}
+.mono{font-variant-numeric:tabular-nums}
 
-    .toolbar{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
-    .btn{appearance:none;background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-weight:600;cursor:pointer}
-    .btn:hover{border-color:#cbd5e1}
+/* === Modell-Info Layout (links 2/3, rechts 1/3) === */
+.infoCols{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width: 960px){ .infoCols{ grid-template-columns: 2fr 1fr; } }
+.infoLeft, .infoRight{ display:grid; gap:12px }
+.infoSection h4{margin:0 0 6px;font-size:15px}
+.infoSection p{margin:0;color:#334155;font-size:14px;line-height:1.55}
+#info-desc,#info-assumptions,#info-math,#info-limits{white-space:pre-line}
+.wiki-link{display:inline-block;margin-top:8px;font-size:13px;color:#2563eb;text-decoration:underline}
+.wiki-right{ text-align:right }
 
-    /* KPIs */
-    .kpiTitle{margin:0 0 8px}
-    .statsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-    .stat{border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:14px}
-    .note{color:var(--muted);font-size:13px;margin-top:8px}
+/* Footer & Impressum (spacing fix) */
+.footerNote{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:10px 16px;
+  margin:0;
+  text-align:center;
+  color:#475569;
+  background:#fff;
+  font-size:12px;
+  line-height:1.5;
+  position:relative;
+  z-index:1;
+}
+.impressum{
+  display:block;
+  max-width:1140px;
+  margin:12px auto 24px; /* spacing from footer */
+  padding:8px 16px 0;
+  color:#475569;
+  font-size:12px;
+  line-height:1.5;
+  clear: both;
+  position:relative;
+  z-index:1;
+}
+.impressum a{color:#475569}
 
-    /* Chart card */
-    .chartCard{border:1px solid var(--border);border-radius:16px;padding:12px 12px 8px;position:relative;background:#fff}
-    .chartHeader{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 8px 4px}
-    .chartTitle{margin:0;font-size:18px}
-    .infoBtn{border:1px solid var(--border);border-radius:999px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:#fff;cursor:pointer;font-weight:700}
-    .infoBtn:hover{border-color:#cbd5e1}
-    canvas#chart{width:100%;height:480px;display:block;border-radius:8px}
-    .legend{position:static;display:flex;gap:16px;font-size:14px;background:rgba(255,255,255,.85);border:1px solid var(--border);border-radius:12px;padding:6px 10px;margin-top:8px}
-    .dot{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px}
-    .dot.s{background:var(--s)} .dot.e{background:var(--e)} .dot.i{background:var(--i)} .dot.r{background:var(--r)} .dot.d{background:var(--d)} .dot.v{background:var(--v)}
+/* ===== Print-specific ===== */
+.printOnly{display:none}
+.screenOnly{display:initial}
+/* Ensure block flow for footer/header/impressum despite .screenOnly */
+header.screenOnly,footer.footerNote.screenOnly,section.impressum.screenOnly{display:block}
+/* Keep the dropdown inline */
+.modelPicker.screenOnly{display:inline-block}
+@media print{
+  @page{ size: A4; margin: 18mm; }
+  body{ background:#fff }
+  .wrap{ max-width: none; margin:0; padding:0; gap:12px }
+  .screenOnly{ display:none !important }
+  .printOnly{ display:block }
+  /* Hide UI chrome */
+  .tools, .modelPicker, .toggle, #panelControl .controlsPh, .footerNote, .impressum{ display:none !important }
+  /* Chart height */
+  .chartPh{ height:95mm; border:1px solid #e5e7eb; box-shadow:none !important }
+  /* Make sections lighter */
+  .section{ border-color:#e5e7eb }
+  .infoSection, .kpisPh, .controlsPh, .noteBox, .explainBox{ box-shadow: none !important }
+  /* Parameter table styling (if used) */
+  .printTable{ width:100%; border-collapse:collapse; font-size:12px; }
+  .printTable th, .printTable td{ border:1px solid #e5e7eb; padding:6px 8px; vertical-align:top }
+  .printTable th{ background:#f8fafc; text-align:left; width:42% }
+  .infoSection{ break-inside: avoid; page-break-inside: avoid; }
+  a[href^="http"]::after{ content:" (" attr(href) ")"; font-weight:400 }
+}
 
-    /* Info box (collapsible) */
-    .infoCard{border:1px solid var(--border);border-radius:16px;padding:16px;background:#fff;display:none}
-    .infoHeader{display:flex;align-items:center;gap:8px;margin:0 0 8px}
-    .infoHeader b{font-size:16px}
-    .bullets{margin:0;padding-left:18px}
-    .bullets li{margin:4px 0}
-    .infoGrid{display:grid;gap:10px;grid-template-columns:1fr}
-    @media (min-width: 960px){ .infoGrid{grid-template-columns:1.2fr 1fr 1fr} }
-    .infoSection{border:1px dashed var(--border);border-radius:12px;padding:12px}
+/* Print header styles (like earlier) */
+#printHeader h1{ font-size:28pt; line-height:1.2; margin:0 0 8px }
+#printHeader .sub1{ font-size:13pt; line-height:1.4; margin:0 0 6px; color:#1f2937; font-weight:600 }
+#printHeader .sub2{ font-size:13pt; line-height:1.4; margin:0 0 12px; color:#1f2937 }
+#printHeader .authors{ font-size:12pt; color:#111827; margin:0 0 10px }
+#printHeader .pub{ font-size:10.5pt; color:#6b7280; margin:0 0 4px }
+#printHeader .version{ font-size:10.5pt; color:#111827; margin:6px 0 0 }
+#printHeader a{ color:#2563eb; text-decoration:underline }
+</style>
 
-    /* Helper class for visually-hidden (accessibility) */
-    .vh{position:absolute !important;width:1px;height:1px;margin:-1px;border:0;padding:0;white-space:nowrap;clip-path:inset(100%);clip:rect(0 0 0 0);overflow:hidden}
-  </style>
+<!-- MathJax -->
+<script>
+window.MathJax = {
+  tex: {inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$','$$'], ['\\[','\\]']]},
+  svg: {fontCache: 'global'}
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Infektionsdynamiken verstehen</h1>
-      <div class="subtitle">SIR • SEIR • SIS • SIRD • SIRV — interaktive Modelle für Schulung und Szenarioplanung</div>
-      </header>
+<div class="wrap">
 
-    <!-- VISUALISIERUNG OBEN: Chart links, Info rechts -->
-    <section class="chartRow">
-      <section class="card chartCard">
-      <div class="chartHeader">
-        <h3 id="chartTitle" class="chartTitle">—</h3>
-        <button id="infoBtn" class="infoBtn" title="Info ein/aus">ℹ</button>
-      </div>
-      <canvas id="chart" aria-label="Zeitverlauf der Kompartimente"></canvas>
-      <div id="legend" class="legend"></div>
-    </section>
-<section id="infoCard" style="position:relative" class="infoCard" aria-live="polite"><button id="closeInfoBtn" class="infoBtn" title="Info schließen" style="position:absolute; top:16px; right:16px;">×</button>
-      <div class="infoHeader"><b>Modell-Info</b><span class="note">(kurzes Lernmodul)</span></div>
-      <div id="infoContent" class="infoGrid"></div>
-    </section>
+  <!-- Screen Header -->
+  <header class="screenOnly">
+    <h1>Infektionsdynamiken verstehen</h1>
+    <div class="subtitle">SIR • SEIR • SIS • SIRD • SIRV — Fünf interaktive Modelle für den Öffentlichen Gesundheitsdienst</div>
+  </header>
 
+  <!-- Print Header (restored) -->
+  <section id="printHeader" class="printOnly">
+    <h1>Infektionsdynamiken verstehen</h1>
+    <p class="sub1">Fünf interaktive Modelle als praxisnahes Werkzeug für</p>
+    <p class="sub2"><b>Schulung</b> und <b>Szenarioplanung</b> im Öffentlichen Gesundheitsdienst</p>
+    <p class="authors">Boris Dominic Rausch &amp; Andreas Heinz</p>
+    <p class="pub">Muster-DOI: <a id="printDoi" href="https://doi.org/10.5281/zenodo.1234567">https://doi.org/10.5281/zenodo.1234567</a></p>
+    <p class="version">Simulator Version <span id="printVersion">2.4</span> · <span id="printTs"></span></p>
+  </section>
 
-    <!-- Unterer Bereich: links Modellauswahl + Controls, rechts KPIs + Info -->
-    <section class="belowRow">
-      <div class="leftPanel">
-        <!-- Modellauswahl -->
-    <section>
-      <div class="selectRow">
-        <div>
-          <h2>Modellauswahl:</h2>
+  <!-- Card mit Chart -->
+  <section class="card">
+    <div class="cardHeader">
+      <h3 class="cardTitle">
+        <span id="titleText">SIR (Susceptible, Infected, Recovered)</span>
+        <span class="modelPicker screenOnly" id="modelPicker">
+          <button class="modelBtn" id="modelBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="modelList">
+            Modell wählen
+          </button>
+          <div class="modelList" id="modelList" role="listbox" aria-label="Modell auswählen">
+            <div class="modelItem" role="option" data-id="SIR" aria-selected="true">
+              <span class="dots"><span class="dot s"></span><span class="dot i"></span><span class="dot r"></span></span>
+              <span>SIR</span>
+            </div>
+            <div class="modelItem" role="option" data-id="SEIR">
+              <span class="dots"><span class="dot s"></span><span class="dot e"></span><span class="dot i"></span><span class="dot r"></span></span>
+              <span>SEIR</span>
+            </div>
+            <div class="modelItem" role="option" data-id="SIS">
+              <span class="dots"><span class="dot s"></span><span class="dot i"></span></span>
+              <span>SIS</span>
+            </div>
+            <div class="modelItem" role="option" data-id="SIRD">
+              <span class="dots"><span class="dot s"></span><span class="dot i"></span><span class="dot r"></span><span class="dot d"></span></span>
+              <span>SIRD</span>
+            </div>
+            <div class="modelItem" role="option" data-id="SIRV">
+              <span class="dots"><span class="dot s"></span><span class="dot i"></span><span class="dot r"></span><span class="dot v"></span></span>
+              <span>SIRV</span>
+            </div>
           </div>
-        <div class="select">
-          <label for="modelSelect" class="vh">Modell</label>
-          <select id="modelSelect">
-            <!-- Options werden per JS mit Farbpunkten gefüllt -->
+          <select class="vh" id="modelSelectNative" aria-label="Modell auswählen">
+            <option value="SIR" selected>SIR</option>
+            <option value="SEIR">SEIR</option>
+            <option value="SIS">SIS</option>
+            <option value="SIRD">SIRD</option>
+            <option value="SIRV">SIRV</option>
           </select>
+        </span>
+      </h3>
+
+      <div class="tools screenOnly">
+        <button class="btn" id="btnReset" type="button">Zurücksetzen</button>
+        <button class="btn" id="btnPNG"   type="button">PNG</button>
+        <button class="btn" id="btnPDF"   type="button">PDF</button>
+        <div class="toggle" role="tablist" aria-label="Ansicht wählen">
+          <button id="toggleControl" class="active" role="tab" aria-selected="true" aria-controls="panelControl">Steuerung</button>
+          <button id="toggleInfo" role="tab" aria-selected="false" aria-controls="panelInfo">Info</button>
         </div>
       </div>
-    </section>
-        <div class="card">
-        <div id="controls" class="controls"></div>
-        <div class="toolbar">
-          <button id="reset" class="btn">Zurücksetzen</button>
-          <button id="save" class="btn">PNG speichern</button>
+    </div>
+
+    <div class="chartPh">
+      <canvas id="chartCanvas" aria-label="Diagramm der Kompartimente"></canvas>
+    </div>
+  </section>
+
+  <!-- Steuerung (Screen) -->
+  <section class="section screenOnly" id="panelControl">
+    <h3>Modellsteuerung</h3>
+    <div class="msGrid">
+      <div>
+        <div class="controlsPh" id="controls"></div>
+      </div>
+      <div>
+        <div class="kpiGroup">
+          <div class="kpisPh" id="kpis">
+            <div class="row"><b>R₀:</b> <span id="kpiR0" class="mono">–</span> <span id="kpiHerd" class="mono" title="Herdenschwelle"> (Schwelle: –)</span></div>
+            <div class="row" id="kpiPeakRow"><b>Peak I:</b> <span id="kpiPeakI" class="mono">–</span> am Tag <span id="kpiPeakDay" class="mono">–</span></div>
+            <div class="row"><b>Endstände:</b> <span id="kpiEnd" class="mono">–</span></div>
+          </div>
+          <div class="noteBox">Hinweis: KPIs aktualisieren sich automatisch bei jeder Änderung.</div>
+          <div class="explainBox">Erklärung: $\\gamma = 1/D$, $R_0 = \\beta/\\gamma (= \\beta\\cdot D)$, Herdenschwelle $\\approx 1 - 1/R_0$ (falls $R_0>1$).</div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Print-only Parameter & KPIs (optional tables, as before) -->
+  <section id="printParams" class="printOnly section">
+    <h3>Parameter (Snapshot)</h3>
+    <table class="printTable" id="paramsTable"></table>
+  </section>
+  <section id="printKpis" class="printOnly section">
+    <h3>Kennzahlen</h3>
+    <table class="printTable" id="kpisTable"></table>
+  </section>
+
+  <!-- Modell-Info -->
+  <section id="panelInfo" class="section" style="display:none">
+    <h3>Modell-Informationen</h3>
+    <div class="infoCols">
+      <!-- linke Spalte: Beschreibung, Annahmen, Limitationen -->
+      <div class="infoLeft">
+        <div class="infoSection"><h4>Beschreibung</h4><p id="info-desc">Beschreibung Modell SIR</p></div>
+        <div class="infoSection"><h4>Annahmen</h4><p id="info-assumptions">Annahmen Modell SIR</p></div>
+        <div class="infoSection"><h4>Limitationen</h4><p id="info-limits">Limitationen Modell SIR</p></div>
       </div>
-      <div class="rightPanel"><div class="card">
-        <h3 class="kpiTitle">Kennzahlen</h3>
-        <div id="stats" class="statsGrid"></div>
-    </section>
-
-      
-
-</div>
-    </section>
-
-
-
-    <!-- Mittlere Zeile: links Controls, rechts KPIs + Info -->
-    
-
-  <footer class="footerNote">© 2025 Boris Dominic Rausch — inspiriert durch den Kurs Public Health an der IU Internationale Hochschule — <a href="mailto:borisdominnicrausch@outlook.de\">borisdominnicrausch@outlook.de</a></footer>
+      <!-- rechte Spalte: Berechnung + Wiki -->
+      <div class="infoRight">
+        <div class="infoSection"><h4>Berechnung</h4><p id="info-math">Berechnung Modell SIR</p></div>
+        <div class="infoSection wiki-right"><h4>Weiterführend</h4><a id="wiki-link" href="#" target="_blank" class="wiki-link" rel="noopener">Wikipedia</a></div>
+      </div>
+    </div>
+  </section>
 </div>
 
-  <!-- ==============================
-       JavaScript – All-in-One Logic
-       ============================== -->
-  <script>
-    // =========================================================
-    // Utility helpers
-    // =========================================================
-    const $ = sel => document.querySelector(sel);
-    const $$ = sel => Array.from(document.querySelectorAll(sel));
-    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-    const deInt = n => Number(n).toLocaleString('de-DE');
-    const deFixed = (n, d=2) => Number(n).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
-
-    // HiDPI canvas sizing
-    function resizeCanvas(canvas, ctx){
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width  = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-
-    
-    
-    // Build a control (slider + numeric input)
-    function buildSliderRow(key, label, value, {min,max,step}, format){
-      const row = document.createElement('div');
-      row.className = 'control';
-
-      const lab = document.createElement('label');
-      lab.htmlFor = key;
-      lab.textContent = label;
-
-      // Numeric text input
-      const num = document.createElement('input');
-      num.type = 'text';
-      num.id = key + '_num';
-      num.inputMode = 'decimal';
-      num.autocomplete = 'off';
-      num.value = format(value);
-      num.title = 'Wert direkt eingeben (Enter oder Fokus verlassen)';
-      num.style.width = '6rem';
-
-      // Slider
-      const range = document.createElement('input');
-      range.type = 'range'; range.id = key; range.min = min; range.max = max; range.step = step; range.value = value;
-
-      // Helpers
-      const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-      const toNumber = (s) => {
-        if (typeof s !== 'string') s = String(s);
-        const cleaned = s.replace(/\./g,'').replace(',','.').trim();
-        const n = Number(cleaned);
-        return Number.isFinite(n) ? n : null;
-      };
-      const snap = (v, stp) => {
-        const inv = 1 / (stp || 1);
-        return Math.round(v * inv) / inv;
-      };
-
-      const syncFromRange = () => {
-        const v = Number(range.value);
-        num.value = format(v);
-      };
-
-      const commitFromNum = () => {
-        const n = toNumber(num.value);
-        if (n === null) { // reset to current slider value if invalid
-          num.value = format(Number(range.value));
-          return;
-        }
-        // snap to step, clamp to bounds
-        const snapped = snap(n, step);
-        const v = clamp(snapped, Number(min), Number(max));
-        range.value = String(v);
-        num.value = format(v);
-        onAnyInput();
-      };
-
-      // Events
-      range.addEventListener('input', () => { syncFromRange(); onAnyInput(); });
-      num.addEventListener('blur', commitFromNum);
-      num.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); num.blur(); }
-        if (e.key === 'ArrowUp')   { e.preventDefault(); const v = Math.min(Number(max), Number(range.value) + Number(step)); range.value = String(v); syncFromRange(); onAnyInput(); }
-        if (e.key === 'ArrowDown') { e.preventDefault(); const v = Math.max(Number(min), Number(range.value) - Number(step)); range.value = String(v); syncFromRange(); onAnyInput(); }
-      });
-
-      // Assemble DOM
-      row.append(lab, num, range);
-      return row;
-    }
-
-
-
-    // Legend builder
-    function buildLegend(container, compartments){
-      container.innerHTML = '';
-      compartments.forEach(c => {
-        const span = document.createElement('span');
-        const dot = document.createElement('span');
-        dot.className = 'dot ' + c.key.toLowerCase();
-        span.append(dot, document.createTextNode(' ' + c.key + ' (' + c.long + ')'));
-        container.appendChild(span);
-      });
-    }
-
-    // Model icons using emoji dots
-    const ICONS = { S:'🟢', E:'🟠', I:'🔴', R:'🔵', D:'⚫', V:'🟣' };
-    function iconsForCompartments(compartments){
-      return compartments.map(c => ICONS[c.key] || '•').join('');
-    }
-
-    // Deep clone (simple)
-    const deepClone = obj => JSON.parse(JSON.stringify(obj));
-
-    // =========================================================
-    // Simulation functions (Euler)
-    // =========================================================
-
-    // --- SIR ---
-    function simulateSIR({ N, I0, beta, D, days, dt }){
-      const gamma = 1 / D;
-      const steps = Math.max(Math.floor(days / dt), 1);
-      const Nsafe = Math.max(N, 1);
-
-      let S = Math.max(Nsafe - I0, 0), I = Math.max(I0, 0), R = 0;
-      const data = [];
-      for(let k=0;k<=steps;k++){
-        const t = +(k*dt).toFixed(6);
-        data.push({ t, S, I, R });
-        const inf = beta * S * I / Nsafe;
-        const rec = gamma * I;
-        S = Math.max(0, S - inf*dt);
-        I = Math.max(0, I + (inf - rec)*dt);
-        R = Math.max(0, R + rec*dt);
-        const sum = S+I+R; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; R*=kN; }
-      }
-      const R0 = beta / gamma;
-      const herd = R0 > 1 ? (1 - 1/R0) : null;
-      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
-      return { data, gamma, R0, herd, peakI, peakT };
-    }
-
-    // --- SEIR ---
-    function simulateSEIR({ N, E0, I0, beta, L, D, days, dt }){
-      const sigma = 1 / L, gamma = 1 / D;
-      const steps = Math.max(Math.floor(days / dt), 1);
-      const Nsafe = Math.max(N, 1);
-
-      let S = Math.max(Nsafe - E0 - I0, 0),
-          E = Math.max(E0, 0),
-          I = Math.max(I0, 0),
-          R = 0;
-
-      const data = [];
-      for(let k=0;k<=steps;k++){
-        const t = +(k*dt).toFixed(6);
-        data.push({ t, S, E, I, R });
-
-        const inf = beta * S * I / Nsafe;
-        const prog = sigma * E;
-        const rec  = gamma * I;
-
-        S = Math.max(0, S - inf*dt);
-        E = Math.max(0, E + (inf - prog)*dt);
-        I = Math.max(0, I + (prog - rec)*dt);
-        R = Math.max(0, R + rec*dt);
-
-        const sum = S+E+I+R; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; E*=kN; I*=kN; R*=kN; }
-      }
-      const R0 = beta / gamma; // einfacher SEIR-Ansatz
-      const herd = R0 > 1 ? (1 - 1/R0) : null;
-      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
-      return { data, sigma, gamma, R0, herd, peakI, peakT };
-    }
-
-    // --- SIS ---
-    function simulateSIS({ N, I0, beta, D, days, dt }){
-      const gamma = 1 / D;
-      const steps = Math.max(Math.floor(days / dt), 1);
-      const Nsafe = Math.max(N, 1);
-
-      let I = clamp(I0, 0, Nsafe);
-      let S = Nsafe - I;
-
-      const data = [];
-      for(let k=0;k<=steps;k++){
-        const t = +(k*dt).toFixed(6);
-        data.push({ t, S, I });
-
-        const inf = beta * S * I / Nsafe;
-        const rec = gamma * I;
-
-        S = Math.max(0, S + (-inf + rec) * dt);
-        I = Math.max(0, I + ( inf - rec) * dt);
-
-        const sum = S + I; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; }
-      }
-      const R0 = beta / gamma;
-      const Istar = R0 > 1 ? Nsafe * (1 - 1/R0) : 0;
-      const Sstar = R0 > 1 ? Nsafe / R0 : Nsafe;
-      let peakI = -1; for(const d of data){ if(d.I>peakI) peakI = d.I; }
-      return { data, gamma, R0, Istar, Sstar, peakI };
-    }
-
-    // --- SIRD ---
-    function simulateSIRD({ N, I0, beta, D, delta, days, dt }){
-      const gamma = 1 / D;
-      const steps = Math.max(Math.floor(days / dt), 1);
-      const Nsafe = Math.max(N, 1);
-
-      let I = clamp(I0, 0, Nsafe-1), S = Nsafe - I, R = 0, Dcum = 0;
-      const data = [];
-      for(let k=0;k<=steps;k++){
-        const t = +(k*dt).toFixed(6);
-        data.push({ t, S, I, R, D:Dcum });
-
-        const inf = beta * S * I / Nsafe;
-        const rec = gamma * I;
-        const death = delta * I;
-
-        S = Math.max(0, S - inf*dt);
-        I = Math.max(0, I + (inf - rec - death)*dt);
-        R = Math.max(0, R + rec*dt);
-        Dcum = Math.max(0, Dcum + death*dt);
-
-        const sum = S + I + R + Dcum; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; R*=kN; Dcum*=kN; }
-      }
-      const R0 = beta / (gamma + delta);
-      const herd = R0 > 1 ? (1 - 1/R0) : null;
-      const IFR_approx = (delta / (gamma + delta)) * 100; // grob über Krankheitsdauer
-      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
-      return { data, gamma, R0, herd, IFR_approx, peakI, peakT };
-    }
-
-    // --- SIRV ---
-    function simulateSIRV({ N, I0, V0, beta, D, nu, days, dt }){
-      const gamma = 1 / D;
-      const steps = Math.max(Math.floor(days / dt), 1);
-      const Nsafe = Math.max(N, 1);
-
-      let I = clamp(I0, 0, Nsafe-1);
-      let V = clamp(V0, 0, Nsafe - I);
-      let R = 0;
-      let S = Nsafe - I - R - V;
-
-      const data = [];
-      for(let k=0;k<=steps;k++){
-        const t = +(k*dt).toFixed(6);
-        data.push({ t, S, I, R, V });
-
-        const inf = beta * S * I / Nsafe;
-        const rec = gamma * I;
-        const vacc = nu * S;
-
-        S = Math.max(0, S + (-inf - vacc) * dt);
-        I = Math.max(0, I + ( inf - rec) * dt);
-        R = Math.max(0, R + ( rec ) * dt);
-        V = Math.max(0, V + ( vacc ) * dt);
-
-        const sum = S + I + R + V; if (sum !== Nsafe){ const kN = Nsafe/sum; S*=kN; I*=kN; R*=kN; V*=kN; }
-      }
-      const R0 = beta / gamma;
-      const S0 = (Nsafe - I - V); // initial susceptible (approx)
-      const Re0 = R0 * (S0 / Nsafe);
-      const herd = R0 > 1 ? (1 - 1/R0) : null;
-      let peakI = -1, peakT = 0; for(const d of data){ if(d.I>peakI){ peakI=d.I; peakT=d.t; } }
-      return { data, gamma, R0, Re0, herd, peakI, peakT };
-    }
-
-    // =========================================================
-    // Model configurations
-    // =========================================================
-    const MODELS = {
-      SIR: {
-        id:'SIR',
-        titleLong: 'Anfällige, Infizierte, Genesene',
-        titleLongEn: 'Susceptible, Infected, Recovered',
-        
-        compartments: [
-          { key:'S', long:'Anfällige' },
-          { key:'I', long:'Infizierte' },
-          { key:'R', long:'Genesene' },
-        ],
-        paramDefs: {
-          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
-          I0:  { label:'Initial Infizierte I₀', min:1, max:10000, step:1, default:10, format:v=>deInt(v) },
-          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
-          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
-          days:{ label:'Simulationsdauer (Tage)', min:30, max:365, step:5, default:120, format:v=>deInt(v) },
-          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
-        },
-        simulate: simulateSIR,
-        kpiNote: 'Hinweis: γ = 1/D. R₀ = β/γ. Herdenschutz-Schwelle = 1 − 1/R₀.',
-        info: {
-          desc: 'Das SIR-Modell (Kermack & McKendrick, 1927) teilt die Bevölkerung in Anfällige (S), Infizierte (I) und Genesene (R) und beschreibt Übergänge abhängig von Übertragungsrate β und Krankheitsdauer D.',
-          assumptions: [
-            'Alle sind zu Beginn empfänglich (S).',
-            'Gleichmäßige Durchmischung, gleiche Anfälligkeit.',
-            'Sofortige Infektiosität nach Infektion.',
-            'Konstantes β; feste D; dauerhafte Immunität.',
-            'Geschlossene Population (keine Geburten/Migration).'
-          ],
-          limits: [
-            'Ignoriert vorhandene Immunität / Reinfektionen.',
-            'Keine realen Kontaktstrukturen oder Verhaltensänderungen.'
-          ]
-        },
-        kpis: (res, st) => [
-          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
-          `<b>R₀</b> = β/γ: ${deFixed(res.R0,2)}`,
-          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
-          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
-        ]
-      },
-
-      SEIR: {
-        id:'SEIR',
-        titleLong: 'Anfällige, Exponierte, Infizierte, Genesene',
-        titleLongEn: 'Susceptible, Exposed, Infected, Recovered',
-        
-        compartments: [
-          { key:'S', long:'Anfällige' },
-          { key:'E', long:'Exponierte' },
-          { key:'I', long:'Infizierte' },
-          { key:'R', long:'Genesene' },
-        ],
-        paramDefs: {
-          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
-          E0:  { label:'Initial Exponierte E₀', min:0, max:10000, step:1, default:5, format:v=>deInt(v) },
-          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:5, format:v=>deInt(v) },
-          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
-          L:   { label:'Latenz L (Tage) → σ = 1/L', min:1, max:21, step:1, default:3, format:v=>deInt(v) },
-          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
-          days:{ label:'Simulationsdauer (Tage)', min:30, max:400, step:5, default:160, format:v=>deInt(v) },
-          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
-        },
-        simulate: simulateSEIR,
-        kpiNote: 'Hinweis: σ = 1/L, γ = 1/D. Im einfachen SEIR beeinflusst L das Timing, nicht R₀ (≈ β/γ).',
-        info: {
-          desc: 'SEIR ergänzt SIR um die Exponierten (E): Infizierte mit Latenz, die noch nicht infektiös sind. Das verändert das zeitliche Muster (Peak später/flacher).',
-          assumptions: [
-            'Gleichmäßige Durchmischung; konstante β, σ, γ.',
-            'Sofortige Progression gemäß Raten.',
-            'Dauerhafte Immunität nach Genesung.',
-            'Geschlossene Population.'
-          ],
-          limits: [
-            'R₀-Vereinfachung (β/γ) ignoriert Latenzeinfluss auf sekundäre Effekte.',
-            'Keine Heterogenität (Alter, Cluster, Superspreader).'
-          ]
-        },
-        kpis: (res, st) => [
-          `<b>σ</b> (E→I): ${deFixed(res.sigma,3)} / Tag (L = ${deInt(st.L)} Tage)`,
-          `<b>γ</b> (I→R): ${deFixed(res.gamma,3)} / Tag (D = ${deInt(st.D)} Tage)`,
-          `<b>R₀</b> ≈ β/γ: ${deFixed(res.R0,2)}`,
-          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
-          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
-        ]
-      },
-
-      SIS: {
-        id:'SIS',
-        titleLong: 'Anfällige, Infizierte (ohne Immunität)',
-        titleLongEn: 'Susceptible, Infected, Susceptible',
-        
-        compartments: [
-          { key:'S', long:'Anfällige' },
-          { key:'I', long:'Infizierte' },
-        ],
-        paramDefs: {
-          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
-          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:10, format:v=>deInt(v) },
-          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
-          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
-          days:{ label:'Simulationsdauer (Tage)', min:30, max:400, step:5, default:160, format:v=>deInt(v) },
-          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
-        },
-        simulate: simulateSIS,
-        kpiNote: 'Hinweis: γ = 1/D. R₀ = β/γ. Bei R₀>1 → endemisches Gleichgewicht I* = N·(1 − 1/R₀), S* = N/R₀.',
-        info: {
-          desc: 'SIS modelliert Krankheiten ohne dauerhafte Immunität: Genesene werden wieder anfällig (R entfällt).',
-          assumptions: [
-            'Gleichmäßige Durchmischung; konstantes β, γ.',
-            'Keine Immunität nach Infektion.',
-            'Geschlossene Population.'
-          ],
-          limits: [
-            'Vernachlässigt partielle/temporäre Immunität.',
-            'Keine Kontakt-Heterogenität oder Verhaltenseffekte.'
-          ]
-        },
-        kpis: (res, st) => [
-          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
-          `<b>R₀</b> = β/γ: ${deFixed(res.R0,2)}`,
-          res.R0>1
-            ? `<b>Endemisches Gleichgewicht</b>: I* = ${deInt(Math.round(res.Istar))}, S* = ${deInt(Math.round(res.Sstar))}`
-            : `<b>Endemisches Gleichgewicht</b>: – (R₀ ≤ 1)`,
-          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))}`,
-        ]
-      },
-
-      SIRD: {
-        id:'SIRD',
-        titleLong: 'Anfällige, Infizierte, Genesene, Verstorbene',
-        titleLongEn: 'Susceptible, Infected, Recovered, Deceased',
-        
-        compartments: [
-          { key:'S', long:'Anfällige' },
-          { key:'I', long:'Infizierte' },
-          { key:'R', long:'Genesene' },
-          { key:'D', long:'Verstorbene (kumulativ)' },
-        ],
-        paramDefs: {
-          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
-          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:10, format:v=>deInt(v) },
-          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
-          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
-          delta:{ label:'Sterberate δ (pro Tag)', min:0, max:0.1, step:0.001, default:0.01, format:v=>deFixed(v,3) },
-          days:{ label:'Simulationsdauer (Tage)', min:30, max:400, step:5, default:160, format:v=>deInt(v) },
-          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
-        },
-        simulate: simulateSIRD,
-        kpiNote: 'Hinweis: γ = 1/D, δ Sterberate. In SIRD: R₀ = β / (γ + δ). Herdenschutz = 1 − 1/R₀.',
-        info: {
-          desc: 'SIRD erweitert SIR um die Verstorbenen (D). Infektionen enden durch Genesung (R) oder Tod (D).',
-          assumptions: [
-            'Gleichmäßige Durchmischung; konstante β, γ, δ.',
-            'Dauerhafte Immunität nach Genesung.',
-            'Geschlossene Population.'
-          ],
-          limits: [
-            'δ als konstante Tagesrate ist eine Vereinfachung.',
-            'Keine Alters-/Risikostratifizierung oder Kapazitätsgrenzen.'
-          ]
-        },
-        kpis: (res, st) => [
-          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
-          `<b>δ</b> (Sterberate): ${deFixed(st.delta,3)} / Tag`,
-          `<b>R₀</b> = β / (γ + δ): ${deFixed(res.R0,2)}`,
-          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
-          `<b>IFR (grob)</b>: ${deFixed(res.IFR_approx,1)} % über Krankheitsdauer`,
-          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
-        ]
-      },
-
-      SIRV: {
-        id:'SIRV',
-        titleLong: 'Anfällige, Infizierte, Genesene, Geimpfte',
-        titleLongEn: 'Susceptible, Infected, Recovered, Vaccinated',
-        
-        compartments: [
-          { key:'S', long:'Anfällige' },
-          { key:'I', long:'Infizierte' },
-          { key:'R', long:'Genesene' },
-          { key:'V', long:'Geimpfte' },
-        ],
-        paramDefs: {
-          N:   { label:'Bevölkerung N', min:100, max:500000, step:100, default:10000, format:v=>deInt(v) },
-          I0:  { label:'Initial Infizierte I₀', min:0, max:10000, step:1, default:10, format:v=>deInt(v) },
-          V0:  { label:'Initial Geimpfte V₀', min:0, max:200000, step:10, default:0, format:v=>deInt(v) },
-          beta:{ label:'Übertragungsrate β (pro Tag)', min:0.01, max:1.00, step:0.01, default:0.35, format:v=>deFixed(v,2) },
-          D:   { label:'Dauer infektiöse Phase D (Tage) → γ = 1/D', min:1, max:21, step:1, default:4, format:v=>deInt(v) },
-          nu:  { label:'Impf-Rate ν (pro Tag)', min:0, max:0.1, step:0.001, default:0.005, format:v=>deFixed(v,3) },
-          days:{ label:'Simulationsdauer (Tage)', min:30, max:500, step:5, default:200, format:v=>deInt(v) },
-          dt:  { label:'Zeitschritt dt (Tage)', min:0.25, max:2, step:0.25, default:1, format:v=>deFixed(v,2) },
-        },
-        simulate: simulateSIRV,
-        kpiNote: 'Hinweis: γ = 1/D. R₀ = β/γ. Effektiv zu t=0: Rₑ₀ = R₀ · (S₀/N) bei Start-Immunität/Impfung.',
-        info: {
-          desc: 'SIRV ergänzt SIR um eine geimpfte Gruppe (V). Impfung verschiebt Personen aus S in V (sofortiger Schutz).',
-          assumptions: [
-            'Gleichmäßige Durchmischung; konstante β, γ, ν.',
-            'Impfung verleiht sofortigen und dauerhaften Schutz.',
-            'Geschlossene Population.'
-          ],
-          limits: [
-            'Kein Impfschutz-Nachlassen oder -Versagen modelliert.',
-            'Keine Priorisierung/Logistik der Impfstrategie.'
-          ]
-        },
-        kpis: (res, st) => [
-          `<b>γ</b> (Genesungsrate): ${deFixed(1/st.D,3)} / Tag`,
-          `<b>ν</b> (Impf-Rate): ${deFixed(st.nu,3)} / Tag`,
-          `<b>R₀</b> = β/γ: ${deFixed(res.R0,2)}; <b>Rₑ₀</b>: ${deFixed(res.Re0,2)}`,
-          `<b>Herdenschutz</b>: ${res.herd ? deFixed(res.herd*100,1)+' %' : '– (R₀ ≤ 1)'}`,
-          `<b>Peak I</b>: ${deInt(Math.round(res.peakI))} bei Tag ${deInt(Math.round(res.peakT))}`,
-        ]
-      },
-    };
-
-    // =========================================================
-    // Global state & initialization
-    // =========================================================
-    const chart = $('#chart');
-    const ctx = chart.getContext('2d');
-    const controlsEl = $('#controls');
-    const statsEl = $('#stats');
-    const kpiNoteEl = $('#kpiNote');
-    const legendEl = $('#legend');
-    const modelSelect = $('#modelSelect');
-    const resetBtn = $('#reset');
-    const saveBtn = $('#save');
-    const chartTitle = $('#chartTitle');
-    const infoBtn = $('#infoBtn');
-    const infoCard = $('#infoCard');
-    const infoContent = $('#infoContent');
-
-    // store per-model states so users can switch and keep choices
-    const storedStates = {};
-    let currentModelId = 'SIR';
-    let currentSimResult = null;
-
-    function defaultStateFor(model){
-      const st = {};
-      const defs = MODELS[model].paramDefs;
-      for(const k in defs) st[k] = defs[k].default;
-      return st;
-    }
-
-    function ensureValidState(model, st){
-      // Adjust dependent maxima (e.g., I0 <= N-1; E0 + I0 <= N-1; V0 <= N-I0)
-      const id = model;
-      if(id==='SIR' || id==='SIS' || id==='SIRD'){
-        st.N = clamp(st.N, MODELS[id].paramDefs.N.min, MODELS[id].paramDefs.N.max);
-        const maxI = Math.max(0, st.N - (id==='SIS'?0:1));
-        st.I0 = clamp(st.I0, MODELS[id].paramDefs.I0.min, maxI || MODELS[id].paramDefs.I0.min);
-      }
-      if(id==='SEIR'){
-        st.N = clamp(st.N, MODELS[id].paramDefs.N.min, MODELS[id].paramDefs.N.max);
-        const maxEI = Math.max(0, st.N - 1);
-        st.E0 = clamp(st.E0, 0, maxEI);
-        st.I0 = clamp(st.I0, 0, Math.max(0, st.N - st.E0 - 1));
-      }
-      if(id==='SIRV'){
-        st.N = clamp(st.N, MODELS[id].paramDefs.N.min, MODELS[id].paramDefs.N.max);
-        st.I0 = clamp(st.I0, 0, Math.max(0, st.N - 1));
-        st.V0 = clamp(st.V0, 0, Math.max(0, st.N - st.I0));
-      }
-      return st;
-    }
-
-    // Build model select options with icons
-    function buildModelSelect(){
-      modelSelect.innerHTML = '';
-      Object.values(MODELS).forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.id;
-        const icons = iconsForCompartments(m.compartments);
-        opt.textContent = `${icons} ${m.id}`;
-        modelSelect.appendChild(opt);
-      });
-      modelSelect.value = currentModelId;
-      modelSelect.addEventListener('change', () => {
-        currentModelId = modelSelect.value;
-        applyModel(currentModelId, /*resetInfo*/true);
-      });
-    }
-
-    // Build controls dynamically
-    function buildControls(modelId, st){
-      controlsEl.innerHTML = '';
-      const defs = MODELS[modelId].paramDefs;
-      // sliders
-      for(const key of Object.keys(defs)){
-        const def = defs[key];
-        const row = buildSliderRow(key, def.label, st[key], def, def.format);
-        controlsEl.appendChild(row);
-      }
-    }
-
-    // Build KPIs
-    function buildKPIs(modelId, res, st){
-      const model = MODELS[modelId];
-      statsEl.innerHTML = '';
-      const items = model.kpis(res, st);
-      items.forEach(html => {
-        const div = document.createElement('div');
-        div.className = 'stat';
-        div.innerHTML = html;
-        statsEl.appendChild(div);
-      });
-      kpiNoteEl.textContent = model.kpiNote || '';
-    }
-
-    // Build Info (learn module) – compact
-    function buildInfo(modelId){
-      const info = MODELS[modelId].info;
-      infoContent.innerHTML = '';
-      const desc = document.createElement('div');
-      desc.className = 'infoSection';
-      desc.innerHTML = `<b>Beschreibung</b><br>${info.desc}`;
-
-      const assumptions = document.createElement('div');
-      assumptions.className = 'infoSection';
-      assumptions.innerHTML = `<b>Annahmen</b>`;
-      const ulA = document.createElement('ul'); ulA.className = 'bullets';
-      info.assumptions.forEach(t => { const li = document.createElement('li'); li.textContent = t; ulA.appendChild(li); });
-      assumptions.appendChild(ulA);
-
-      const limits = document.createElement('div');
-      limits.className = 'infoSection';
-      limits.innerHTML = `<b>Limitationen</b>`;
-      const ulL = document.createElement('ul'); ulL.className = 'bullets';
-      info.limits.forEach(t => { const li = document.createElement('li'); li.textContent = t; ulL.appendChild(li); });
-      limits.appendChild(ulL);
-
-      infoContent.append(desc, assumptions, limits);
-    }
-
-    // Chart drawing (axes + series + ticks)
-    function drawChart(modelId, res){
-      resizeCanvas(chart, ctx);
-      const W = chart.clientWidth, H = chart.clientHeight;
-      ctx.clearRect(0,0,W,H);
-
-      const margin = { top: 12, right: 18, bottom: 40, left: 64 };
-      const w = W - margin.left - margin.right;
-      const h = H - margin.top - margin.bottom;
-
-      // Determine tMax and yMax
-      const arr = res.data;
-      const tMax = arr.length ? arr[arr.length-1].t : 1;
-      let yMax = 0;
-      for(const d of arr){
-        MODELS[modelId].compartments.forEach(c => { const v = d[c.key]; if (typeof v === 'number') yMax = Math.max(yMax, v); });
-      }
-      yMax = Math.max(1, Math.ceil(yMax / 10) * 10);
-
-      // grid
-      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--line').trim() || '#e5e7eb';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      const yTicks = 5, xTicks = 10;
-      for(let i=0;i<=yTicks;i++){
-        const y = margin.top + h*(i/yTicks);
-        ctx.moveTo(margin.left, y); ctx.lineTo(margin.left + w, y);
-      }
-      for(let i=0;i<=xTicks;i++){
-        const x = margin.left + w*(i/xTicks);
-        ctx.moveTo(x, margin.top); ctx.lineTo(x, margin.top + h);
-      }
-      ctx.stroke();
-
-      // Axis titles
-      ctx.fillStyle = '#111';
-      ctx.font = '12px system-ui,-apple-system,Segoe UI,Roboto';
-      ctx.textAlign = 'center';
-      ctx.fillText('Tage', margin.left + w/2, margin.top + h + 28);
-      ctx.save(); ctx.translate(16, margin.top + h/2); ctx.rotate(-Math.PI/2); ctx.fillText('Personen', 0, 0); ctx.restore();
-
-      // Tick labels
-      ctx.fillStyle = '#666';
-      ctx.font = '12px system-ui,-apple-system,Segoe UI,Roboto';
-      // y labels
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      for(let i=0;i<=yTicks;i++){
-        const y = margin.top + h*(i/yTicks);
-        const val = Math.round(yMax * (1 - i/yTicks));
-        ctx.fillText(val.toLocaleString('de-DE'), margin.left - 10, y);
-      }
-      // x labels
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      for(let i=0;i<=xTicks;i++){
-        const x = margin.left + w*(i/xTicks);
-        const val = Math.round(tMax * (i/xTicks));
-        ctx.fillText(String(val), x, margin.top + h + 6);
-      }
-
-      const X = t => margin.left + (t / tMax) * w;
-      const Y = v => margin.top + h - (v / yMax) * h;
-
-      // draw series by compartments
-      function cssVar(name, fallback){ const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); return v || fallback; }
-      const colorMap = { S: cssVar('--s','#10b981'), E: cssVar('--e','#f59e0b'), I: cssVar('--i','#ef4444'), R: cssVar('--r','#3b82f6'), D: cssVar('--d','#111827'), V: cssVar('--v','#8b5cf6') };
-
-      MODELS[modelId].compartments.forEach(c => {
-        ctx.strokeStyle = colorMap[c.key] || '#000';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        let first = true;
-        for(const d of arr){
-          const x = X(d.t), y = Y(d[c.key]);
-          if(first){ ctx.moveTo(x,y); first=false; } else { ctx.lineTo(x,y); }
-        }
-        ctx.stroke();
-      });
-    }
-
-    // Handle any slider input → recompute & redraw
-    function onAnyInput(){
-      const m = MODELS[currentModelId];
-      const st = storedStates[currentModelId];
-      // read from DOM inputs
-      for(const key of Object.keys(m.paramDefs)){
-        const el = document.getElementById(key);
-        if(!el) continue;
-        let val = Number(el.value);
-        st[key] = val;
-      }
-      ensureValidState(currentModelId, st);
-      // adjust dependent maxima in UI (e.g., I0.max)
-      if(currentModelId==='SIR' || currentModelId==='SIS' || currentModelId==='SIRD'){
-        const I0 = $('#I0'); if(I0) I0.max = String(Math.max(1, st.N - (currentModelId==='SIS'?0:1)));
-      }
-      if(currentModelId==='SEIR'){
-        const E0 = $('#E0'), I0 = $('#I0');
-        if(E0) E0.max = String(Math.max(0, st.N - 1));
-        if(I0) I0.max = String(Math.max(0, st.N - st.E0 - 1));
-      }
-      if(currentModelId==='SIRV'){
-        const V0 = $('#V0'), I0 = $('#I0');
-        if(I0) I0.max = String(Math.max(0, st.N - 1));
-        if(V0) V0.max = String(Math.max(0, st.N - st.I0));
-      }
-
-      // simulate
-      currentSimResult = runSimulation(currentModelId, st);
-      // redraw
-      drawChart(currentModelId, currentSimResult);
-      buildKPIs(currentModelId, currentSimResult, st);
-    }
-
-    function runSimulation(modelId, st){
-      const m = MODELS[modelId];
-      // Map generic state to simulate args per model
-      if(modelId==='SIR')  return m.simulate({ N:st.N, I0:st.I0, beta:st.beta, D:st.D, days:st.days, dt:st.dt });
-      if(modelId==='SEIR') return m.simulate({ N:st.N, E0:st.E0, I0:st.I0, beta:st.beta, L:st.L, D:st.D, days:st.days, dt:st.dt });
-      if(modelId==='SIS')  return m.simulate({ N:st.N, I0:st.I0, beta:st.beta, D:st.D, days:st.days, dt:st.dt });
-      if(modelId==='SIRD') return m.simulate({ N:st.N, I0:st.I0, beta:st.beta, D:st.D, delta:st.delta, days:st.days, dt:st.dt });
-      if(modelId==='SIRV') return m.simulate({ N:st.N, I0:st.I0, V0:st.V0, beta:st.beta, D:st.D, nu:st.nu, days:st.days, dt:st.dt });
-      return { data:[] };
-    }
-
-    // Apply a model: build UI, legend, info, simulate & draw
-    function applyModel(modelId, resetInfo=false){
-      const m = MODELS[modelId];
-      chartTitle.textContent = `${modelId} (${m.titleLongEn})`;
-
-      // state
-      storedStates[modelId] = ensureValidState(modelId, storedStates[modelId] || defaultStateFor(modelId));
-      const st = storedStates[modelId];
-
-      // controls
-      buildControls(modelId, st);
-
-      // legend
-      buildLegend(legendEl, m.compartments);
-
-      // info (collapsed by default or on model switch)
-      buildInfo(modelId);
-      if(resetInfo){ infoCard.style.display = 'none'; }
-
-      // simulate + render
-      currentSimResult = runSimulation(modelId, st);
-      drawChart(modelId, currentSimResult);
-      buildKPIs(modelId, currentSimResult, st);
-    }
-
-    // Save PNG
-    function savePNG(){
-      drawChart(currentModelId, currentSimResult); // ensure fresh
-      const a = document.createElement('a');
-      const fname = `${currentModelId.toLowerCase()}_simulator.png`;
-      a.download = fname;
-      a.href = chart.toDataURL('image/png');
-      a.click();
-    }
-
-    // Reset current model to defaults
-    function resetCurrent(){
-      storedStates[currentModelId] = defaultStateFor(currentModelId);
-      applyModel(currentModelId, /*resetInfo*/true);
-    }
-
-    // Info toggle
-    infoBtn.addEventListener('click', () => {
-      const isOpen = document.body.classList.contains('info-open');
-      if (isOpen){
-        infoCard.style.display = 'none';
-        infoBtn.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('info-open');
-      } else {
-        infoCard.style.display = 'block';
-        infoBtn.setAttribute('aria-expanded', 'true');
-        document.body.classList.add('info-open');
-        infoCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+<footer class="footerNote screenOnly">© 2025 — Infektionsdynamiken verstehen: Fünf interaktive Modelle zur Schulung im Öffentlichen Gesundheitsdienst.</footer>
+<section class="impressum screenOnly" aria-label="Impressum">
+  <b>Impressum</b><br/>
+  Boris Dominic Rausch · c/o flexdienst #10910 · Kurt-Schumacher-Straße 76 · 67663 Kaiserslautern<br/>
+  E-Mail: <a href="mailto:borisdominnicrausch@outlook.de">borisdominnicrausch@outlook.de</a><br/><br/>
+  Verantwortlich gemäß § 55 Abs. 2 RStV: Boris Dominic Rausch<br/><br/>
+  <b>Haftungsausschluss</b>: Inhalte dienen ausschließlich Informations- und Schulungszwecken. Keine Haftung für externe Links.<br/>
+  <b>Urheberrecht</b>: Inhalte unterliegen deutschem Urheberrecht.
+</section>
+
+<script>
+/* ====== MODEL_INFO with aligned parameter blocks (unchanged from V2.36) ====== */
+const MODEL_INFO = {
+  SIR: {
+    desc: "Das SIR-Modell ist ein einfaches mathematisches Modell, das die Ausbreitung einer Infektionskrankheit beschreibt.\n\nEs unterteilt die Bevölkerung in drei Gruppen:\n- S (Susceptible / Anfällig) – noch nicht infiziert, aber empfänglich\n- I (Infected / Infiziert) – aktuell krank und ansteckend\n- R (Recovered / Genesen) – erholt und nicht mehr ansteckend\n\nDas Modell zeigt, wie Personen im Zeitverlauf von S zu I und schließlich zu R wechseln. Ausschlaggebend sind dabei die Übertragungsrate und die Dauer der Ansteckungsfähigkeit. Damit lässt sich abschätzen, ob eine Krankheit eine Epidemie auslöst oder abklingt, und wie Maßnahmen wie Abstand, Hygiene oder Impfungen den Verlauf beeinflussen.",
+    wiki: "https://de.wikipedia.org/wiki/SIR-Modell",
+    assumptions: "Zentrale Annahmen (vereinfachend):\n- Zu Beginn ist jede Person empfänglich (keine Vorerkrankungen/Immunität).\n- Gleichmäßige Durchmischung: gleiche Kontaktwahrscheinlichkeit für alle.\n- Nach Infektion sofort infektiös.\n- Einheitliche Krankheitsdauer für alle.\n- Nach Genesung dauerhaft immun (I → R, keine Reinfektion).\n- Bevölkerung besteht nur aus S, I, R (Geburten/Todesfälle außerhalb der Krankheit fehlen).",
+    math:
+      "Gleichungen (SIR):\n" +
+      "$$\\frac{dS}{dt} = -\\beta \\frac{S I}{N}$$\n" +
+      "$$\\frac{dI}{dt} = \\beta \\frac{S I}{N} - \\gamma I$$\n" +
+      "$$\\frac{dR}{dt} = \\gamma I$$\n\n" +
+      "Parameter:\n" +
+      "$$\\begin{aligned}\n" +
+      "  \\beta &= \\text{Übertragungsrate}\\\\\n" +
+      "  \\gamma &= \\frac{1}{\\text{Dauer der Infektiosität}}\\\\\n" +
+      "  N &= \\text{Gesamtbevölkerung}\\\\\n" +
+      "  R_0 &= \\frac{\\beta}{\\gamma}\n" +
+      "\\end{aligned}$$",
+    limits: "Wichtige Limitationen:\n- (Teil-)Immunität zu Beginn wird nicht berücksichtigt.\n- Reale Kontaktstrukturen sind nicht homogen (Haushalte, Schulen, Arbeitsplätze).\n- Infektiösität variiert zwischen Personen und über die Zeit.\n- Reinfektionen sind bei manchen Krankheiten möglich.\n- Krankheits-/Infektionsdauern streuen; Infektiosität setzt oft verzögert ein.\n- β ist im Grundmodell konstant, reale Verhaltensänderungen/interventionen machen β zeitabhängig."
+  },
+  SEIR: {
+    desc: "Das SEIR-Modell erweitert das SIR-Modell um eine zusätzliche Gruppe E (Exposed / Exponiert).\n\nDie vier Gruppen sind:\n- S (Susceptible / Anfällig) – noch nicht infiziert, aber empfänglich\n- E (Exposed / Exponiert) – infiziert, aber noch nicht infektiös (Inkubationszeit)\n- I (Infected / Infiziert) – infektiös\n- R (Recovered / Genesen) – erholt und nicht mehr ansteckend\n\nDieses Modell bildet Krankheiten realistischer ab, bei denen es zwischen Ansteckung und Ansteckungsfähigkeit eine Verzögerung gibt.",
+    wiki: "https://de.wikipedia.org/wiki/SEIR-Modell",
+    assumptions: "Zentrale Annahmen:\n- Nach Ansteckung folgt ein nicht-infektiöses Stadium (S → E), erst danach I.\n- Einheitliche Dauer der Inkubations- (E) und Infektionsphase (I).\n- Homogene Durchmischung; keine Reinfektion (wie bei SIR).\n- β (Kontakt/Übertragbarkeit) ist konstant.",
+    math:
+      "Gleichungen (SEIR):\n" +
+      "$$\\frac{dS}{dt} = -\\beta \\frac{S I}{N}$$\n" +
+      "$$\\frac{dE}{dt} = \\beta \\frac{S I}{N} - \\sigma E$$\n" +
+      "$$\\frac{dI}{dt} = \\sigma E - \\gamma I$$\n" +
+      "$$\\frac{dR}{dt} = \\gamma I$$\n\n" +
+      "Parameter:\n" +
+      "$$\\begin{aligned}\n" +
+      "  \\beta &= \\text{Übertragungsrate}\\\\\n" +
+      "  \\sigma &= \\frac{1}{\\text{Inkubationszeit}}\\\\\n" +
+      "  \\gamma &= \\text{Genesungsrate}\\\\\n" +
+      "  N &= \\text{Gesamtbevölkerung}\n" +
+      "\\end{aligned}$$",
+    limits: "Limitationen:\n- Inkubationszeit wird als fix/identisch modelliert; real variiert sie.\n- Prä-/asymptomatische Transmission kann höher oder niedriger sein als angenommen.\n- Gleiches Kontakt-/Verhaltensproblem wie bei SIR (fehlende Netzwerke, zeitabhängiges β)."
+  },
+  SIS: {
+    desc: "Das SIS-Modell beschreibt Krankheiten, bei denen Genesung keine dauerhafte Immunität verleiht.\n\nAblauf:\n- S (Susceptible / Anfällig)\n- I (Infected / Infiziert)\n\nNach der Genesung kehren Personen in die Gruppe S zurück (I → S) und können sich erneut anstecken.\n\nBeispiele: einige Erkältungsviren, Gonorrhö.",
+    wiki: "https://de.wikipedia.org/wiki/SIS-Modell",
+    assumptions: "Zentrale Annahmen:\n- Keine schützende Immunität: Genesene werden wieder empfänglich (I → S).\n- Homogene Durchmischung; einheitliche Krankheitsdauer.\n- β ist konstant.",
+    math:
+      "Gleichungen (SIS):\n" +
+      "$$\\frac{dS}{dt} = -\\beta \\frac{S I}{N} + \\gamma I$$\n" +
+      "$$\\frac{dI}{dt} = \\beta \\frac{S I}{N} - \\gamma I$$\n\n" +
+      "Parameter:\n" +
+      "$$\\begin{aligned}\n" +
+      "  \\beta &= \\text{Übertragungsrate}\\\\\n" +
+      "  \\gamma &= \\text{Genesungsrate (Rückkehr zu S)}\\\\\n" +
+      "  N &= \\text{Gesamtbevölkerung}\n" +
+      "\\end{aligned}$$",
+    limits: "Limitationen:\n- Temporäre oder partielle Immunität wird nicht abgebildet.\n- Heterogene Kontakte, Superspreading, Alters-/Risikostrukturen fehlen.\n- Interventionen/Verhaltensänderungen, die β verändern, fehlen."
+  },
+  SIRD: {
+    desc: "Das SIRD-Modell erweitert das SIR-Modell um eine zusätzliche Gruppe D (Deceased / Verstorben).\n\nDie Gruppen sind:\n- S (Susceptible / Anfällig)\n- I (Infected / Infiziert)\n- R (Recovered / Genesen)\n- D (Deceased / Verstorben)\n\nEs wird genutzt, wenn Sterblichkeit einen wesentlichen Einfluss auf die Dynamik hat.",
+    wiki: "https://de.wikipedia.org/wiki/SIR-Modell#SIRD",
+    assumptions: "Zentrale Annahmen:\n- Abgang aus I erfolgt über zwei Wege: Genesung (I → R) oder Tod (I → D).\n- Sterblichkeits-/Übergangsrate nach D ist konstant (zeitlich/personenunabhängig).\n- Homogene Durchmischung; keine Reinfektion (wie SIR).",
+    math:
+      "Gleichungen (SIRD):\n" +
+      "$$\\frac{dS}{dt} = -\\beta \\frac{S I}{N}$$\n" +
+      "$$\\frac{dI}{dt} = \\beta \\frac{S I}{N} - \\gamma I - \\mu I$$\n" +
+      "$$\\frac{dR}{dt} = \\gamma I$$\n" +
+      "$$\\frac{dD}{dt} = \\mu I$$\n\n" +
+      "Parameter:\n" +
+      "$$\\begin{aligned}\n" +
+      "  \\beta &= \\text{Übertragungsrate}\\\\\n" +
+      "  \\gamma &= \\text{Genesungsrate}\\\\\n" +
+      "  \\mu &= \\text{Sterberate}\\\\\n" +
+      "  N &= \\text{Gesamtbevölkerung}\n" +
+      "\\end{aligned}$$",
+    limits: "Limitationen:\n- Alters- und Risikounterschiede in der Letalität fehlen.\n- Behandlung/Versorgung (zeitabhängige Letalität, Überlastungseffekte) fehlen.\n- Kontaktheterogenität und zeitabhängiges β fehlen (wie SIR)."
+  },
+  SIRV: {
+    desc: "Das SIRV-Modell ergänzt das SIR-Modell um die Gruppe V (Vaccinated / Geimpft).\n\nDie Gruppen sind:\n- S (Susceptible / Anfällig)\n- I (Infected / Infiziert)\n- R (Recovered / Genesen)\n- V (Vaccinated / Geimpft)\n\nEignet sich, um den Einfluss von Impfkampagnen auf den Verlauf zu untersuchen.",
+    wiki: "https://de.wikipedia.org/wiki/SIR-Modell#SIRV",
+    assumptions: "Zentrale Annahmen:\n- Geimpfte sind vollständig geschützt (kein Infekt/keine Transmission) und verbleiben in V.\n- Impfungen verschieben Personen aus S → V mit konstanter Rate.\n- Homogene Durchmischung; keine Reinfektion (wie SIR).",
+    math:
+      "Gleichungen (SIRV):\n" +
+      "$$\\frac{dS}{dt} = -\\beta \\frac{S I}{N} - \\nu S$$\n" +
+      "$$\\frac{dI}{dt} = \\beta \\frac{S I}{N} - \\gamma I$$\n" +
+      "$$\\frac{dR}{dt} = \\gamma I$$\n" +
+      "$$\\frac{dV}{dt} = \\nu S$$\n\n" +
+      "Parameter:\n" +
+      "$$\\begin{aligned}\n" +
+      "  \\beta &= \\text{Übertragungsrate}\\\\\n" +
+      "  \\gamma &= \\text{Genesungsrate}\\\\\n" +
+      "  \\nu &= \\text{Impfrate}\\\\\n" +
+      "  N &= \\text{Gesamtbevölkerung}\n" +
+      "\\end{aligned}$$",
+    limits: "Limitationen:\n- Kein Impfabfall (Waning) und keine Impfdurchbrüche; Wirksamkeit wird als konstant angenommen.\n- Keine Priorisierung nach Alters-/Risikogruppen oder Impfschemata.\n- Gleiches Kontakt-/Verhaltensproblem wie bei SIR (β nicht zeitabhängig modelliert)."
+  }
+};
+
+/* ====== Toggle Panels ====== */
+const toggleControl = document.getElementById('toggleControl');
+const toggleInfo    = document.getElementById('toggleInfo');
+const panelControl  = document.getElementById('panelControl');
+const panelInfo     = document.getElementById('panelInfo');
+function showPanel(which){
+  if(which==='control'){
+    panelControl.style.display='block'; panelInfo.style.display='none';
+    toggleControl.classList.add('active'); toggleControl.setAttribute('aria-selected','true');
+    toggleInfo.classList.remove('active'); toggleInfo.setAttribute('aria-selected','false');
+  }else{
+    panelControl.style.display='none'; panelInfo.style.display='block';
+    toggleInfo.classList.add('active'); toggleInfo.setAttribute('aria-selected','true');
+    toggleControl.classList.remove('active'); toggleControl.setAttribute('aria-selected','false');
+    renderModelInfo(currentModel);
+  }
+  scheduleRedraw();
+}
+if(toggleControl && toggleInfo){
+  toggleControl.addEventListener('click', ()=>showPanel('control'));
+  toggleInfo.addEventListener('click',    ()=>showPanel('info'));
+}
+
+/* ====== Custom Dropdown ====== */
+const modelBtn   = document.getElementById('modelBtn');
+const modelList  = document.getElementById('modelList');
+const modelItems = modelList ? Array.from(modelList.querySelectorAll('.modelItem')) : [];
+const nativeSel  = document.getElementById('modelSelectNative');
+const titleText  = document.getElementById('titleText');
+const TITLE_MAP  = {
+  SIR:  'SIR (Susceptible, Infected, Recovered)',
+  SEIR: 'SEIR (Susceptible, Exposed, Infected, Recovered)',
+  SIS:  'SIS (Susceptible, Infected, Susceptible)',
+  SIRD: 'SIRD (Susceptible, Infected, Recovered, Deceased)',
+  SIRV: 'SIRV (Susceptible, Infected, Recovered, Vaccinated)'
+};
+let currentModel = 'SIR';
+function openList(){ if(modelList){ modelList.style.display='block'; modelBtn.setAttribute('aria-expanded','true'); modelItems[0]?.focus(); } }
+function closeList(){ if(modelList){ modelList.style.display='none';  modelBtn.setAttribute('aria-expanded','false'); } }
+function selectModel(id){
+  currentModel = id;
+  modelItems.forEach(el=>el.setAttribute('aria-selected', el.dataset.id===id ? 'true' : 'false'));
+  if(titleText) titleText.textContent = TITLE_MAP[id] || id;
+  if(nativeSel) nativeSel.value = id;
+  renderControls(id);
+  renderModelInfo(id);
+  runAndDraw();
+  closeList();
+}
+if(modelBtn){
+  modelBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const isOpen = modelList.style.display==='block';
+    if(isOpen) closeList(); else openList();
+  });
+}
+modelItems.forEach((el, idx)=>{
+  el.addEventListener('click', (e)=>{ e.stopPropagation(); selectModel(el.dataset.id); });
+  el.addEventListener('keydown', (e)=>{
+    const key=e.key;
+    if(key==='Enter' || key===' '){ e.preventDefault(); selectModel(el.dataset.id); }
+    if(key==='Escape'){ e.preventDefault(); closeList(); modelBtn.focus(); }
+    if(key==='ArrowDown'){ e.preventDefault(); (modelItems[idx+1]||modelItems[0]).focus(); }
+    if(key==='ArrowUp'){ e.preventDefault(); (modelItems[idx-1]||modelItems[modelItems.length-1]).focus(); }
+  });
+  el.tabIndex=-1;
+});
+document.addEventListener('click', (e)=>{ if(modelList && !modelList.contains(e.target) && !modelBtn.contains(e.target)) closeList(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeList(); });
+
+/* ====== Info Rendering ====== */
+const infoDesc = document.getElementById('info-desc');
+const infoAss  = document.getElementById('info-assumptions');
+const infoMath = document.getElementById('info-math');
+const infoLim  = document.getElementById('info-limits');
+const wikiLink = document.getElementById('wiki-link');
+function nl2br(s){ return (s||'').replace(/\\n/g,'<br>'); }
+async function typeset(el){
+  if(window.MathJax && MathJax.typesetPromise){ try{ await MathJax.typesetPromise([el]); }catch(e){} }
+}
+function renderModelInfo(model){
+  const d = MODEL_INFO[model] || {};
+  if(infoDesc) infoDesc.innerHTML = nl2br(d.desc || '');
+  if(infoAss)  infoAss.innerHTML  = nl2br(d.assumptions || '');
+  if(infoMath) infoMath.innerHTML = nl2br(d.math || '');
+  if(infoLim)  infoLim.innerHTML  = nl2br(d.limits || '');
+  if(d.wiki && wikiLink){ wikiLink.href = d.wiki; wikiLink.style.display='inline-block'; } else if(wikiLink){ wikiLink.removeAttribute('href'); wikiLink.style.display='none'; }
+  typeset(document.getElementById('panelInfo'));
+}
+
+/* ====== Controls, Simulation, Chart, KPIs, PNG, PDF ====== */
+const DEFAULTS = {
+  SIR:  { N:1_000_000, I0:10,  beta:0.30, inf_days:5,   days:160 },
+  SEIR: { N:1_000_000, E0:20, I0:10, beta:0.30, inc_days:3, inf_days:5, days:180 },
+  SIS:  { N:1_000_000, I0:10,  beta:0.30, inf_days:5,   days:160 },
+  SIRD: { N:1_000_000, I0:10,  beta:0.30, inf_days:5, mu:0.002, days:160 },
+  SIRV: { N:1_000_000, I0:10,  beta:0.30, inf_days:5, nu:0.005, V0:0, days:200 }
+};
+const CONTROLS = {
+  SIR: [
+    {key:'N', label:'Bevölkerung N', type:'int',  min:1000, max:10_000_000, step:1000},
+    {key:'I0',label:'Infiziert zu Beginn I₀', type:'int', min:1, max:100_000, step:1},
+    {key:'beta', label:'Übertragungsrate β (/Tag)', type:'float', min:0.02, max:1.5, step:0.01},
+    {key:'inf_days', label:'Infekt.-Dauer D (Tage)', type:'float', min:1, max:21, step:0.1},
+    {key:'days', label:'Simulationsdauer (Tage)', type:'int', min:30, max:365, step:1}
+  ],
+  SEIR: [
+    {key:'N', label:'Bevölkerung N', type:'int',  min:1000, max:10_000_000, step:1000},
+    {key:'E0',label:'Exponiert zu Beginn E₀', type:'int', min:0, max:100_000, step:1},
+    {key:'I0',label:'Infiziert zu Beginn I₀', type:'int', min:1, max:100_000, step:1},
+    {key:'beta', label:'Übertragungsrate β (/Tag)', type:'float', min:0.02, max:1.5, step:0.01},
+    {key:'inc_days', label:'Inkubationszeit L (Tage)', type:'float', min:0.5, max:14, step:0.1},
+    {key:'inf_days', label:'Infekt.-Dauer D (Tage)', type:'float', min:1, max:21, step:0.1},
+    {key:'days', label:'Simulationsdauer (Tage)', type:'int', min:30, max:365, step:1}
+  ],
+  SIS: [
+    {key:'N', label:'Bevölkerung N', type:'int',  min:1000, max:10_000_000, step:1000},
+    {key:'I0',label:'Infiziert zu Beginn I₀', type:'int', min:1, max:100_000, step:1},
+    {key:'beta', label:'Übertragungsrate β (/Tag)', type:'float', min:0.02, max:1.5, step:0.01},
+    {key:'inf_days', label:'Krankheitsdauer D (Tage)', type:'float', min:1, max:21, step:0.1},
+    {key:'days', label:'Simulationsdauer (Tage)', type:'int', min:30, max:365, step:1}
+  ],
+  SIRD: [
+    {key:'N', label:'Bevölkerung N', type:'int',  min:1000, max:10_000_000, step:1000},
+    {key:'I0',label:'Infiziert zu Beginn I₀', type:'int', min:1, max:100_000, step:1},
+    {key:'beta', label:'Übertragungsrate β (/Tag)', type:'float', min:0.02, max:1.5, step:0.01},
+    {key:'inf_days', label:'Infekt.-Dauer D (Tage)', type:'float', min:1, max:21, step:0.1},
+    {key:'mu', label:'Sterberate μ (/Tag)', type:'float', min:0, max:0.05, step:0.0005},
+    {key:'days', label:'Simulationsdauer (Tage)', type:'int', min:30, max:365, step:1}
+  ],
+  SIRV: [
+    {key:'N', label:'Bevölkerung N', type:'int',  min:1000, max:10_000_000, step:1000},
+    {key:'I0',label:'Infiziert zu Beginn I₀', type:'int', min:1, max:100_000, step:1},
+    {key:'beta', label:'Übertragungsrate β (/Tag)', type:'float', min:0.02, max:1.5, step:0.01},
+    {key:'inf_days', label:'Infekt.-Dauer D (Tage)', type:'float', min:1, max:21, step:0.1},
+    {key:'nu', label:'Impfrate ν (/Tag)', type:'float', min:0, max:0.2, step:0.001},
+    {key:'V0', label:'Geimpft zu Beginn V₀', type:'int', min:0, max:5_000_000, step:1},
+    {key:'days', label:'Simulationsdauer (Tage)', type:'int', min:30, max:365, step:1}
+  ]
+};
+const controlsEl = document.getElementById('controls');
+function numfmt(x){ return x.toLocaleString('de-DE'); }
+function renderControls(model){
+  if(!controlsEl) return;
+  const defs = CONTROLS[model];
+  const defaults = DEFAULTS[model];
+  let html = '';
+  defs.forEach(def=>{
+    const v = defaults[def.key];
+    const inputId = `ctrl-${def.key}`;
+    const rangeId = `${inputId}-range`;
+    html += `
+      <div class="ctrlRow">
+        <label for="${rangeId}">${def.label}</label>
+        <input type="range" id="${rangeId}" min="${def.min}" max="${def.max}" step="${def.step}" value="${v}">
+        <input type="number" id="${inputId}"   min="${def.min}" max="${def.max}" step="${def.step}" value="${v}">
+      </div>
+    `;
+  });
+  html += `<div class="hint">Tipp: Zahlenfeld fokussieren und mit ↑/↓ in feinen Schritten anpassen.</div>`;
+  controlsEl.innerHTML = html;
+
+  defs.forEach(def=>{
+    const num   = document.getElementById(`ctrl-${def.key}`);
+    const range = document.getElementById(`ctrl-${def.key}-range`);
+    const sync = (from, to)=>{ to.value = from.value; runAndDraw(); };
+    range.addEventListener('input', ()=>sync(range, num));
+    num.addEventListener('input',   ()=>{
+      let val = parseFloat(num.value);
+      if(isNaN(val)) return;
+      val = Math.max(parseFloat(num.min), Math.min(parseFloat(num.max), val));
+      num.value = val;
+      sync(num, range);
     });
-    
-    const closeInfoBtn = document.getElementById('closeInfoBtn');
-    if (closeInfoBtn){
-      closeInfoBtn.addEventListener('click', () => {
-        infoCard.style.display = 'none';
-        infoBtn.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('info-open');
-      });
+  });
+}
+function readParams(){
+  const defs = CONTROLS[currentModel];
+  const p = {};
+  defs.forEach(def=>{
+    const el = document.getElementById(`ctrl-${def.key}`);
+    p[def.key] = el ? (def.type==='int' ? parseInt(el.value,10) : parseFloat(el.value)) : DEFAULTS[currentModel][def.key];
+  });
+  return p;
+}
+const btnReset = document.getElementById('btnReset');
+if(btnReset){ btnReset.addEventListener('click', ()=>{ renderControls(currentModel); runAndDraw(); }); }
+
+/* Simulation */
+function simulate(model, p){
+  const days = Math.max(1, Math.round(p.days||160));
+  const dt = 1;
+  const gamma = 1 / (p.inf_days||5);
+  const beta  = p.beta||0.3;
+
+  let S = p.N||1_000_000;
+  let E = 0, I = 0, R = 0, D = 0, V = 0;
+  if(model==='SEIR'){ E = p.E0||0; }
+  if(model==='SIRV'){ V = p.V0||0; }
+  I = p.I0||1;
+  S = S - E - I - R - D - V;
+  if(S<0){ S=0; }
+
+  const sigma = model==='SEIR' ? 1 / (p.inc_days||3) : 0;
+  const mu    = model==='SIRD' ? (p.mu||0) : 0;
+  const nu    = model==='SIRV' ? (p.nu||0) : 0;
+
+  const t=[]; const out={S:[], E:[], I:[], R:[], D:[], V:[]};
+
+  for(let day=0; day<=days; day+=dt){
+    t.push(day);
+    out.S.push(S); out.E.push(E); out.I.push(I); out.R.push(R); out.D.push(D); out.V.push(V);
+
+    const Ntot = Math.max(1, S+E+I+R+D+V);
+    const infFlow = beta * S * I / Ntot;
+    let dS=0,dE=0,dI=0,dR=0,dD=0,dV=0;
+
+    if(model==='SIR'){
+      dS = -infFlow;
+      dI = infFlow - gamma*I;
+      dR = gamma*I;
+    }else if(model==='SEIR'){
+      dS = -infFlow;
+      dE =  infFlow - sigma*E;
+      dI =  sigma*E - gamma*I;
+      dR =  gamma*I;
+    }else if(model==='SIS'){
+      dS = -infFlow + gamma*I;
+      dI =  infFlow - gamma*I;
+    }else if(model==='SIRD'){
+      dS = -infFlow;
+      dI =  infFlow - gamma*I - mu*I;
+      dR =  gamma*I;
+      dD =  mu*I;
+    }else if(model==='SIRV'){
+      dS = -infFlow - nu*S;
+      dI =  infFlow - gamma*I;
+      dR =  gamma*I;
+      dV =  nu*S;
     }
 
-    // Buttons
-    resetBtn.addEventListener('click', resetCurrent);
-    saveBtn.addEventListener('click', savePNG);
-    window.addEventListener('resize', () => { if(currentSimResult) drawChart(currentModelId, currentSimResult); });
+    S += dS*dt; E += dE*dt; I += dI*dt; R += dR*dt; D += dD*dt; V += dV*dt;
 
-    // Init
-    buildModelSelect();
-    applyModel(currentModelId, /*resetInfo*/true);
-  </script>
+    if(S<0)S=0; if(E<0)E=0; if(I<0)I=0; if(R<0)R=0; if(D<0)D=0; if(V<0)V=0;
+  }
+  return {t, out};
+}
+
+/* Chart + Legend */
+const canvas = document.getElementById('chartCanvas');
+const ctx = canvas.getContext('2d', {alpha:true});
+function getCssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+const COLORS = { S:getCssVar('--s'), E:getCssVar('--e'), I:getCssVar('--i'), R:getCssVar('--r'), D:getCssVar('--d'), V:getCssVar('--v') };
+let lastCssW = 0, lastCssH = 0;
+let dprBoost = 1;
+function resizeCanvas(){
+  const parent = canvas.parentElement;
+  const cssW = Math.max(1, parent.clientWidth);
+  const cssH = Math.max(1, parent.clientHeight);
+  if(cssW === lastCssW && cssH === lastCssH) return;
+  lastCssW = cssW; lastCssH = cssH;
+
+  const dpr = (window.devicePixelRatio || 1) * dprBoost;
+  const newW = Math.floor(cssW * dpr);
+  const newH = Math.floor(cssH * dpr);
+  if(canvas.width !== newW) canvas.width = newW;
+  if(canvas.height !== newH) canvas.height = newH;
+
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr, dpr);
+}
+function crisp(n){ return Math.round(n) + 0.5; }
+function drawAxes(xmin,xmax,ymin,ymax,w,h,m){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle = '#e5e7eb';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#64748b';
+  ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+
+  const ticks = 5;
+  for(let i=0;i<=ticks;i++){
+    const val = ymin + (i*(ymax-ymin))/ticks;
+    const y = m.top + (1 - ( (val-ymin)/(ymax-ymin) )) * (h - m.top - m.bottom);
+    const yy = crisp(y);
+    ctx.beginPath(); ctx.moveTo(m.left, yy); ctx.lineTo(w - m.right, yy); ctx.stroke();
+    const label = (val>=1000) ? (Math.round(val/1000)+'k') : (''+Math.round(val));
+    ctx.fillText(label, 4, yy-2);
+  }
+
+  const xLabels = [xmin, xmin+(xmax-xmin)/4, xmin+(xmax-xmin)/2, xmin+3*(xmax-xmin)/4, xmax];
+  xLabels.forEach((xv)=>{
+    let x = m.left + ( (xv-xmin)/(xmax-xmin) ) * (w - m.left - m.right);
+    x = Math.min(w - m.right - 12, Math.max(m.left + 2, x));
+    ctx.fillText(''+Math.round(xv), x-6, h-6 - (m.bottom-24));
+  });
+
+  ctx.strokeStyle = '#cbd5e1';
+  const fw = (w - m.left - m.right);
+  const fh = (h - m.top - m.bottom);
+  ctx.strokeRect(crisp(m.left), crisp(m.top), Math.round(fw), Math.round(fh));
+}
+function plotLine(xs, ys, color, xmin, xmax, ymin, ymax, w, h, m){
+  if(!ys || ys.length===0) return;
+  ctx.beginPath();
+  for(let i=0;i<ys.length;i++){
+    const x = m.left + ( (xs[i]-xmin)/(xmax-xmin) ) * (w - m.left - m.right);
+    const y = m.top  + (1 - ( (ys[i]-ymin)/(ymax-ymin) )) * (h - m.top - m.bottom);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+}
+const DE_LABEL = { S:'Anfällig', E:'Exponiert', I:'Infiziert', R:'Genesen', D:'Verstorben', V:'Geimpft' };
+function seriesFor(model){
+  return (model==='SEIR') ? ['S','E','I','R'] :
+         (model==='SIRD') ? ['S','I','R','D'] :
+         (model==='SIRV') ? ['S','I','R','V'] :
+         (model==='SIS')  ? ['S','I'] :
+                            ['S','I','R'];
+}
+function measureTextUnscaled(text){
+  ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+  ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+  const w = ctx.measureText(text).width; ctx.restore(); return w;
+}
+function drawLegend(seq, m, w, h){
+  const r = 5, padX = 8, padY = 6, gapDotText = 6, gapItem = 16;
+  let x = m.left + padX; let y = h - m.bottom + padY;
+  ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+  ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+  seq.forEach((k)=>{
+    const label = `${k} (${DE_LABEL[k]})`;
+    const textW = measureTextUnscaled(label);
+    const needW = 2*r + gapDotText + textW + gapItem;
+    if(x + needW > w - m.right){ x = m.left + padX; y += 18; }
+    ctx.beginPath(); ctx.arc(x + r, y + r, r, 0, Math.PI*2); ctx.fillStyle = COLORS[k]; ctx.fill();
+    ctx.fillStyle = '#334155'; ctx.fillText(label, x + 2*r + gapDotText, y);
+    x += needW;
+  });
+}
+function drawChart(data, model, N){
+  const parent = canvas.parentElement;
+  const w = parent.clientWidth;
+  const h = parent.clientHeight;
+
+  ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+  const seq = seriesFor(model);
+  let estimateW = 0, lines = 1;
+  seq.forEach(k=>{ estimateW += 10 + 6 + measureTextUnscaled(`${k} (${DE_LABEL[k]})`) + 16; });
+  const available = w - 48 - 12 - 10;
+  if(estimateW > available) lines = 2;
+  const legendSpace = lines * 22;
+
+  const m = {left:48, right:12, top:10, bottom:28 + legendSpace};
+
+  const ymax = Math.max(N, ...['S','E','I','R','D','V'].map(k => Math.max(...data.out[k])));
+  drawAxes(data.t[0], data.t[data.t.length-1], 0, ymax, w, h, m);
+  seq.forEach(k => plotLine(data.t, data.out[k], COLORS[k], data.t[0], data.t[data.t.length-1], 0, ymax, w, h, m));
+  drawLegend(seq, m, w, h);
+}
+
+/* KPIs */
+function computeKPIs(model, p, data){
+  const R0 = (p.beta||0)* (p.inf_days||5);
+  const I = data.out.I;
+  let peakI = 0, peakDay = 0;
+  for(let i=0;i<I.length;i++){ if(I[i]>peakI){ peakI=I[i]; peakDay=i; } }
+  const end = Object.fromEntries(['S','E','I','R','D','V'].map(k=>[k, Math.round(data.out[k][data.out[k].length-1]||0)]));
+  return { R0, peakI, peakDay, end };
+}
+const kpiR0    = document.getElementById('kpiR0');
+const kpiHerd  = document.getElementById('kpiHerd');
+const kpiPeakI = document.getElementById('kpiPeakI');
+const kpiPeakDay = document.getElementById('kpiPeakDay');
+const kpiEnd   = document.getElementById('kpiEnd');
+function updateKPIs(model, p, data){
+  const k = computeKPIs(model, p, data);
+  kpiR0 && (kpiR0.textContent = k.R0 ? k.R0.toFixed(2) : '–');
+  kpiHerd && (kpiHerd.textContent = (k.R0>1) ? ` (Schwelle: ${(100*(1-1/k.R0)).toFixed(1)}%)` : ' (Schwelle: –)');
+  kpiPeakI && (kpiPeakI.textContent = `${numfmt(Math.round(k.peakI))} (${(100*k.peakI/(p.N||1)).toFixed(2)}%)`);
+  kpiPeakDay && (kpiPeakDay.textContent = ''+k.peakDay);
+  if(kpiEnd){
+    const parts = [];
+    if(model==='SEIR'){ parts.push(`E=${numfmt(k.end.E)}`); }
+    parts.push(`S=${numfmt(k.end.S)}`, `I=${numfmt(k.end.I)}`, `R=${numfmt(k.end.R)}`);
+    if(model==='SIRD'){ parts.push(`D=${numfmt(k.end.D)}`); }
+    if(model==='SIRV'){ parts.push(`V=${numfmt(k.end.V)}`); }
+    kpiEnd.textContent = parts.join(' · ');
+  }
+  return k;
+}
+
+/* PNG Export (mit Wasserzeichen für Web) */
+const WATERMARK = [
+  { text: 'Rausch (2025) • https://doi.org.musterdoi/123456789', font: '600 13px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' },
+  { text: 'Kompartimentmodell-Simulation • Infektionsdynamiken verstehen', font: '13px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' }
+];
+const btnPNG = document.getElementById('btnPNG');
+if(btnPNG){
+  btnPNG.addEventListener('click', ()=>{
+    const dpr = (window.devicePixelRatio || 1);
+    const cssW = canvas.parentElement.clientWidth;
+    const cssH = canvas.parentElement.clientHeight;
+    const off = document.createElement('canvas');
+    off.width  = Math.floor(cssW * dpr);
+    off.height = Math.floor(cssH * dpr);
+    const octx = off.getContext('2d');
+    octx.scale(dpr, dpr);
+    octx.drawImage(canvas, 0, 0, off.width, off.height, 0, 0, cssW, cssH);
+    const pad = 10; let y = pad + 2;
+    octx.textAlign = 'right'; octx.textBaseline = 'top'; octx.fillStyle = 'rgba(15,23,42,0.76)';
+    WATERMARK.forEach((ln)=>{
+      octx.font = ln.font; octx.fillText(ln.text, cssW - pad, y);
+      const m = octx.measureText(ln.text);
+      const lineH = Math.max(16, m.actualBoundingBoxAscent + m.actualBoundingBoxDescent + 2);
+      y += lineH;
+    });
+    const a = document.createElement('a');
+    const ts = new Date(); const pad2 = n => String(n).padStart(2,'0');
+    const fname = `Kompartiment-Simulator_${currentModel}_${ts.getFullYear()}${pad2(ts.getMonth()+1)}${pad2(ts.getDate())}_${pad2(ts.getHours())}${pad2(ts.getMinutes())}.png`;
+    a.download = fname; a.href = off.toDataURL('image/png'); a.click();
+  });
+}
+
+/* PDF / Print */
+function buildParamsTable(model, p){
+  const defs = CONTROLS[model];
+  return defs.map(def=>{
+    const val = p[def.key];
+    const formatted = (def.type==='int') ? numfmt(val) : (''+val);
+    return `<tr><th>${def.label}</th><td>${formatted}</td></tr>`;
+  }).join('');
+}
+function buildKpisTable(model, p, k){
+  const lines = [
+    ['R₀', k.R0 ? k.R0.toFixed(2) : '–'],
+    ['Herdenschwelle', (k.R0>1) ? `${(100*(1-1/k.R0)).toFixed(1)}%` : '–'],
+    ['Peak I', `${numfmt(Math.round(k.peakI))} (${(100*k.peakI/(p.N||1)).toFixed(2)}%) am Tag ${k.peakDay}`]
+  ];
+  const endParts = [];
+  if(model==='SEIR') endParts.push(`E=${numfmt(k.end.E)}`);
+  endParts.push(`S=${numfmt(k.end.S)}`, `I=${numfmt(k.end.I)}`, `R=${numfmt(k.end.R)}`);
+  if(model==='SIRD') endParts.push(`D=${numfmt(k.end.D)}`);
+  if(model==='SIRV') endParts.push(`V=${numfmt(k.end.V)}`);
+  lines.push(['Endstände', endParts.join(' · ')]);
+  return lines.map(([a,b])=>`<tr><th>${a}</th><td>${b}</td></tr>`).join('');
+}
+function preparePrint(){
+  // timestamp
+  const tsEl = document.getElementById('printTs');
+  if(tsEl){
+    const d = new Date();
+    const pad = n=>String(n).padStart(2,'0');
+    tsEl.textContent = `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} · ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  renderModelInfo(currentModel);
+  const p = readParams();
+  const data = simulate(currentModel, p);
+  const k = computeKPIs(currentModel, p, data);
+  const pt = document.getElementById('paramsTable');
+  const kt = document.getElementById('kpisTable');
+  if(pt) pt.innerHTML = buildParamsTable(currentModel, p);
+  if(kt) kt.innerHTML = buildKpisTable(currentModel, p, k);
+
+  dprBoost = 2.5; lastCssW = 0; lastCssH = 0; resizeCanvas(); drawChart(data, currentModel, p.N||1);
+}
+function cleanupPrint(){ dprBoost = 1; lastCssW = 0; lastCssH = 0; resizeCanvas(); runAndDraw(); }
+const btnPDF = document.getElementById('btnPDF');
+if(btnPDF){ btnPDF.addEventListener('click', ()=>{ preparePrint(); setTimeout(()=>window.print(), 50); }); }
+if('onbeforeprint' in window){ window.addEventListener('beforeprint', preparePrint); window.addEventListener('afterprint', cleanupPrint); }
+
+/* Run-all */
+function runAndDraw(){ const p = readParams(); const data = simulate(currentModel, p); drawChart(data, currentModel, p.N||1); updateKPIs(currentModel, p, data); }
+function init(){ resizeCanvas(); renderControls(currentModel); renderModelInfo(currentModel); runAndDraw(); }
+let rafToken = null;
+function scheduleRedraw(){ if(rafToken) return; rafToken = requestAnimationFrame(()=>{ rafToken=null; resizeCanvas(); runAndDraw(); }); }
+window.addEventListener('load', scheduleRedraw);
+window.addEventListener('resize', scheduleRedraw);
+try{ const ro = new ResizeObserver(scheduleRedraw); ro.observe(document.querySelector('.chartPh')); }catch(e){}
+init();
+</script>
 </body>
 </html>
