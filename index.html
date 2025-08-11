@@ -3,28 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Interaktiver Simulator für SIR, SEIR, SIS, SIRD und SIRV. Visualisiert R₀, Herdenschwelle und Peaks. Kostenloses Browser-Tool für Schulung & Szenarioplanung im ÖGD.">
-<meta name="author" content="Boris Dominic Rausch">
-<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
-<meta name="theme-color" content="#0f172a">
-<meta name="keywords" content="SIR, SEIR, SIS, SIRD, SIRV, R0, Herdenschwelle, Epidemiologie, Simulation, Öffentlicher Gesundheitsdienst, ÖGD, Infektionsdynamiken">
-
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:locale" content="de_DE">
-<meta property="og:title" content="Infektionsdynamiken verstehen – Interaktiver SIR/SEIR/SIS/SIRD/SIRV-Simulator">
-<meta property="og:description" content="Interaktiver Simulator für SIR, SEIR, SIS, SIRD und SIRV. Visualisiert R₀, Herdenschwelle und Peaks. Tool für Schulung & Szenarioplanung im ÖGD.">
-<meta property="og:url" content="https://www.infektionsdynamiken.de/">
-<meta property="og:image" content="https://www.infektionsdynamiken.de/og.png">
-<meta property="og:image:alt" content="Kurvenverlauf der SIR/SEIR/SIS/SIRD/SIRV-Modelle">
-
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Infektionsdynamiken verstehen – Interaktiver SIR/SEIR/SIS/SIRD/SIRV-Simulator">
-<meta name="twitter:description" content="Simulator mit R₀, Herdenschwelle & Peaks – Schulung & Szenarioplanung im ÖGD.">
-<meta name="twitter:image" content="https://www.infektionsdynamiken.de/og.png">
-<title>Infektionsdynamiken.de</title>
-
+<title>Kompartiment-Simulator V2.42</title>
+<style>
+:root{
+  --fg:#0f172a; --muted:#475569; --line:#e5e7eb; --border:#e2e8f0; --bg:#ffffff;
+  --s:#10b981; --e:#f59e0b; --i:#ef4444; --r:#3b82f6; --d:#111827; --v:#8b5cf6;
+  --accent:#2563eb;
+}
 *{box-sizing:border-box}
 html,body{height:100%}
 @supports (scrollbar-gutter: stable) { html{ scrollbar-gutter: stable both-edges; } }
@@ -198,13 +183,6 @@ window.MathJax = {
 };
 </script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-
-<!-- Cloudflare Web Analytics -->
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' 
-  data-cf-beacon='{"token": "144f1f6debef471ca5e0b52668656da9"}'>
-</script>
-<!-- End Cloudflare Web Analytics -->  
-  
 </head>
 <body>
 <div class="wrap">
@@ -221,7 +199,7 @@ window.MathJax = {
     <p class="sub1">Fünf interaktive Modelle als praxisnahes Werkzeug für</p>
     <p class="sub2"><b>Schulung</b> und <b>Szenarioplanung</b> im Öffentlichen Gesundheitsdienst</p>
     <p class="authors">Boris Dominic Rausch</p>
-    <p class="pub">https://www.Infektionsdynamiken.de/: <a id="printDoi" href="https://www.Infektionsdynamiken.de/">https://www.Infektionsdynamiken.de/</a></p>
+    <p class="pub">https://bdr2025.github.io/Infektionsdynamiken-verstehen/: <a id="printDoi" href="https://bdr2025.github.io/Infektionsdynamiken-verstehen/">https://bdr2025.github.io/Infektionsdynamiken-verstehen/</a></p>
     <p class="version">Simulator Version <span id="printVersion">2.42</span> · <span id="printTs"></span></p>
   </section>
 
@@ -332,11 +310,11 @@ window.MathJax = {
   </section>
 </div>
 
-<footer class="footerNote screenOnly">© 2025 — www.Infektionsdynamiken.de — Fünf interaktive Modelle zur Schulung im Öffentlichen Gesundheitsdienst.</footer>
+<footer class="footerNote screenOnly">© 2025 — Infektionsdynamiken verstehen: Fünf interaktive Modelle zur Schulung im Öffentlichen Gesundheitsdienst.</footer>
 <section class="impressum screenOnly" aria-label="Impressum">
   <b>Impressum</b><br/>
   Boris Dominic Rausch · c/o flexdienst #10910 · Kurt-Schumacher-Straße 76 · 67663 Kaiserslautern<br/>
-  E-Mail: <a href="mailto:info@infektionsdynamiken.de">info@infektionsdynamiken.de</a><br/><br/>
+  E-Mail: <a href="mailto:borisdominnicrausch@outlook.de">borisdominnicrausch@outlook.de</a><br/><br/>
   Verantwortlich gemäß § 55 Abs. 2 RStV: Boris Dominic Rausch<br/><br/>
   <b>Haftungsausschluss</b>: Inhalte dienen ausschließlich Informations- und Schulungszwecken. Keine Haftung für externe Links.<br/>
   <b>Urheberrecht</b>: Inhalte unterliegen deutschem Urheberrecht.
@@ -836,8 +814,8 @@ function updateKPIs(model, p, data){
 
 /* PNG Export (mit Wasserzeichen für Web) */
 const WATERMARK = [
-  { text: 'Rausch (2025) • www.infektionsdynamiken.de/', font: '600 13px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' },
-  { text: 'Infektionsdynamiken verstehen • Modellsimulation', font: '13px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' }
+  { text: 'Rausch (2025) • https://bdr2025.github.io/Infektionsdynamiken-verstehen/', font: '600 13px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' },
+  { text: 'Kompartimentmodell-Simulation • Infektionsdynamiken verstehen', font: '13px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' }
 ];
 const btnPNG = document.getElementById('btnPNG');
 if(btnPNG){
