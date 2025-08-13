@@ -37,50 +37,51 @@
 
     <!-- Interaktiv -->
     <section id="interactivePanel" class="container panel when-school" hidden>
-      <div class="interactive-grid">
-        <div class="interactive-chart card">
-          <canvas id="seirCanvasInteractive"></canvas>
+  <div class="interactive-grid">
+    <div class="interactive-chart card">
+      <canvas id="seirCanvasInteractive"></canvas>
+    </div>
+    <aside class="interactive-side">
+      <div class="kpi-grid">
+        <div class="kpi-card kpi--neutral">
+          <div class="kpi-title">Ansteckungsfaktor</div>
+          <div id="kAnsteck" class="kpi-value">–</div>
+          <div class="kpi-hint">Ø angesteckte Personen pro Erkranktem</div>
         </div>
-        <aside class="interactive-side">
-          <div class="kpi-grid">
-            <div class="kpi-card kpi--neutral">
-              <div class="kpi-title">Ansteckungsfaktor</div>
-              <div id="kAnsteck" class="kpi-value">–</div>
-              <div class="kpi-hint">Ø angesteckte Personen pro Erkranktem</div>
-            </div>
-            <div class="kpi-card kpi--green">
-              <div class="kpi-title">Gesunde Menschen</div>
-              <div id="kGesund" class="kpi-value">–</div>
-            </div>
-            <div class="kpi-card kpi--blue">
-              <div class="kpi-title">Genesene Menschen</div>
-              <div id="kGenesene" class="kpi-value">–</div>
-            </div>
-          </div>
-
-          <div class="controls card">
-            <label class="ctrl">
-              <span>Ansteckungszahl (Durchschnitt)</span>
-              <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
-              <output id="rR0v">2.0</output>
-            </label>
-            <label class="ctrl">
-              <span>Inkubationsdauer (Tage)</span>
-              <input type="range" id="rInc" min="2" max="7" step="1" value="3">
-              <output id="rIncv">3</output>
-            </label>
-            <label class="ctrl">
-              <span>Ansteckungsdauer (Tage)</span>
-              <input type="range" id="rDays" min="2" max="5" step="1" value="5">
-              <output id="rDaysv">5</output>
-            </label>
-          </div>
-        </aside>
+        <div class="kpi-card kpi--green">
+          <div class="kpi-title">Gesunde Menschen</div>
+          <div id="kGesund" class="kpi-value">–</div>
+        </div>
+        <div class="kpi-card kpi--blue">
+          <div class="kpi-title">Genesene Menschen</div>
+          <div id="kGenesene" class="kpi-value">–</div>
+        </div>
       </div>
-    </section>
+
+      <div class="controls card">
+        <label class="ctrl">
+          <span>Ansteckungszahl (Durchschnitt)</span>
+          <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
+          <output id="rR0v">2.0</output>
+        </label>
+        <label class="ctrl">
+          <span>Inkubationsdauer (Tage)</span>
+          <input type="range" id="rInc" min="2" max="7" step="1" value="3">
+          <output id="rIncv">3</output>
+        </label>
+        <label class="ctrl">
+          <span>Ansteckungsdauer (Tage)</span>
+          <input type="range" id="rDays" min="2" max="5" step="1" value="5">
+          <output id="rDaysv">5</output>
+        </label>
+      </div>
+    </aside>
+  </div>
+</section>
+
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js?v=5"></script>
+  <script type="module" src="./js/core/app.js?v=6"></script>
 </body>
 </html>

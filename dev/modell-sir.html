@@ -43,45 +43,47 @@
       <div id="uniKpis" class="when-uni"></div>
     </section>
 
+    
     <!-- Interaktive Ansicht (kleineres Chart mit Achsen + KPI + 2 Regler) -->
-    <section id="interactivePanel" class="container panel when-school" hidden>
-      <div class="interactive-grid">
-        <div class="interactive-chart card">
-          <canvas id="sirCanvasInteractive"></canvas>
+<section id="interactivePanel" class="container panel when-school" hidden>
+  <div class="interactive-grid">
+    <div class="interactive-chart card">
+      <canvas id="sirCanvasInteractive"></canvas>
+    </div>
+
+    <aside class="interactive-side">
+      <div class="kpi-grid">
+        <div class="kpi-card kpi--neutral">
+          <div class="kpi-title">Ansteckungsfaktor</div>
+          <div id="kAnsteck" class="kpi-value">–</div>
+          <div class="kpi-hint">Ø angesteckte Personen pro Erkranktem</div>
         </div>
-
-        <!-- KPI: Ansteckungsfaktor (neutral), Gesunde (grün), Genesene (blau) -->
-<div class="kpi-grid">
-  <div class="kpi-card kpi--neutral">
-    <div class="kpi-title">Ansteckungsfaktor</div>
-    <div id="kAnsteck" class="kpi-value">–</div>
-    <div class="kpi-hint">Ø angesteckte Personen pro Erkranktem</div>
-  </div>
-  <div class="kpi-card kpi--green">
-    <div class="kpi-title">Gesunde Menschen</div>
-    <div id="kGesund" class="kpi-value">–</div>
-  </div>
-  <div class="kpi-card kpi--blue">
-    <div class="kpi-title">Genesene Menschen</div>
-    <div id="kGenesene" class="kpi-value">–</div>
-  </div>
-</div>
-
-<!-- Reglerbereich (Tage 2–5) -->
-<label class="ctrl">
-  <span>Ansteckungsdauer (Tage)</span>
-  <input type="range" id="rDays" min="2" max="5" step="1" value="5">
-  <output id="rDaysv">5</output>
-</label>
-            <label class="ctrl">
-              <span>Ansteckungsdauer (Tage)</span>
-              <input type="range" id="rDays" min="2" max="10" step="1" value="5">
-              <output id="rDaysv">5</output>
-            </label>
-          </div>
-        </aside>
+        <div class="kpi-card kpi--green">
+          <div class="kpi-title">Gesunde Menschen</div>
+          <div id="kGesund" class="kpi-value">–</div>
+        </div>
+        <div class="kpi-card kpi--blue">
+          <div class="kpi-title">Genesene Menschen</div>
+          <div id="kGenesene" class="kpi-value">–</div>
+        </div>
       </div>
-    </section>
+
+      <div class="controls card">
+        <label class="ctrl">
+          <span>Ansteckungszahl (Durchschnitt)</span>
+          <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
+          <output id="rR0v">2.0</output>
+        </label>
+        <label class="ctrl">
+          <span>Ansteckungsdauer (Tage)</span>
+          <input type="range" id="rDays" min="2" max="5" step="1" value="5">
+          <output id="rDaysv">5</output>
+        </label>
+      </div>
+    </aside>
+  </div>
+</section>
+
   </main>
 
   <div data-include="footer"></div>
