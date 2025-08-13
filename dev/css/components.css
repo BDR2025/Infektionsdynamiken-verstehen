@@ -25,3 +25,35 @@
 
 .btn{ display:inline-flex; gap:8px; align-items:center; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:#fff; color:var(--ink); cursor:pointer; }
 .btn--primary{ background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+
+/* =========================================
+   SIR-Modell – Preset-Bar & Hinweisbox
+   ========================================= */
+
+/* Container für Preset-Buttons (Fall 1 / Fall 2) */
+.preset-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Hinweisbox unterhalb des Charts oder als Erklärungstext */
+.notice {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(0,158,115,.08);       /* leicht grünlicher Hintergrund */
+  border: 1px solid rgba(0,158,115,.2);  /* abgetönter Rand */
+  border-radius: 8px;
+  color: #6b7280;                        /* dezentes Grau für den Text */
+  font-size: 0.95rem;                    /* etwas kleinere Schrift */
+  display: flex;                         /* für Icon + Text nebeneinander */
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* Icon in der Notice-Box */
+.notice::before {
+  content: "ℹ️";
+  font-size: 1rem;
+  line-height: 1.2;
+}
