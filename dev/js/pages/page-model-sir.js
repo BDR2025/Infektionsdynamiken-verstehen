@@ -5,35 +5,36 @@ import { fitCanvas, drawSIRChart, animateSIR } from '../ui/chart.js';
 
 const N_SCHOOL = 100;
 
-// Dauer der Intro-Animationen (ms) – leicht justierbar
+// Dauer der Intro-Animationen (ms) – zentral justierbar
 const INTRO_DURATION_MS = {
   school_case1: 12000,
   school_case2: 14000,
-  uni_default:  16000
+  uni_default:  16000,
 };
 
 const presets = {
   school_case1: { N: N_SCHOOL, I0: 1, beta: (1/5)*0.8, gamma: 1/5, autoEnd: true, maxDays: 30 },
   school_case2: { N: N_SCHOOL, I0: 1, beta: (1/5)*2.0, gamma: 1/5, autoEnd: true },
-  uni_default:  { N: 1000,     I0: 1, beta: 0.3,      gamma: 1/5, autoEnd: true }
+  uni_default:  { N: 1000,     I0: 1, beta: 0.3,      gamma: 1/5, autoEnd: true },
 };
 
+// globaler Animations-Abbrucher
 let cancelAnim = null;
+// letzter Intro-Stand (für Resize-Redraw)
 let lastSeries = null, lastN = null, lastProgress = 0;
 
 export function init(){
   const mode = getMode();
 
-  // Intro-Refs
+  // ---------- DOM-Refs ----------
   const intro = {
     section: document.getElementById('introSection'),
     canvas: document.getElementById('sirCanvas'),
     summary: document.getElementById('schoolSummary'),
     uniKpis: document.getElementById('uniKpis'),
-    showControlsBtn: document.getElementById('showControls')
+    showControlsBtn: document.getElementById('showControls'),
   };
 
-  // Interaktiv-Refs (School)
   const inter = {
     panel: document.getElementById('interactivePanel'),
     canvas: document.getElementById('sirCanvasInteractive'),
@@ -43,76 +44,165 @@ export function init(){
     daysv: document.getElementById('rDaysv'),
     kAn: document.getElementById('kAnsteck'),
     kS: document.getElementById('kGesund'),
-    kG: document.getElementById('kGenesene') // Genesene (kumulativ)
+    kG: document.getElementById('kGenesene'),
   };
 
-  // ---------- Intro: Fall 1 → automatisch Fall 2 ----------
+  // Coach‑Video (optional vorhanden)
+  const coach = {
+    video: document.getElementById('coachVideo'),
+    toggleBtn: document.getElementById('coachToggle'),
+    syncChk: document.getElementById('coachSync'),
+  };
+
+  // ---------- Intro: Animation + (optional) Video‑Sync ----------
+  function playIntroWithCoach(series, N, { durationMs=12000 } = {}){
+    lastSeries = series; lastN = N; lastProgress = 0;
+
+    // Wenn kein Video oder Sync aus → normale Canvas-Animation
+    const wantSync = !!(coach.video && (coach.syncChk?.checked));
+    if (!wantSync){
+      cancelAnim?.();
+      cancelAnim = animateSIR(intro.canvas, series, N, {
+        duration: durationMs,
+        emphasis: 'S',
+        thin: 2, thick: 6,
+        showAxes: false,
+        labelLine: 'S',
+        labelFormatter: ({t,S}) => `Tag ${t} · Gesund: ${Math.round(S)}`,
+        onTick: ({progress}) => { lastProgress = progress; },
+      });
+      // Video (falls vorhanden) stumm anwerfen – Autoplay-Sicherheit
+      if (coach.video){
+        try { coach.video.currentTime = 0; } catch {}
+        coach.video.muted = true;
+        coach.video.play().catch(()=>{ /* wartet auf User */ });
+      }
+      return;
+    }
+
+    // Harte Synchronisation: Chart-Frame folgt der Videozeit
+    cancelAnim?.();
+    fitCanvas(intro.canvas);
+    let raf = 0;
+
+    const drawByVideo = ()=>{
+      const v = coach.video;
+      const dur = Math.max(0.1, v.duration || durationMs/1000);
+      const p = Math.min(1, Math.max(0, v.currentTime / dur));
+      lastProgress = p;
+
+      drawSIRChart(intro.canvas, series, N, {
+        progress: p,
+        emphasis: 'S',
+        thin: 2, thick: 6,
+        showAxes: false,
+        labelLine: 'S',
+        labelFormatter: ({t,S}) => `Tag ${t} · Gesund: ${Math.round(S)}`,
+      });
+
+      if (!v.paused && !v.ended) raf = requestAnimationFrame(drawByVideo);
+    };
+
+    const onPlay  = ()=> { cancelAnimationFrame(raf); raf = requestAnimationFrame(drawByVideo); };
+    const onPause = ()=> cancelAnimationFrame(raf);
+    const onEnded = ()=> cancelAnimationFrame(raf);
+
+    coach.video.removeEventListener('play', onPlay);
+    coach.video.removeEventListener('pause', onPause);
+    coach.video.removeEventListener('ended', onEnded);
+    coach.video.addEventListener('play', onPlay);
+    coach.video.addEventListener('pause', onPause);
+    coach.video.addEventListener('ended', onEnded);
+
+    try { coach.video.currentTime = 0; } catch {}
+    coach.video.muted = true;
+    coach.video.play().catch(()=>{ /* wartet auf User */ });
+    onPlay();
+  }
+
+  // startet eine Intro-Sequenz für ein Preset
   function startIntro(presetKey){
     const p = presets[presetKey];
     const initVals = { S: p.N - p.I0, I: p.I0, R: 0 };
     const series = runSIR(p, initVals, p);
-    lastSeries = series; lastN = p.N; lastProgress = 0;
 
-    cancelAnim?.();
+    // UI vorab leeren
+    if (intro.summary) intro.summary.hidden = true;
+    if (intro.uniKpis) intro.uniKpis.hidden = true;
+    if (intro.showControlsBtn) intro.showControlsBtn.hidden = true;
 
-    cancelAnim = animateSIR(intro.canvas, series, p.N, {
-      duration: INTRO_DURATION_MS[presetKey] || 14000,
-      emphasis: 'S',
-      thin: 2,
-      thick: 6,               // grüne Linie deutlich dicker
-      showAxes: false,
-      labelLine: 'S',
-      labelFormatter: ({t,S}) => `Tag ${t} · Gesund: ${Math.round(S)}`,
-      onTick: ({progress}) => { lastProgress = progress; },
-      onDone: () => {
-        if (presetKey === 'school_case1' && mode === 'school'){
+    playIntroWithCoach(series, p.N, { durationMs: INTRO_DURATION_MS[presetKey] || 14000 });
+
+    // Abschluss-Callback getrennt steuern:
+    // Wir hängen uns an setTimeout in Dauer der Animation (robust genug für Intro)
+    const finishMs = INTRO_DURATION_MS[presetKey] || 14000;
+    window.setTimeout(()=>{
+      const stats = statsFromSeries(series, p.N);
+      if (getMode() === 'school'){
+        if (intro.summary){
+          intro.summary.innerHTML = formatSchoolText(stats, presetKey);
+          intro.summary.hidden = false;
+        }
+        if (intro.showControlsBtn) intro.showControlsBtn.hidden = false;
+
+        // Automatisch von Fall 1 → Fall 2
+        if (presetKey === 'school_case1'){
           setTimeout(()=> startIntro('school_case2'), 500);
-        } else {
-          const stats = statsFromSeries(series, p.N);
-          if (mode === 'school'){
-            intro.summary.innerHTML = formatSchoolText(stats, presetKey);
-            intro.summary.hidden = false;
-            intro.showControlsBtn.hidden = false; // „Zum interaktiven Modell“
-          } else {
-            intro.uniKpis.innerHTML = formatUniKpis(stats, p);
-            intro.uniKpis.hidden = false;
-          }
+        }
+      } else {
+        if (intro.uniKpis){
+          intro.uniKpis.innerHTML = formatUniKpis(stats, p);
+          intro.uniKpis.hidden = false;
         }
       }
-    });
+    }, finishMs + 30);
   }
 
   // Preset-Buttons (School)
   document.querySelectorAll('[data-preset]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      intro.summary.hidden = true;
-      intro.showControlsBtn.hidden = true;
       startIntro(btn.dataset.preset);
     });
   });
 
-  // „Zum interaktiven Modell“ → interaktives Grid
+  // Coach-Controls
+  coach.toggleBtn?.addEventListener('click', ()=>{
+    const v = coach.video;
+    if (!v) return;
+    if (v.paused) { v.play().catch(()=>{}); }
+    else          { v.pause(); }
+    // Optional: beim Klick Ton togglen
+    v.muted = !v.muted;
+  });
+  coach.syncChk?.addEventListener('change', ()=>{
+    // Bei Umschalten neu starten, damit die gewählte Logik greift
+    // (wir nehmen den aktuellen Fall als Referenz; default Fall 2 im School-Modus)
+    const fallback = getMode() === 'school' ? 'school_case2' : 'uni_default';
+    startIntro(fallback);
+  });
+
+  // „Zum interaktiven Modell“
   intro.showControlsBtn?.addEventListener('click', ()=>{
     intro.section.hidden = true;
     inter.panel.hidden = false;
-    // Startwerte (wie Fall 2)
-    inter.r0.value = "2.0"; inter.r0v.textContent = "2.0";
-    inter.days.value = "5"; inter.daysv.textContent = "5";
+    // Start wie Fall 2
+    inter.r0.value = '2.0'; inter.r0v.textContent = '2.0';
+    inter.days.value = '5'; inter.daysv.textContent = '5';
     renderInteractive();
     inter.panel.scrollIntoView({ behavior:'smooth', block:'start' });
   });
 
-  // Initiale Intro-Sequenz
+  // Initiale Intro-Sequenz starten
   startIntro(mode === 'school' ? 'school_case1' : 'uni_default');
 
-  // ---------- Interaktive Ansicht (Achsen + KPI) ----------
+  // ---------- Interaktive Ansicht (mit Achsen & KPI) ----------
   function renderInteractive(){
-    // Clamp auf 2–5 Tage (auch wenn HTML anders gesetzt würde)
-    const days = Math.max(2, Math.min(5, parseInt(inter.days.value, 10)));
+    // Clamp (2–5 Tage) – auch wenn im HTML später etwas anderes steht
+    const days = Math.max(2, Math.min(5, parseInt(inter.days.value, 10) || 5));
     inter.days.value = String(days);
     inter.daysv.textContent = String(days);
 
-    const R0 = parseFloat(inter.r0.value);
+    const R0 = Number.parseFloat(inter.r0.value) || 2.0;
     inter.r0v.textContent = R0.toFixed(1);
 
     const gamma = 1 / days;
@@ -127,16 +217,14 @@ export function init(){
       progress: 1,
       emphasis: 'S',
       thin: 2, thick: 6,
-      showAxes: true
+      showAxes: true,
     });
 
     // KPI: Ansteckungsfaktor (R0), Gesunde (S), Genesene (R)
-    const end = series.at(-1).y;       // [S, I, R]
-    const S = Math.round(end[0]);
-    const R = Math.round(end[2]);
+    const [S_end,, R_end] = series.at(-1).y;
     inter.kAn.textContent = R0.toFixed(2);
-    inter.kS.textContent  = S;
-    inter.kG.textContent  = R;
+    inter.kS.textContent  = Math.round(S_end);
+    inter.kG.textContent  = Math.round(R_end);
   }
 
   inter.r0?.addEventListener('input', renderInteractive);
@@ -148,9 +236,11 @@ export function init(){
       fitCanvas(intro.canvas);
       drawSIRChart(intro.canvas, lastSeries, lastN, {
         progress: Math.max(0.01, lastProgress),
-        emphasis: 'S', thin:2, thick:6, showAxes:false,
+        emphasis: 'S',
+        thin: 2, thick: 6,
+        showAxes: false,
         labelLine: 'S',
-        labelFormatter: ({t,S}) => `Tag ${t} · Gesund: ${Math.round(S)}`
+        labelFormatter: ({t,S}) => `Tag ${t} · Gesund: ${Math.round(S)}`,
       });
     }
     if (!inter.panel.hidden){
@@ -159,6 +249,7 @@ export function init(){
   }, { passive:true });
 }
 
+// ---------- Textausgaben ----------
 function formatSchoolText(stats, presetKey){
   if (presetKey === 'school_case1'){
     return `
