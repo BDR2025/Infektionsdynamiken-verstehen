@@ -1,0 +1,27 @@
+/* ---------- Components: cards, arrows, canvas placeholder, buttons ---------- */
+
+.card{ background: var(--panel); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 16px; }
+
+.kpis{ display:flex; gap: 14px; flex-wrap: wrap; }
+.kpi{ background: #fff; border:1px solid var(--border); border-radius: 12px; padding: 8px 12px; min-width: 120px; }
+.kpi small{ color: var(--muted); display:block; }
+.kpi strong{ font-size: 18px; }
+
+/* Edge arrows for model paging */
+.edge-nav{ position: fixed; inset: 0; pointer-events: none; }
+.edge{ position: absolute; top: 50%; transform: translateY(-50%);
+  pointer-events: auto; display:grid; place-items:center; width: 44px; height: 44px;
+  border-radius: 50%; border:1px solid var(--border); background: #fff; color: var(--ink);
+  box-shadow: var(--shadow); text-decoration:none; font-size: 24px; line-height: 1; }
+.edge:hover{ text-decoration: none; }
+.edge-prev{ left: 12px; }
+.edge-next{ right: 12px; }
+
+/* Canvas placeholder (smaller, responsive like in the morning) */
+.chart-panel{ display:grid; place-items:center; padding: 12px; background:#fff; border:1px dashed var(--border);
+  border-radius: 14px; min-height: 260px; }
+.chart-canvas{ width: min(560px, 90%); height: 320px; background: repeating-linear-gradient(90deg, #f7f7f8, #f7f7f8 8px, #fafafa 8px, #fafafa 16px);
+  border:1px solid #e5e7eb; border-radius: 8px; display:grid; place-items:center; color:#94a3b8; font-weight:600; letter-spacing:.2px; }
+
+.btn{ display:inline-flex; gap:8px; align-items:center; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:#fff; color:var(--ink); cursor:pointer; }
+.btn--primary{ background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }

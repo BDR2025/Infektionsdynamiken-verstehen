@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de" data-mode="school">
+<head>
+  <title>SEIR Modell</title>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/layout.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/pages/model.css">
+  <link rel="stylesheet" href="./css/modes.css">
+
+</head>
+<body data-page="model-seir">
+  <div data-include="header"></div>
+
+  <main id="content" role="main">
+
+  <!-- Edge navigation (no bottom buttons) -->
+  <div class="edge-nav" aria-hidden="false">
+    <a class="edge edge-prev" href="modell-sir.html" data-transition aria-label="Vorheriges Modell">‹</a>
+    <a class="edge edge-next" href="modell-sis.html" data-transition aria-label="Nächstes Modell">›</a>
+  </div>
+
+  <section class="model-hero container">
+    <article class="card model-intro">
+      <h2>SEIR <span class="when-school" style="color:var(--muted)">· Schul-Ansicht</span><span class="when-uni" style="color:var(--muted)">· Uni-Ansicht</span></h2>
+      <p class="desc">Kurze Einleitung (Platzhalter). Später: Walkthrough → dann Regler.</p>
+      <div class="kpis">
+        <div class="kpi"><small>N</small><strong>—</strong></div>
+        <div class="kpi"><small>I₀</small><strong>—</strong></div>
+        <div class="kpi"><small>R₀</small><strong>—</strong></div>
+      </div>
+      <p class="pager-hint">Mit den Pfeiltasten links/rechts wechseln.</p>
+    </article>
+
+    <aside class="card chart-panel">
+      <div class="chart-canvas">Chart‑Canvas (Platzhalter)</div>
+    </aside>
+  </section>
+
+  <section class="container panel controls">
+    <div class="card">Regler‑Platzhalter</div>
+    <div class="card">KPI‑Platzhalter</div>
+  </section>
+
+  <section class="container panel explain">
+    <div class="when-school card">Erklärung (School) – wenige Formeln, mehr Beispiele. Platzhalter.</div>
+    <div class="when-uni card">Explanation (University) – Formeln, KPIs. Platzhalter.</div>
+  </section>
+
+  </main>
+
+  <div data-include="footer"></div>
+  <script type="module" src="./js/core/app.js"></script>
+</body>
+</html>

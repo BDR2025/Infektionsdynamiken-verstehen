@@ -1,0 +1,12 @@
+/* ---------- Page-specific: model pages ---------- */
+.model-hero{ display:grid; gap: 16px; grid-template-columns: 1fr 1fr; align-items: stretch; }
+@media (max-width: 960px){ .model-hero{ grid-template-columns: 1fr; } }
+
+.model-intro{ display:grid; gap: 12px; }
+.model-intro h2{ margin: 0; font-size: clamp(20px, 3vw, 28px); }
+.model-intro .desc{ color: var(--muted); }
+
+.controls{ display:grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.explain{ display:grid; gap: 12px; }
+
+.pager-hint{ color: var(--muted); font-size: 12px; }

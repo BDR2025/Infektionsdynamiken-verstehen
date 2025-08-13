@@ -1,0 +1,6 @@
+/* ---------- Didaktik flip ---------- */
+:root[data-mode="school"] .when-uni{ display: none !important; }
+:root[data-mode="uni"] .when-school{ display: none !important; }
+
+:root[data-mode="school"]{ --accent: #16a34a; }
+:root[data-mode="uni"]{ --accent: #2563eb; }

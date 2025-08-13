@@ -1,0 +1,73 @@
+<header class="site-header" role="banner">
+  <div class="wrap header-row">
+    <!-- Brand (SVG + Title + Badge) -->
+    <a class="brandblock" href="index.html" data-transition aria-label="Startseite">
+      <div class="brand-icon" aria-hidden="true">
+        <!-- Inline SVG adapted from your header concept -->
+        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <defs>
+            <linearGradient id="card-bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#f6f8fb"/>
+            </linearGradient>
+            <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#e6eaf1"/>
+              <stop offset="1" stop-color="#d7dde7"/>
+            </linearGradient>
+            <linearGradient id="gS" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2fe173"/><stop offset="1" stop-color="#16a34a"/>
+            </linearGradient>
+            <linearGradient id="gI" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ff6b61"/><stop offset="1" stop-color="#e64b40"/>
+            </linearGradient>
+            <linearGradient id="gR" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#64a9ff"/><stop offset="1" stop-color="#2d6cdf"/>
+            </linearGradient>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity=".18"/>
+            </filter>
+            <radialGradient id="gloss" cx="0.2" cy="0.15" r="0.6">
+              <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+              <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g filter="url(#shadow)">
+            <rect x="8" y="8" width="80" height="80" rx="18" fill="url(#card-bg)"/>
+          </g>
+          <rect x="8" y="8" width="80" height="80" rx="18" fill="none" stroke="url(#ring)" stroke-width="1"/>
+          <rect x="9.5" y="9.5" width="77" height="77" rx="16.5" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="1"/>
+          <path d="M16 22 C 44 22, 62 38, 80 76" fill="none" stroke="url(#gS)" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 76 C 28 76, 56 46, 80 22" fill="none" stroke="url(#gR)" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 76 C 36 66, 52 42, 80 76" fill="none" stroke="url(#gI)" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <g>
+            <circle cx="22" cy="78" r="5" fill="#1db954" stroke="#ffffff" stroke-width="2"/>
+            <circle cx="34" cy="78" r="5" fill="#e74c3c" stroke="#ffffff" stroke-width="2"/>
+            <circle cx="46" cy="78" r="5" fill="#2d6cdf" stroke="#ffffff" stroke-width="2"/>
+          </g>
+          <ellipse cx="22" cy="20" rx="20" ry="12" fill="url(#gloss)"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">Infektionsdynamiken<span class="tld">.de</span> <span class="verstehen">verstehen</span></h1>
+        <div class="brand-badge" role="note" aria-label="Interaktiv – 5 Modelle">
+          <span class="txt">INTERAKTIV · 5 MODELLE</span>
+          <span class="dots" aria-hidden="true"><i class="dot s"></i><i class="dot i"></i><i class="dot r"></i><i class="dot d"></i><i class="dot v"></i></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Main nav -->
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a href="index.html" data-nav="index" data-transition>Start</a>
+      <a href="modelle.html" data-nav="modelle" data-transition>Modelle</a>
+      <a href="repositorium.html" data-nav="repo" data-transition>Repositorium</a>
+      <a href="kontakt.html" data-nav="kontakt" data-transition>Kontakt</a>
+      <a href="rechtliches.html" data-nav="recht" data-transition>Rechtliches</a>
+    </nav>
+
+    <!-- Mode toggle -->
+    <button id="modeToggle" class="mode-toggle" aria-pressed="false" aria-label="Zielgruppe umschalten">
+      <span class="school">School</span> | <span class="uni">University</span>
+    </button>
+  </div>
+</header>
