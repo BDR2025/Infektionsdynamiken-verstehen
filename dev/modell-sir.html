@@ -14,45 +14,57 @@
   <div data-include="header"></div>
 
   <main id="content" role="main">
-    <!-- Edge navigation -->
-    <div class="edge-nav" aria-hidden="false">
-      <a class="edge edge-prev" href="modell-sirv.html" data-transition aria-label="Vorheriges Modell">‹</a>
-      <a class="edge edge-next" href="modell-seir.html" data-transition aria-label="Nächstes Modell">›</a>
-    </div>
+    <!-- Prev/Next -->
+    <nav class="edge-nav">
+      <a class="edge-nav__prev" href="./modell-intro.html" aria-label="Vorherige Seite">‹</a>
+      <a class="edge-nav__next" href="./modell-seir.html" aria-label="Nächstes Modell">›</a>
+    </nav>
 
+    <!-- Intro + Toolbar -->
     <section class="container panel">
+      <header class="model-head">
+        <h1><strong>SIR</strong> <span class="dot">·</span> <span class="when-school">Schul‑Ansicht</span><span class="when-uni">Uni‑Ansicht</span></h1>
+      </header>
 
-      <!-- Toolbar: Presets links, Live‑KPI + „Regler anzeigen“ rechts -->
-      <div class="model-toolbar">
-        <div class="toolbar-left when-school">
-          <div class="preset-bar">
-            <button class="btn btn-pill" data-preset="school_case1">Fall 1</button>
-            <button class="btn btn-pill" data-preset="school_case2">Fall 2</button>
-          </div>
+      <p class="lead when-school">
+        Wir betrachten eine <strong>Gruppe mit 100&nbsp;Menschen</strong>.
+        <em>Zu Beginn ist eine Person in dieser Gruppe krank.</em>
+        Beobachte die <strong>grüne Linie der gesunden Menschen</strong> – sie ist hier extra deutlich dargestellt.
+      </p>
+      <p class="lead when-uni">
+        In der Uni‑Ansicht arbeiten wir mit den Parametern β (Ansteckung) und γ (Genesung) und werten KPIs aus.
+      </p>
+
+      <div class="model-toolbar when-school" role="toolbar" aria-label="Fälle">
+        <div class="toolbar-left">
+          <button id="btnFall1" class="btn btn--pill is-active">Fall&nbsp;1</button>
+          <button id="btnFall2" class="btn btn--pill">Fall&nbsp;2</button>
         </div>
-        <div class="toolbar-right when-school">
-          <div id="liveKpi" class="live-kpi" hidden>
-            <span id="liveDay">Tag 0</span> · <strong id="liveI">0</strong> Erkrankte
-          </div>
-          <button id="showControls" class="btn btn-primary" hidden>Regler anzeigen</button>
+        <div class="toolbar-right">
+          <div id="liveKpi" class="live-kpi"><span id="liveDay">Tag&nbsp;0</span> · <span id="liveI">0&nbsp;Erkrankte</span></div>
+          <button id="btnInteractive" class="btn btn--ghost" title="Wechselt ins interaktive Modell mit Achsen & KPI">Zum interaktiven Modell</button>
         </div>
       </div>
+    </section>
 
-      <!-- Chart (ohne feste width/height, damit er scharf skaliert werden kann) -->
-      <canvas id="sirCanvas"></canvas>
-
-      <!-- Ausgaben -->
+    <!-- Chart -->
+    <section class="container panel chart-panel">
+      <canvas id="sirCanvas" width="1000" height="560"></canvas>
       <div id="schoolSummary" class="notice when-school"></div>
       <div id="uniKpis" class="when-uni"></div>
     </section>
 
-    <!-- Schul‑Regler (Platzhalter) – wird erst nach der Einführung sichtbar -->
+    <!-- Controls (School) – erst im interaktiven Modus sichtbar -->
     <section id="controlsPanel" class="container panel when-school" hidden>
-      <div class="card">Regler (School) – folgt. Hier blenden wir später Ansteckungszahl & Infektionsdauer ein.</div>
+      <div class="card">
+        Regler (School) – später: <strong>Ansteckungsfaktor</strong>
+        (als Beschreibung „Wie viele Menschen steckt eine kranke Person pro Tag an?“).
+        Keine Populations‑ oder R₀‑Regler in der Schulansicht.
+      </div>
     </section>
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js?v=3"></script>
+  <script defer src="./js/sir.js?v=3"></script>
 </body>
 </html>
