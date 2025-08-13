@@ -126,5 +126,37 @@ canvas.responsive {
   height: auto; /* die echte Höhe setzt fitCanvas */
 }
 
+/* --- Side panel: KPI & Coach/Controls ----------------------------------- */
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.kpi-card { border-radius: 12px; padding: 12px; border: 1px solid var(--border); background: #fff; }
+.kpi-title { font-size: 12px; color: var(--muted); }
+.kpi-value { font-size: 24px; font-weight: 700; line-height: 1.2; }
+.kpi-hint  { font-size: 12px; color: var(--muted); }
+
+.kpi--green { background: rgba(0,158,115,.06); border-color: rgba(0,158,115,.2); }
+.kpi--blue  { background: rgba(0,114,178,.06); border-color: rgba(0,114,178,.2); }
+.kpi--neutral { background: #fff; }
+
+#sideBody { display: grid; gap: 12px; }
+
+/* Coach – quadratisch */
+.coach-box { display: grid; gap: 8px; }
+.coach-aspect { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 14px;
+  background: #000; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.15), 0 0 0 1px rgba(0,0,0,.06); }
+.coach-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.coach-play { position: absolute; inset: 0; display: grid; place-items: center;
+  background: radial-gradient( circle at 50% 50%, rgba(0,0,0,.45), rgba(0,0,0,.65) );
+  color: #fff; font-size: 28px; border: 0; cursor: pointer; }
+.coach-play.is-hidden { display: none; }
+.coach-sync { font-size: 12px; color: var(--muted-strong); display: inline-flex; align-items: center; gap: 6px; }
+
+/* Controls */
+.controls .ctrl { display: grid; gap: 6px; }
+.controls input[type="range"] { width: 100%; }
+
+/* kleine Screens */
+@media (max-width: 900px){
+  .kpi-grid { grid-template-columns: 1fr; }
+}
 
 
