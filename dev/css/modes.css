@@ -21,23 +21,5 @@
   margin: 0 auto;        /* Zentriert das Canvas horizontal */
 }
 
-/* Coach Dock */
-.coach-dock {
-  display: grid; gap: 8px; align-content: start;
-  margin-top: 10px;
-}
-.coach-video {
-  width: min(360px, 100%);
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(2, 6, 23, .18);
-  border: 1px solid #e5e7eb;
-  background: #000;
-}
-.coach-controls {
-  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-}
-.coach-sync { color:#64748b; font-size: .95rem; display:flex; gap:8px; align-items:center; }
 
-@media (max-width: 900px){
-  .coach-video { width: 100%; }
-}
+

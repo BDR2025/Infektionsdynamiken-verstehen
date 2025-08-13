@@ -11,38 +11,49 @@
   <link rel="stylesheet" href="./css/pages/model.css">
   <link rel="stylesheet" href="./css/modes.css">
 </head>
-<body data-page="model-sir">
+<body data-page="model-sir" data-phase="intro">
   <div data-include="header"></div>
 
   <main id="content" role="main">
-    <!-- Edge navigation -->
     <div class="edge-nav" aria-hidden="false">
       <a class="edge edge-prev" href="modell-sirv.html" data-transition aria-label="Vorheriges Modell">‹</a>
       <a class="edge edge-next" href="modell-seir.html" data-transition aria-label="Nächstes Modell">›</a>
     </div>
 
-    <!-- EIN Grid für Intro & Interaktiv -->
     <section class="container panel">
+      <!-- Toolbar -->
       <div class="model-toolbar">
         <div class="preset-bar when-school">
           <button class="btn btn-pill" data-preset="school_case1">Fall 1</button>
           <button class="btn btn-pill" data-preset="school_case2">Fall 2</button>
         </div>
         <div class="toolbar-right when-school">
-          <button id="btnTry" class="btn">Selbst probieren</button>
+          <button id="btnTry" class="btn btn-primary">Selbst probieren</button>
         </div>
       </div>
 
+      <!-- One permanent grid: chart left, side right -->
       <div class="interactive-grid">
-        <!-- Chart links -->
+        <!-- Chart -->
         <div class="interactive-chart card">
           <canvas id="sirCanvas" class="responsive"></canvas>
         </div>
 
-        <!-- Side-Panel rechts -->
+        <!-- Side panel: switches between Coach (intro) and KPIs/Regler (interactive) -->
         <aside class="interactive-side">
-          <!-- KPI-Reihe (immer sichtbar) -->
-          <div class="kpi-grid">
+          <!-- Coach (intro only) -->
+          <div id="coachBlock" class="coach-card">
+            <video id="coachVideo" class="coach-video" playsinline muted autoplay preload="auto" loop>
+              <!-- put the file here: ./assets/coach/SIR_School_Ben.mp4 -->
+              <source src="./assets/coach/SIR_School_Ben.mp4#t=0.001" type="video/mp4">
+            </video>
+            <label class="sync-row" hidden>
+              <input type="checkbox" id="syncCoach" checked> <span>Mit Animation synchronisieren</span>
+            </label>
+          </div>
+
+          <!-- KPIs (interactive) -->
+          <div id="kpiGrid" class="kpi-grid" hidden>
             <div class="kpi-card kpi--neutral">
               <div class="kpi-title">Ansteckungsfaktor</div>
               <div id="kAnsteck" class="kpi-value">–</div>
@@ -58,48 +69,29 @@
             </div>
           </div>
 
-          <!-- Body-Bereich: zuerst Coach, später Regler -->
-          <div id="sideBody">
-            <!-- Coach (quadratisch) -->
-            <div id="coachBox" class="coach-box when-school">
-              <div class="coach-aspect">
-                <video id="coachVideo"
-                       class="coach-video"
-                       src="./assets/video/SIR_School_Ben.mp4"
-                       playsinline
-                       preload="metadata"></video>
-                <button id="coachPlay" class="coach-play" aria-label="Coach abspielen">▶︎</button>
-              </div>
-              <label class="coach-sync">
-                <input type="checkbox" id="coachSync" checked>
-                Mit Animation synchronisieren
-              </label>
-            </div>
-
-            <!-- Regler (zunächst verborgen) -->
-            <div id="controls" class="controls card" hidden>
-              <label class="ctrl">
-                <span>Ansteckungszahl (Durchschnitt)</span>
-                <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
-                <output id="rR0v">2.0</output>
-              </label>
-              <label class="ctrl">
-                <span>Ansteckungsdauer (Tage)</span>
-                <input type="range" id="rDays" min="2" max="5" step="1" value="5">
-                <output id="rDaysv">5</output>
-              </label>
-            </div>
+          <!-- Regler (interactive) -->
+          <div id="controls" class="controls card" hidden>
+            <label class="ctrl">
+              <span>Ansteckungszahl (Durchschnitt)</span>
+              <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
+              <output id="rR0v">2.0</output>
+            </label>
+            <label class="ctrl">
+              <span>Ansteckungsdauer (Tage)</span>
+              <input type="range" id="rDays" min="2" max="5" step="1" value="5">
+              <output id="rDaysv">5</output>
+            </label>
           </div>
         </aside>
       </div>
 
-      <!-- Schul-Erklärung unter dem Grid -->
+      <!-- School text summary under the grid -->
       <div id="schoolSummary" class="notice when-school"></div>
       <div id="uniKpis" class="when-uni"></div>
     </section>
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js"></script>
+  <script type="module" src="./js/core/app.js?v=7"></script>
 </body>
 </html>

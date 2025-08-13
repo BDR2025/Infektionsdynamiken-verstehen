@@ -159,4 +159,88 @@ canvas.responsive {
   .kpi-grid { grid-template-columns: 1fr; }
 }
 
+/* KPI */
+.kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px; }
+.kpi-card { border-radius:12px; padding:12px; border:1px solid var(--border); background:#fff; }
+.kpi-title{ font-size:12px; color:var(--muted); }
+.kpi-value{ font-size:24px; font-weight:700; line-height:1.2; }
+.kpi-hint { font-size:12px; color:var(--muted); }
+.kpi--green{ background:rgba(0,158,115,.06); border-color:rgba(0,158,115,.2); }
+.kpi--blue { background:rgba(0,114,178,.06); border-color:rgba(0,114,178,.2); }
+
+/* Coach (quadratisch, weißer Hintergrund) */
+.coach-box{ display:grid; gap:8px; }
+.coach-aspect{ position:relative; width:100%; aspect-ratio:1/1; border-radius:14px;
+  background:#fff; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.06); }
+.coach-video{ width:100%; height:100%; object-fit:cover; background:#fff; display:block; }
+
+/* Controls */
+.controls .ctrl{ display:grid; gap:6px; }
+.controls input[type="range"]{ width:100%; }
+
+@media (max-width:900px){
+  .kpi-grid{ grid-template-columns:1fr; }
+}
+
+/* --- Intro/Interactive phases ------------------------------------------- */
+[data-phase="intro"] #kpiGrid,
+[data-phase="intro"] #controls { display: none !important; }
+[data-phase="interactive"] #coachBlock { display: none !important; }
+
+/* --- Grid stays identical for both phases ------------------------------- */
+.interactive-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;   /* fixed side width → stable canvas size */
+  gap: 16px;
+  align-items: start;
+}
+.interactive-chart { min-height: 440px; } /* ensures non-zero size for DPR sizing */
+
+/* Coach Dock */
+.coach-dock {
+  display: grid; gap: 8px; align-content: start;
+  margin-top: 10px;
+}
+.coach-video {
+  width: min(360px, 100%);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(2, 6, 23, .18);
+  border: 1px solid #e5e7eb;
+  background: #000;
+}
+.coach-controls {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.coach-sync { color:#64748b; font-size: .95rem; display:flex; gap:8px; align-items:center; }
+
+@media (max-width: 900px){
+  .coach-video { width: 100%; }
+}
+
+/* --- Coach video card ---------------------------------------------------- */
+.coach-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 12px;
+}
+.coach-video {
+  width: 100%;
+  aspect-ratio: 1 / 1;      /* square */
+  object-fit: cover;
+  background: #fff;         /* avoid black flash before first frame */
+  border-radius: 12px;
+  display: block;
+}
+/* no controls overlay anywhere */
+.coach-video::-webkit-media-controls { display: none !important; }
+.coach-video::-webkit-media-controls-enclosure { display: none !important; }
+
+/* Canvas sizing (DPR will set the bitmap size) */
+#sirCanvas { width:100%; height:auto; display:block; }
+
+/* Optional: hide the small sync row for now */
+.sync-row { display:none; }
+
 
