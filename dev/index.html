@@ -1,33 +1,101 @@
 <!doctype html>
 <html lang="de" data-mode="school">
 <head>
-  <title>Infektionsdynamiken – Start</title>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Infektionsdynamiken – Start</title>
+
+  <!-- Globale Styles -->
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/layout.css">
   <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/pages/model.css">
   <link rel="stylesheet" href="./css/modes.css">
 
+  <!-- Seitenstil -->
+  <link rel="stylesheet" href="./css/pages/index.css">
 </head>
 <body data-page="index">
   <div data-include="header"></div>
 
   <main id="content" role="main">
 
-  <section class="container panel">
-    <h2 style="margin-top:0">Willkommen</h2>
-    <p class="when-school">Dies ist die Schul-Ansicht. Inhalte sind hier vereinfacht und beispielhaft – aktuell nur Platzhalter.</p>
-    <p class="when-uni">Dies ist die Uni-Ansicht. Hier erscheinen später Formeln und KPIs – aktuell nur Platzhalter.</p>
-	<p class=""
-    <p><a class="btn btn--primary" href="modelle.html" data-transition>Zu den Modellen</a></p>
-  </section>
+    <!-- HERO -->
+    <section class="hero container">
+      <div class="hero__text">
+        <h1>Infektions&shy;dynamiken <span class="muted">verstehen</span></h1>
+        <p class="lead when-school">
+          Interaktive Modelle für den Unterricht – mit einfachen Begriffen,
+          Beispielen und kurzen Erklärungen.
+        </p>
+        <p class="lead when-uni">
+          Kompartimentmodelle mit Parametern, Gleichungen und Kennzahlen – kompakt und interaktiv.
+        </p>
+
+        <div class="hero__cta">
+          <a class="btn btn-primary" href="modelle.html" data-transition>Zu den Modellen</a>
+          <a class="btn" href="#wie-funktionierts">Wie funktioniert’s?</a>
+        </div>
+
+        <div class="hero__mode-tip">
+          <span class="chip">School / University</span>
+          Umschalten oben rechts: Inhalte passen sich an die Zielgruppe an.
+        </div>
+      </div>
+
+      <div class="hero__art card">
+        <!-- Illustration: ersetze den Pfad, falls dein Asset woanders liegt -->
+        <img src="visuals/startingvirus.png" alt="" loading="eager" />
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="container features" id="wie-funktionierts">
+      <article class="card feat">
+        <div class="feat__icon">🎛️</div>
+        <h3>Interaktiv</h3>
+        <p>Parameter anpassen, Verlauf sehen, Zusammenhänge begreifen.</p>
+      </article>
+      <article class="card feat">
+        <div class="feat__icon">🔁</div>
+        <h3>Zwei Perspektiven</h3>
+        <p><span class="when-school">Alltagssprache & Beispiele.</span><span class="when-uni">Formeln, KPIs & Ableitungen.</span></p>
+      </article>
+      <article class="card feat">
+        <div class="feat__icon">🪄</div>
+        <h3>Didaktischer Einstieg</h3>
+        <p>Erst ein kurzer geführter Ablauf, dann „Zum interaktiven Modell“.</p>
+      </article>
+    </section>
+
+    <!-- MODEL-KACHELN (Teaser) -->
+    <section class="container models">
+      <h2>Modelle</h2>
+      <div class="model-grid">
+        <a class="model-card card" href="modell-sir.html" data-transition>
+          <div class="model-card__dot" style="--dot:#009E73"></div>
+          <h4>SIR</h4>
+          <p class="when-school">Grundlage: gesund · erkrankt · genesen.</p>
+          <p class="when-uni">β, γ – Basisverlauf ohne Inkubation.</p>
+        </a>
+
+        <a class="model-card card" href="modell-seir.html" data-transition>
+          <div class="model-card__dot" style="--dot:#f59e0b"></div>
+          <h4>SEIR</h4>
+          <p class="when-school">Mit Inkubations­zeit (exponiert).</p>
+          <p class="when-uni">σ (1/Incubation) ergänzt.</p>
+        </a>
+
+        <a class="model-card card disabled" href="modelle.html" data-transition aria-disabled="true">
+          <div class="model-card__dot" style="--dot:#D55E00"></div>
+          <h4>Weitere</h4>
+          <p>Folgen in Kürze: SIS, SIRS, SIRV …</p>
+        </a>
+      </div>
+    </section>
 
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js"></script>
+  <script type="module" src="./js/core/app.js?v=7"></script>
 </body>
 </html>
