@@ -105,3 +105,16 @@
   .interactive-grid{ grid-template-columns: 1fr; }
   .kpi-grid{ grid-template-columns: 1fr 1fr; }
 }
+
+/* KPI-Farbflächen (dezent) */
+.kpi--green { background: rgba(0,158,115,.06); border-color: rgba(0,158,115,.25); }
+.kpi--blue  { background: rgba(0,114,178,.06); border-color: rgba(0,114,178,.25); }
+.kpi--neutral { background:#fff; }
+
+/* kurze Erläuterung unter dem Faktor */
+.kpi-hint { font-size: .8rem; color:#6b7280; margin-top:2px; }
+
+/* Safety: Notice nie „Wort für Wort“ umbrechen */
+.notice { white-space: normal; word-break: normal; }
+.notice p { margin: 0; }
+

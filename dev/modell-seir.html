@@ -2,7 +2,6 @@
 <html lang="de" data-mode="school">
 <head>
   <title>SEIR Modell</title>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="./css/base.css">
@@ -10,49 +9,78 @@
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/pages/model.css">
   <link rel="stylesheet" href="./css/modes.css">
-
 </head>
 <body data-page="model-seir">
   <div data-include="header"></div>
 
   <main id="content" role="main">
+    <div class="edge-nav" aria-hidden="false">
+      <a class="edge edge-prev" href="modell-sir.html" data-transition aria-label="Vorheriges Modell">‹</a>
+      <a class="edge edge-next" href="modell-sis.html" data-transition aria-label="Nächstes Modell">›</a>
+    </div>
 
-  <!-- Edge navigation (no bottom buttons) -->
-  <div class="edge-nav" aria-hidden="false">
-    <a class="edge edge-prev" href="modell-sir.html" data-transition aria-label="Vorheriges Modell">‹</a>
-    <a class="edge edge-next" href="modell-sis.html" data-transition aria-label="Nächstes Modell">›</a>
-  </div>
-
-  <section class="model-hero container">
-    <article class="card model-intro">
-      <h2>SEIR <span class="when-school" style="color:var(--muted)">· Schul-Ansicht</span><span class="when-uni" style="color:var(--muted)">· Uni-Ansicht</span></h2>
-      <p class="desc">Kurze Einleitung (Platzhalter). Später: Walkthrough → dann Regler.</p>
-      <div class="kpis">
-        <div class="kpi"><small>N</small><strong>—</strong></div>
-        <div class="kpi"><small>I₀</small><strong>—</strong></div>
-        <div class="kpi"><small>R₀</small><strong>—</strong></div>
+    <!-- Intro -->
+    <section id="introSection" class="container panel">
+      <div class="model-toolbar">
+        <div class="preset-bar when-school">
+          <button class="btn btn-pill" data-preset="school_case1">Fall 1</button>
+          <button class="btn btn-pill" data-preset="school_case2">Fall 2</button>
+        </div>
+        <div class="toolbar-right when-school">
+          <button id="showControls" class="btn btn-primary" hidden>Zum interaktiven Modell</button>
+        </div>
       </div>
-      <p class="pager-hint">Mit den Pfeiltasten links/rechts wechseln.</p>
-    </article>
+      <canvas id="seirCanvas"></canvas>
+      <div id="schoolSummary" class="notice when-school"></div>
+      <div id="uniKpis" class="when-uni"></div>
+    </section>
 
-    <aside class="card chart-panel">
-      <div class="chart-canvas">Chart‑Canvas (Platzhalter)</div>
-    </aside>
-  </section>
+    <!-- Interaktiv -->
+    <section id="interactivePanel" class="container panel when-school" hidden>
+      <div class="interactive-grid">
+        <div class="interactive-chart card">
+          <canvas id="seirCanvasInteractive"></canvas>
+        </div>
+        <aside class="interactive-side">
+          <div class="kpi-grid">
+            <div class="kpi-card kpi--neutral">
+              <div class="kpi-title">Ansteckungsfaktor</div>
+              <div id="kAnsteck" class="kpi-value">–</div>
+              <div class="kpi-hint">Ø angesteckte Personen pro Erkranktem</div>
+            </div>
+            <div class="kpi-card kpi--green">
+              <div class="kpi-title">Gesunde Menschen</div>
+              <div id="kGesund" class="kpi-value">–</div>
+            </div>
+            <div class="kpi-card kpi--blue">
+              <div class="kpi-title">Genesene Menschen</div>
+              <div id="kGenesene" class="kpi-value">–</div>
+            </div>
+          </div>
 
-  <section class="container panel controls">
-    <div class="card">Regler‑Platzhalter</div>
-    <div class="card">KPI‑Platzhalter</div>
-  </section>
-
-  <section class="container panel explain">
-    <div class="when-school card">Erklärung (School) – wenige Formeln, mehr Beispiele. Platzhalter.</div>
-    <div class="when-uni card">Explanation (University) – Formeln, KPIs. Platzhalter.</div>
-  </section>
-
+          <div class="controls card">
+            <label class="ctrl">
+              <span>Ansteckungszahl (Durchschnitt)</span>
+              <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
+              <output id="rR0v">2.0</output>
+            </label>
+            <label class="ctrl">
+              <span>Inkubationsdauer (Tage)</span>
+              <input type="range" id="rInc" min="2" max="7" step="1" value="3">
+              <output id="rIncv">3</output>
+            </label>
+            <label class="ctrl">
+              <span>Ansteckungsdauer (Tage)</span>
+              <input type="range" id="rDays" min="2" max="5" step="1" value="5">
+              <output id="rDaysv">5</output>
+            </label>
+          </div>
+        </aside>
+      </div>
+    </section>
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js"></script>
+  <script type="module" src="./js/core/app.js?v=5"></script>
 </body>
 </html>

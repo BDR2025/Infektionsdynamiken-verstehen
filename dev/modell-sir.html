@@ -50,28 +50,29 @@
           <canvas id="sirCanvasInteractive"></canvas>
         </div>
 
-        <aside class="interactive-side">
-          <div class="kpi-grid">
-            <div class="kpi-card">
-              <div class="kpi-title">Ansteckungsfaktor</div>
-              <div id="kAnsteck" class="kpi-value">–</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-title">Gesunde Menschen</div>
-              <div id="kGesund" class="kpi-value">–</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-title">Erkrankte Menschen</div>
-              <div id="kErkrankt" class="kpi-value">–</div>
-            </div>
-          </div>
+        <!-- KPI: Ansteckungsfaktor (neutral), Gesunde (grün), Genesene (blau) -->
+<div class="kpi-grid">
+  <div class="kpi-card kpi--neutral">
+    <div class="kpi-title">Ansteckungsfaktor</div>
+    <div id="kAnsteck" class="kpi-value">–</div>
+    <div class="kpi-hint">Ø angesteckte Personen pro Erkranktem</div>
+  </div>
+  <div class="kpi-card kpi--green">
+    <div class="kpi-title">Gesunde Menschen</div>
+    <div id="kGesund" class="kpi-value">–</div>
+  </div>
+  <div class="kpi-card kpi--blue">
+    <div class="kpi-title">Genesene Menschen</div>
+    <div id="kGenesene" class="kpi-value">–</div>
+  </div>
+</div>
 
-          <div class="controls card">
-            <label class="ctrl">
-              <span>Ansteckungszahl (Durchschnitt)</span>
-              <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
-              <output id="rR0v">2.0</output>
-            </label>
+<!-- Reglerbereich (Tage 2–5) -->
+<label class="ctrl">
+  <span>Ansteckungsdauer (Tage)</span>
+  <input type="range" id="rDays" min="2" max="5" step="1" value="5">
+  <output id="rDaysv">5</output>
+</label>
             <label class="ctrl">
               <span>Ansteckungsdauer (Tage)</span>
               <input type="range" id="rDays" min="2" max="10" step="1" value="5">

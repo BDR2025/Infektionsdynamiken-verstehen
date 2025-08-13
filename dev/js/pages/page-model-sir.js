@@ -1,12 +1,13 @@
+// js/pages/page-model-sir.js
 import { getMode } from '../core/mode.js';
 import { runSIR, statsFromSeries } from '../models/sir.js';
 import { fitCanvas, drawSIRChart, animateSIR } from '../ui/chart.js';
 
 const N_SCHOOL = 100;
 
-// Dauer der Intro-Animationen (ms) – leicht anpassbar, z. B. für Avatar-Timing
+// Dauer der Intro-Animationen (ms) – leicht justierbar
 const INTRO_DURATION_MS = {
-  school_case1: 12000, // schneller & weich
+  school_case1: 12000,
   school_case2: 14000,
   uni_default:  16000
 };
@@ -42,31 +43,28 @@ export function init(){
     daysv: document.getElementById('rDaysv'),
     kAn: document.getElementById('kAnsteck'),
     kS: document.getElementById('kGesund'),
-    kI: document.getElementById('kErkrankt')
+    kG: document.getElementById('kGenesene') // Genesene (kumulativ)
   };
 
-  // ---------- Intro: Abspielen Fall 1 → automatisch Fall 2 ----------
+  // ---------- Intro: Fall 1 → automatisch Fall 2 ----------
   function startIntro(presetKey){
     const p = presets[presetKey];
     const initVals = { S: p.N - p.I0, I: p.I0, R: 0 };
     const series = runSIR(p, initVals, p);
     lastSeries = series; lastN = p.N; lastProgress = 0;
 
-    // laufende Animation stoppen
     cancelAnim?.();
 
-    // Intro: großes Chart, grüne Linie betont, Label „Gesund: …“
     cancelAnim = animateSIR(intro.canvas, series, p.N, {
       duration: INTRO_DURATION_MS[presetKey] || 14000,
       emphasis: 'S',
       thin: 2,
-      thick: 6,               // grüne Linie 3-4x so dick
+      thick: 6,               // grüne Linie deutlich dicker
       showAxes: false,
       labelLine: 'S',
       labelFormatter: ({t,S}) => `Tag ${t} · Gesund: ${Math.round(S)}`,
       onTick: ({progress}) => { lastProgress = progress; },
       onDone: () => {
-        // Reihenfolge: Fall 1 → automatisch Fall 2; danach Zusammenfassung & Button
         if (presetKey === 'school_case1' && mode === 'school'){
           setTimeout(()=> startIntro('school_case2'), 500);
         } else {
@@ -93,11 +91,11 @@ export function init(){
     });
   });
 
-  // „Zum interaktiven Modell“ → interaktives Grid zeigen
+  // „Zum interaktiven Modell“ → interaktives Grid
   intro.showControlsBtn?.addEventListener('click', ()=>{
     intro.section.hidden = true;
     inter.panel.hidden = false;
-    // Startwerte aus Fall 2 übernehmen
+    // Startwerte (wie Fall 2)
     inter.r0.value = "2.0"; inter.r0v.textContent = "2.0";
     inter.days.value = "5"; inter.daysv.textContent = "5";
     renderInteractive();
@@ -107,12 +105,15 @@ export function init(){
   // Initiale Intro-Sequenz
   startIntro(mode === 'school' ? 'school_case1' : 'uni_default');
 
-  // ---------- Interaktive Ansicht (mit Achsen & KPI) ----------
+  // ---------- Interaktive Ansicht (Achsen + KPI) ----------
   function renderInteractive(){
-    const R0 = parseFloat(inter.r0.value);
-    const days = parseInt(inter.days.value, 10);
-    inter.r0v.textContent = R0.toFixed(1);
+    // Clamp auf 2–5 Tage (auch wenn HTML anders gesetzt würde)
+    const days = Math.max(2, Math.min(5, parseInt(inter.days.value, 10)));
+    inter.days.value = String(days);
     inter.daysv.textContent = String(days);
+
+    const R0 = parseFloat(inter.r0.value);
+    inter.r0v.textContent = R0.toFixed(1);
 
     const gamma = 1 / days;
     const beta  = R0 * gamma;
@@ -120,6 +121,7 @@ export function init(){
     const initVals = { S: N_SCHOOL - 1, I: 1, R: 0 };
 
     const series = runSIR(p, initVals, { autoEnd:true });
+
     fitCanvas(inter.canvas, 0.62);
     drawSIRChart(inter.canvas, series, p.N, {
       progress: 1,
@@ -128,11 +130,13 @@ export function init(){
       showAxes: true
     });
 
-    // KPI (einfach & klar): R0, Endwerte S/I
-    const end = series.at(-1).y;
+    // KPI: Ansteckungsfaktor (R0), Gesunde (S), Genesene (R)
+    const end = series.at(-1).y;       // [S, I, R]
+    const S = Math.round(end[0]);
+    const R = Math.round(end[2]);
     inter.kAn.textContent = R0.toFixed(2);
-    inter.kS.textContent  = Math.round(end[0]);
-    inter.kI.textContent  = Math.round(end[1]);
+    inter.kS.textContent  = S;
+    inter.kG.textContent  = R;
   }
 
   inter.r0?.addEventListener('input', renderInteractive);
@@ -156,21 +160,20 @@ export function init(){
 }
 
 function formatSchoolText(stats, presetKey){
-  // freundliche Formulierung für „Gruppe mit 100 Menschen“
   if (presetKey === 'school_case1'){
     return `
-      Zu Beginn ist <strong>eine Person</strong> in dieser Gruppe krank.<br>
-      Jede kranke Person steckt im Schnitt <strong>weniger als eine</strong> weitere Person an (Ansteckungszahl&nbsp;0,8).<br>
-      Der Ausbruch endet nach <strong>${stats.duration} Tagen</strong> mit insgesamt <strong>${stats.totalInfected} Erkrankten</strong>.
-      <strong>${stats.totalNotInfected}</strong> Menschen haben sich nicht angesteckt.
+      <p>Zu Beginn ist <strong>eine Person</strong> in dieser Gruppe krank.</p>
+      <p>Jede kranke Person steckt im Schnitt <strong>weniger als eine</strong> weitere Person an (Ansteckungszahl&nbsp;0,8).</p>
+      <p>Der Ausbruch endet nach <strong>${stats.duration} Tagen</strong> mit insgesamt <strong>${stats.totalInfected} Erkrankten</strong>.
+      <strong>${stats.totalNotInfected}</strong> Menschen haben sich nicht angesteckt.</p>
     `;
   } else {
     return `
-      Zu Beginn ist <strong>eine Person</strong> in dieser Gruppe krank.<br>
-      Jede kranke Person steckt im Schnitt <strong>zwei</strong> weitere an (Ansteckungszahl&nbsp;2,0).<br>
-      Der Höhepunkt des Ausbruchs wird am Tag <strong>${stats.tPeak}</strong> mit <strong>${stats.peakI} Erkrankten</strong> erreicht.<br>
-      Der Ausbruch endet nach <strong>${stats.duration} Tagen</strong> mit insgesamt <strong>${stats.totalInfected} Erkrankten</strong>
-      und <strong>${stats.totalNotInfected}</strong> Menschen, die nicht erkrankt sind.
+      <p>Zu Beginn ist <strong>eine Person</strong> in dieser Gruppe krank.</p>
+      <p>Jede kranke Person steckt im Schnitt <strong>zwei</strong> weitere an (Ansteckungszahl&nbsp;2,0).</p>
+      <p>Der Höhepunkt des Ausbruchs wird am Tag <strong>${stats.tPeak}</strong> mit <strong>${stats.peakI} Erkrankten</strong> erreicht.</p>
+      <p>Der Ausbruch endet nach <strong>${stats.duration} Tagen</strong> mit insgesamt <strong>${stats.totalInfected} Erkrankten</strong>
+      und <strong>${stats.totalNotInfected}</strong> Menschen, die nicht erkrankt sind.</p>
     `;
   }
 }
