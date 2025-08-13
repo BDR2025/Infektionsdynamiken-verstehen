@@ -118,3 +118,13 @@
 .notice { white-space: normal; word-break: normal; }
 .notice p { margin: 0; }
 
+.chart-panel canvas,
+.chart-box canvas,
+canvas.responsive {
+  display: block;
+  width: 100%;
+  height: auto; /* die echte Höhe setzt fitCanvas */
+}
+
+
+

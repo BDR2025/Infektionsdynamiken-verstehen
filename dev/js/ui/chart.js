@@ -11,16 +11,26 @@ const COL_R = '#0072B2'; // blau
 export function fitCanvas(canvas, aspect = 0.62) {
   if (!canvas) return { ctx: null, w: 0, h: 0 };
   const dpr = window.devicePixelRatio || 1;
-  const cssW = Math.max(320, Math.round(canvas.clientWidth || canvas.getBoundingClientRect().width || 560));
+
+  // NEU: Breite vom Parent statt vom Canvas selbst messen
+  const host = canvas.parentElement || canvas;
+  const hostW = Math.round(host.getBoundingClientRect().width || host.clientWidth || 560);
+
+  const cssW = Math.max(320, hostW);
   const cssH = Math.max(220, Math.round(cssW * aspect));
+
   canvas.width  = Math.round(cssW * dpr);
   canvas.height = Math.round(cssH * dpr);
-  canvas.style.width  = cssW + 'px';
+
+  // Wichtig: CSS-Breite auf 100%, damit der Parent die Größe vorgibt
+  canvas.style.width  = '100%';
   canvas.style.height = cssH + 'px';
+
   const ctx = canvas.getContext('2d');
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);     // 1 CSS-Pixel = 1 Einheit → scharf
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return { ctx, w: cssW, h: cssH };
 }
+
 
 function rr(ctx, x, y, w, h, r = 8) {        // Rounded-Rect Pfad
   ctx.beginPath();
