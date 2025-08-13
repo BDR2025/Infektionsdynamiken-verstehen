@@ -43,10 +43,19 @@
         <aside class="interactive-side">
           <!-- Coach (intro only) -->
           <div id="coachBlock" class="coach-card">
-            <video id="coachVideo" class="coach-video" playsinline muted autoplay preload="auto" loop>
-              <!-- put the file here: ./assets/coach/SIR_School_Ben.mp4 -->
-              <source src="assets/Videos/SIR_School_Ben.mp4" type="video/mp4">
-            </video>
+            <video
+  id="coachVideo"
+  playsinline
+  autoplay
+  muted
+  preload="auto"
+  disablepictureinpicture
+  x-webkit-airplay="deny"
+  controlsList="nodownload noplaybackrate noremoteplayback"
+  class="coach-video"
+  src="./media/SIR_School_Ben.mp4">
+</video>
+
             <label class="sync-row" hidden>
               <input type="checkbox" id="syncCoach" checked> <span>Mit Animation synchronisieren</span>
             </label>
