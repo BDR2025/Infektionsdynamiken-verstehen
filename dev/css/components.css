@@ -65,12 +65,17 @@
   box-shadow: 0 0 0 0 rgba(0,158,115,.55);
   animation: pulse-green 1.6s ease-out infinite;
 }
-@keyframes pulse-green {
-  0%   { box-shadow: 0 0 0 0 rgba(0,158,115,.55); }
-  70%  { box-shadow: 0 0 0 12px rgba(0,158,115,0); }
+@keyframes sirPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0,158,115,0.6); }
+  40%  { box-shadow: 0 0 0 6px rgba(0,158,115,0.3); }
+  70%  { box-shadow: 0 0 0 14px rgba(0,158,115,0); }
   100% { box-shadow: 0 0 0 0 rgba(0,158,115,0); }
 }
-/* Motion-Respect */
-@media (prefers-reduced-motion: reduce) {
-  .btn-pill.is-live { animation: none; }
+
+.btn.is-live,
+.btn-pill.is-live {
+  animation: sirPulse 1.8s ease-in-out infinite;
+  outline: none; /* kein fixer Rand */
+  border-color: #009E73;
 }
+

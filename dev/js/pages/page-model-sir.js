@@ -16,25 +16,30 @@ const presets = {
 let cancelAnim = null;
 let lastSeries = null, lastN = null, lastProgress = 0;
 let interactive = false;
+let videoStarted = false; // merken, ob Video schon gestartet wurde
+let tryPulseActive = false; // NEU: Status für roten Try-Puls
 
 // Fall-Buttons für Puls
 const presetBtn = { school_case1: null, school_case2: null };
 
-// CSS einmalig injizieren (inkl. Puls-Style für .btn und .btn-pill)
+// CSS für Puls-Effekt (weicher Glow)
 function ensureInlineStyle() {
   if (document.getElementById('sir-inline-style')) return;
   const css = `
-  @keyframes sirPulse {0%{box-shadow:0 0 0 0 rgba(0,158,115,.45)}70%{box-shadow:0 0 0 10px rgba(0,158,115,0)}100%{box-shadow:0 0 0 0 rgba(0,158,115,0)}}
-  .btn.is-live, .btn-pill.is-live{animation:sirPulse 1.8s ease-in-out infinite; outline:2px solid #009E73}
-
-  /* Coach-Video & Overlay-Button */
+  @keyframes sirPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(0,158,115,0.6); }
+    40%  { box-shadow: 0 0 0 6px rgba(0,158,115,0.3); }
+    70%  { box-shadow: 0 0 0 14px rgba(0,158,115,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,158,115,0); }
+  }
+  .btn.is-live, .btn-pill.is-live {
+    animation: sirPulse 1.8s ease-in-out infinite;
+    border-color: #009E73;
+  }
   #coachVideo{background:#fff; display:block; width:100%; height:auto; border-radius:16px}
   #coachVideo::-webkit-media-controls,
   #coachVideo::-webkit-media-controls-enclosure,
   #coachVideo::-webkit-media-controls-overlay-play-button{display:none !important}
-  .coach-card{position:relative}
-  .coach-unmute{position:absolute; right:12px; bottom:12px; z-index:5; background:#111827; color:#fff; border:0; border-radius:999px; padding:8px 12px; font-size:12px; box-shadow:0 4px 12px rgba(0,0,0,.15); cursor:pointer}
-  .coach-unmute.hide{display:none}
   `;
   const el = document.createElement('style');
   el.id = 'sir-inline-style';
@@ -46,52 +51,14 @@ function ensureInlineStyle() {
 function markLive(key){ Object.values(presetBtn).forEach(b=>b?.classList.remove('is-live')); presetBtn[key]?.classList.add('is-live'); }
 function clearLive(){ Object.values(presetBtn).forEach(b=>b?.classList.remove('is-live')); }
 
-// Autoplay: stumm starten; beim ersten User-Event Ton freischalten
-function setupAudioUnlockers(videoEl, unmuteBtn, extraTriggers = []) {
+// Autoplay: stumm starten (für Policies)
+function playCoachAutoplay(videoEl){
   if (!videoEl) return;
-
-  const unlock = () => {
-    try {
-      videoEl.muted = false;
-      videoEl.play().catch(()=>{ /* ok */ });
-      unmuteBtn?.classList.add('hide');
-    } catch(_) {}
-    window.removeEventListener('pointerdown', unlock, { once:true });
-  };
-
-  // globaler Einmal-Klick irgendwo
-  window.addEventListener('pointerdown', unlock, { once:true });
-
-  // zusätzliche Trigger (z.B. Fall-Buttons)
-  extraTriggers.forEach(el => el?.addEventListener('click', unlock, { once:true }));
-
-  // expliziter Unmute-Button
-  unmuteBtn?.addEventListener('click', unlock);
-}
-
-// Versuche Autoplay direkt; wenn blockiert → stumm + Unmute anzeigen
-function playCoachAutoplay(videoEl, soundBtn){
-  if (!videoEl) return;
-
-  // harte Abschaltung sichtbarer Controls
   videoEl.removeAttribute('controls');
   videoEl.setAttribute('playsinline','');
   videoEl.setAttribute('webkit-playsinline','');
-  videoEl.setAttribute('x-webkit-airplay','deny');
-  videoEl.setAttribute('disablepictureinpicture','');
-  videoEl.setAttribute('controlsList','nodownload noplaybackrate noremoteplayback');
-  videoEl.loop = false;
-
-  try { videoEl.currentTime = 0; } catch(_){}
-
-  // realistisch: erst einmal STUMM starten (Autoplay-Policies)
   videoEl.muted = true;
-  const p = videoEl.play();
-  if (p && typeof p.catch === 'function'){
-    p.catch(()=>{ /* ignorieren – bleibt stumm */ });
-  }
-  // Unmute-Button sichtbar lassen – wird per Klick ausgeblendet
-  soundBtn?.classList.remove('hide');
+  videoEl.play().catch(()=>{});
 }
 
 export function init(){
@@ -101,9 +68,8 @@ export function init(){
   // Refs
   const canvas   = document.getElementById('sirCanvas');
   const summary  = document.getElementById('schoolSummary');
-  const btnTry   = document.getElementById('btnTry'); // optional
+  const btnTry   = document.getElementById('btnTry');
   const coachVid = document.getElementById('coachVideo');
-  const rightCol = coachVid?.parentElement || document.querySelector('.coach-card');
 
   // KPI/Regler (nur interaktiv)
   const kpiGrid  = document.querySelector('.kpi-grid');
@@ -112,38 +78,40 @@ export function init(){
   const days = document.getElementById('rDays'); const daysv= document.getElementById('rDaysv');
   const kAn = document.getElementById('kAnsteck'), kS = document.getElementById('kGesund'), kG = document.getElementById('kGenesene');
 
-  // Unmute-Overlay anlegen
-  let unmuteBtn = null;
-  if (rightCol && coachVid){
-    rightCol.classList.add('coach-card');
-    unmuteBtn = document.createElement('button');
-    unmuteBtn.type = 'button';
-    unmuteBtn.className = 'coach-unmute hide';
-    unmuteBtn.textContent = '🔊 Ton einschalten';
-    rightCol.appendChild(unmuteBtn);
-    coachVid.addEventListener('ended', ()=> unmuteBtn.classList.add('hide'));
-  }
-
-  // Fall-Buttons (für Puls & Audio-Unlock)
+  // Fall-Buttons
   presetBtn.school_case1 = document.querySelector('[data-preset="school_case1"]');
   presetBtn.school_case2 = document.querySelector('[data-preset="school_case2"]');
+
+  // NEU: Try-Puls 4 Sek. vor Videoende
+  if (coachVid && btnTry) {
+    coachVid.addEventListener('timeupdate', () => {
+      if (!tryPulseActive && coachVid.duration && (coachVid.duration - coachVid.currentTime) <= 4) {
+        btnTry.classList.add('pulse-try');
+        tryPulseActive = true;
+      }
+    });
+    btnTry.addEventListener('click', () => {
+      btnTry.classList.remove('pulse-try');
+      tryPulseActive = false;
+    });
+  }
 
   // UI-Modi
   function showIntroUI(){
     interactive = false;
-    kpiGrid && (kpiGrid.hidden = true);
-    ctrlBox && (ctrlBox.hidden = true);
-    coachVid && (coachVid.hidden = false);
-    btnTry && (btnTry.hidden = false);
+    kpiGrid.hidden = true;
+    ctrlBox.hidden = true;
+    coachVid.hidden = false;
+    btnTry.hidden = false;
   }
   function showInteractiveUI(){
     interactive = true;
     clearLive();
     cancelAnim?.();
-    kpiGrid && (kpiGrid.hidden = false);
-    ctrlBox && (ctrlBox.hidden = false);
-    coachVid && (coachVid.hidden = true);
-    summary && (summary.hidden = true);
+    kpiGrid.hidden = false;
+    ctrlBox.hidden = false;
+    coachVid.hidden = true;
+    summary.hidden = true;
     renderInteractive();
   }
 
@@ -158,12 +126,13 @@ export function init(){
     markLive(presetKey);
     cancelAnim?.();
 
-    // Canvas vorbereiten + Coach starten
     fitCanvas(canvas);
-    playCoachAutoplay(coachVid, unmuteBtn);
-    setupAudioUnlockers(coachVid, unmuteBtn, [presetBtn.school_case1, presetBtn.school_case2, btnTry]);
 
-    // Einen Frame warten → dann animieren (sicherer, falls Layout noch läuft)
+    if (!videoStarted) {
+      playCoachAutoplay(coachVid);
+      videoStarted = true;
+    }
+
     requestAnimationFrame(()=>{
       cancelAnim = animateSIR(canvas, series, p.N, {
         duration: INTRO_DURATION_MS[presetKey] || 14000,
@@ -174,7 +143,7 @@ export function init(){
         onDone: () => {
           clearLive();
           const stats = statsFromSeries(series, p.N);
-          if (mode === 'school' && summary){
+          if (mode === 'school'){
             summary.innerHTML = formatSchoolText(stats, presetKey);
             summary.hidden = false;
           }
@@ -188,9 +157,9 @@ export function init(){
 
   // Interaktive Darstellung
   function renderInteractive(){
-    const d = Math.max(2, Math.min(5, parseInt(days?.value ?? '5', 10)));
-    if (days){ days.value = String(d); daysv && (daysv.textContent = String(d)); }
-    const R0 = parseFloat(r0?.value ?? '2.0'); r0v && (r0v.textContent = R0.toFixed(1));
+    const d = Math.max(2, Math.min(5, parseInt(days.value || '5', 10)));
+    days.value = String(d); daysv.textContent = String(d);
+    const R0 = parseFloat(r0.value || '2.0'); r0v.textContent = R0.toFixed(1);
     const gamma = 1 / d, beta = R0 * gamma;
 
     const p = { N: N_SCHOOL, beta, gamma, autoEnd:true };
@@ -200,10 +169,10 @@ export function init(){
     fitCanvas(canvas, 0.62);
     drawSIRChart(canvas, series, p.N, { progress:1, emphasis:'S', thin:2, thick:6, showAxes:true });
 
-    const end = series.at(-1).y; // [S,I,R]
-    kAn && (kAn.textContent = R0.toFixed(2));
-    kS  && (kS.textContent  = Math.round(end[0]));
-    kG  && (kG.textContent  = Math.round(end[2]));
+    const end = series.at(-1).y;
+    kAn.textContent = R0.toFixed(2);
+    kS.textContent  = Math.round(end[0]);
+    kG.textContent  = Math.round(end[2]);
   }
 
   // Events
@@ -212,19 +181,15 @@ export function init(){
       clearLive(); cancelAnim?.(); startIntro(btn.dataset.preset);
     });
   });
-  btnTry?.addEventListener('click', ()=>{
-    try { coachVid.pause(); } catch(_){}
-    showInteractiveUI();
-  });
-  r0?.addEventListener('input', ()=> interactive && renderInteractive());
-  days?.addEventListener('input', ()=> interactive && renderInteractive());
+  btnTry.addEventListener('click', showInteractiveUI);
+  r0.addEventListener('input', ()=> interactive && renderInteractive());
+  days.addEventListener('input', ()=> interactive && renderInteractive());
 
   // Startfluss
   startIntro(mode === 'school' ? 'school_case1' : 'uni_default');
 
-  // Resize → defensiv neu zeichnen
+  // Resize
   window.addEventListener('resize', ()=>{
-    if (!canvas) return;
     if (interactive){
       renderInteractive();
     } else if (lastSeries){
