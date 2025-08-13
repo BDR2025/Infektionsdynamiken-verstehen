@@ -14,57 +14,77 @@
   <div data-include="header"></div>
 
   <main id="content" role="main">
-    <!-- Prev/Next -->
-    <nav class="edge-nav">
-      <a class="edge-nav__prev" href="./modell-intro.html" aria-label="Vorherige Seite">‹</a>
-      <a class="edge-nav__next" href="./modell-seir.html" aria-label="Nächstes Modell">›</a>
-    </nav>
+    <!-- Edge navigation -->
+    <div class="edge-nav" aria-hidden="false">
+      <a class="edge edge-prev" href="modell-sirv.html" data-transition aria-label="Vorheriges Modell">‹</a>
+      <a class="edge edge-next" href="modell-seir.html" data-transition aria-label="Nächstes Modell">›</a>
+    </div>
 
-    <!-- Intro + Toolbar -->
-    <section class="container panel">
-      <header class="model-head">
-        <h1><strong>SIR</strong> <span class="dot">·</span> <span class="when-school">Schul‑Ansicht</span><span class="when-uni">Uni‑Ansicht</span></h1>
-      </header>
-
-      <p class="lead when-school">
-        Wir betrachten eine <strong>Gruppe mit 100&nbsp;Menschen</strong>.
-        <em>Zu Beginn ist eine Person in dieser Gruppe krank.</em>
-        Beobachte die <strong>grüne Linie der gesunden Menschen</strong> – sie ist hier extra deutlich dargestellt.
-      </p>
-      <p class="lead when-uni">
-        In der Uni‑Ansicht arbeiten wir mit den Parametern β (Ansteckung) und γ (Genesung) und werten KPIs aus.
-      </p>
-
-      <div class="model-toolbar when-school" role="toolbar" aria-label="Fälle">
-        <div class="toolbar-left">
-          <button id="btnFall1" class="btn btn--pill is-active">Fall&nbsp;1</button>
-          <button id="btnFall2" class="btn btn--pill">Fall&nbsp;2</button>
+    <!-- Intro-Ansicht (großes Chart, ohne Achsen) -->
+    <section id="introSection" class="container panel">
+      <div class="model-toolbar">
+        <div class="toolbar-left when-school">
+          <div class="preset-bar">
+            <button class="btn btn-pill" data-preset="school_case1">Fall 1</button>
+            <button class="btn btn-pill" data-preset="school_case2">Fall 2</button>
+          </div>
         </div>
-        <div class="toolbar-right">
-          <div id="liveKpi" class="live-kpi"><span id="liveDay">Tag&nbsp;0</span> · <span id="liveI">0&nbsp;Erkrankte</span></div>
-          <button id="btnInteractive" class="btn btn--ghost" title="Wechselt ins interaktive Modell mit Achsen & KPI">Zum interaktiven Modell</button>
+        <div class="toolbar-right when-school">
+          <!-- Button erscheint nach der Einführung -->
+          <button id="showControls" class="btn btn-primary" hidden>Zum interaktiven Modell</button>
         </div>
       </div>
-    </section>
 
-    <!-- Chart -->
-    <section class="container panel chart-panel">
-      <canvas id="sirCanvas" width="1000" height="560"></canvas>
+      <!-- Chart (Intro) -->
+      <canvas id="sirCanvas"></canvas>
+
+      <!-- Zusammenfassung nach der Einführung -->
       <div id="schoolSummary" class="notice when-school"></div>
       <div id="uniKpis" class="when-uni"></div>
     </section>
 
-    <!-- Controls (School) – erst im interaktiven Modus sichtbar -->
-    <section id="controlsPanel" class="container panel when-school" hidden>
-      <div class="card">
-        Regler (School) – später: <strong>Ansteckungsfaktor</strong>
-        (als Beschreibung „Wie viele Menschen steckt eine kranke Person pro Tag an?“).
-        Keine Populations‑ oder R₀‑Regler in der Schulansicht.
+    <!-- Interaktive Ansicht (kleineres Chart mit Achsen + KPI + 2 Regler) -->
+    <section id="interactivePanel" class="container panel when-school" hidden>
+      <div class="interactive-grid">
+        <div class="interactive-chart card">
+          <canvas id="sirCanvasInteractive"></canvas>
+        </div>
+
+        <aside class="interactive-side">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">Ansteckungsfaktor</div>
+              <div id="kAnsteck" class="kpi-value">–</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Gesunde Menschen</div>
+              <div id="kGesund" class="kpi-value">–</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Erkrankte Menschen</div>
+              <div id="kErkrankt" class="kpi-value">–</div>
+            </div>
+          </div>
+
+          <div class="controls card">
+            <label class="ctrl">
+              <span>Ansteckungszahl (Durchschnitt)</span>
+              <input type="range" id="rR0" min="0.5" max="4" step="0.1" value="2.0">
+              <output id="rR0v">2.0</output>
+            </label>
+            <label class="ctrl">
+              <span>Ansteckungsdauer (Tage)</span>
+              <input type="range" id="rDays" min="2" max="10" step="1" value="5">
+              <output id="rDaysv">5</output>
+            </label>
+          </div>
+        </aside>
       </div>
     </section>
   </main>
 
   <div data-include="footer"></div>
-  <script defer src="./js/sir.js?v=3"></script>
+  <!-- Cache-Busting: Zahl erhöhen, wenn du JS änderst -->
+  <script type="module" src="./js/core/app.js?v=4"></script>
 </body>
 </html>

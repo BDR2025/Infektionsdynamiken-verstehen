@@ -48,3 +48,60 @@
   display:block;
   margin:0 auto;
 }
+/* =========================================
+   SIR – Intro-Toolbar, Canvas, Interaktiv-Layout
+   ========================================= */
+.model-toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-bottom:12px; flex-wrap:wrap;
+}
+.preset-bar{ display:flex; gap:8px; }
+.btn-pill{ border-radius:999px; padding:8px 12px; }
+
+/* Intro: großes Chart (ohne Achsen) */
+#sirCanvas{
+  width:100%;
+  max-width:1000px;
+  height:auto;
+  display:block;
+  margin:0 auto;
+}
+
+/* Interaktives Grid */
+.interactive-grid{
+  display:grid;
+  grid-template-columns: 2fr 1fr;
+  gap:14px;
+}
+.interactive-chart canvas{
+  width:100%;
+  height:auto;
+  display:block;
+}
+.interactive-side{
+  display:grid;
+  gap:12px;
+}
+.kpi-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:10px;
+}
+.kpi-card{
+  padding:10px 12px;
+  border:1px solid var(--border, #e5e7eb);
+  border-radius:10px;
+  background:#fff;
+}
+.kpi-title{ font-size:.85rem; color:#6b7280; }
+.kpi-value{ font-size:1.25rem; font-weight:600; }
+
+.controls{ display:grid; gap:10px; }
+.ctrl{ display:grid; gap:6px; }
+.ctrl input[type="range"]{ width:100%; }
+
+/* Mobile: interaktive Ansicht stapeln */
+@media (max-width: 900px){
+  .interactive-grid{ grid-template-columns: 1fr; }
+  .kpi-grid{ grid-template-columns: 1fr 1fr; }
+}
