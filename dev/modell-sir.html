@@ -2,7 +2,6 @@
 <html lang="de" data-mode="school">
 <head>
   <title>SIR Modell</title>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="./css/base.css">
@@ -15,7 +14,6 @@
   <div data-include="header"></div>
 
   <main id="content" role="main">
-
     <!-- Edge navigation -->
     <div class="edge-nav" aria-hidden="false">
       <a class="edge edge-prev" href="modell-sirv.html" data-transition aria-label="Vorheriges Modell">‹</a>
@@ -23,23 +21,38 @@
     </div>
 
     <section class="container panel">
-      <!-- Preset-Bar nur im School-Modus -->
-      <div class="when-school preset-bar">
-        <button class="btn" data-preset="school_case1">Fall 1</button>
-        <button class="btn" data-preset="school_case2">Fall 2</button>
+
+      <!-- Toolbar: Presets links, Live‑KPI + „Regler anzeigen“ rechts -->
+      <div class="model-toolbar">
+        <div class="toolbar-left when-school">
+          <div class="preset-bar">
+            <button class="btn btn-pill" data-preset="school_case1">Fall 1</button>
+            <button class="btn btn-pill" data-preset="school_case2">Fall 2</button>
+          </div>
+        </div>
+        <div class="toolbar-right when-school">
+          <div id="liveKpi" class="live-kpi" hidden>
+            <span id="liveDay">Tag 0</span> · <strong id="liveI">0</strong> Erkrankte
+          </div>
+          <button id="showControls" class="btn btn-primary" hidden>Regler anzeigen</button>
+        </div>
       </div>
 
-      <!-- Chart -->
-      <canvas id="sirCanvas" width="560" height="320"></canvas>
+      <!-- Chart (ohne feste width/height, damit er scharf skaliert werden kann) -->
+      <canvas id="sirCanvas"></canvas>
 
       <!-- Ausgaben -->
       <div id="schoolSummary" class="notice when-school"></div>
       <div id="uniKpis" class="when-uni"></div>
     </section>
 
+    <!-- Schul‑Regler (Platzhalter) – wird erst nach der Einführung sichtbar -->
+    <section id="controlsPanel" class="container panel when-school" hidden>
+      <div class="card">Regler (School) – folgt. Hier blenden wir später Ansteckungszahl & Infektionsdauer ein.</div>
+    </section>
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js"></script>
+  <script type="module" src="./js/core/app.js?v=3"></script>
 </body>
 </html>
