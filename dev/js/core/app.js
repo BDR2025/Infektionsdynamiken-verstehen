@@ -1,22 +1,18 @@
-// js/core/app.js  (ES-Modul)
+// js/core/app.js  (ES-Modul, zusammengeführt)
 
-// Deine bestehenden Imports
 import { loadPartials } from './includes.js';
 import { getMode, applyMode, bindModeToggle } from './mode.js';
-import { bindLinks, markActiveNav, bindEdgeKeys } from './router.js';
+// Router ist optional – Datei existiert bei dir, Guard verhindert Fehler, falls Exports fehlen
+import * as Router from './router.js';
 
-// ---------- UI Helpers (neu) ----------
-
-// Hamburger-Overlay (Topnav) verdrahten
+/* ------------------ UI: Hamburger / Overlay-Menu ------------------ */
 function wireMenu(root = document) {
   const open = root.getElementById('navOpen');
   const menu = root.getElementById('navMenu');
-
-  // Falls Header (noch) nicht geladen ist, später erneut versuchen
   if (!open || !menu) return;
 
-  // Doppeltbindungen vermeiden
-  if (open.dataset.wired === '1' && menu.dataset.wired === '1') return;
+  // Doppelte Listener vermeiden
+  if (open.dataset.wired === '1') return;
   open.dataset.wired = '1';
   menu.dataset.wired = '1';
 
@@ -42,35 +38,31 @@ function wireMenu(root = document) {
   }, { passive: true });
 }
 
-// Bottom-Nav aktiv markieren (ergänzt markActiveNav aus router.js)
+/* ------------------ Bottom-Nav aktiv markieren ------------------ */
 function markActiveBottomNav() {
   const page = document.body?.getAttribute('data-page');
   if (!page) return;
-
   document.querySelectorAll('.site-bottom-nav .tab')
-    .forEach(a => {
-      a.classList.toggle('active', a.dataset.nav === page);
-    });
+    .forEach(a => a.classList.toggle('active', a.dataset.nav === page));
 }
 
-// Gemeinsame Initialisierung (idempotent)
+/* ------------------ Gemeinsame Initialisierung ------------------ */
 function initCommon() {
   // Modus anwenden & Toggle binden
   applyMode(getMode());
-  bindModeToggle();
+  bindModeToggle(document);
 
-  // SPA-Navigation etc.
-  bindLinks();
-  markActiveNav();
-  bindEdgeKeys();
+  // Router (falls vorhanden)
+  if (typeof Router.bindLinks === 'function') Router.bindLinks();
+  if (typeof Router.markActiveNav === 'function') Router.markActiveNav();
+  if (typeof Router.bindEdgeKeys === 'function') Router.bindEdgeKeys();
 
-  // Header-Topnav & Bottom-Nav
+  // Header-Menü & Bottom-Nav
   wireMenu(document);
   markActiveBottomNav();
 }
 
-// ---------- Page Loader (dein Code, minimal angepasst) ----------
-
+/* ------------------ Page-Loader nach data-page ------------------ */
 async function initPageScript() {
   const page = document.body.dataset.page || '';
   const map = {
@@ -85,32 +77,25 @@ async function initPageScript() {
   const key = Object.keys(map).find(k => page.startsWith(k));
   if (key) {
     const mod = await map[key]();
-    // Falls das Modul eine init-Funktion bietet
     if (typeof mod.init === 'function') mod.init();
   }
 }
 
-// ---------- Boot-Sequenz ----------
-
+/* ------------------ Boot ------------------ */
 async function boot() {
-  // 1) Header/Footer via Includes laden
-  await loadPartials();
-
-  // 2) Gemeinsame Init (Modus, Router, Menüs, Bottom-Nav)
-  initCommon();
-
-  // 3) Seitenspezifisches Script nachladen
-  await initPageScript();
+  await loadPartials();  // Header/Footer injizieren
+  initCommon();          // Modus/Toggle, Router, Hamburger, Bottom-Nav
+  await initPageScript();// Seitenspezifische Logik
 }
 
-// Beim ersten DOM-Ready starten
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot, { once: true });
 } else {
   boot();
 }
 
-// Falls Includes (Header/Footer) später erneut injiziert werden, neu verdrahten
-document.addEventListener('includes:done', () => {
-  initCommon();
-});
+// Wenn Partials später (erneut) geladen werden, alles neu verdrahten
+document.addEventListener('includes:done', initCommon);
+
+// Optional: falls du kein SPA-Router-PushState nutzt und Back/Forward zuverlässig neu laden willst
+// window.addEventListener('popstate', () => location.reload());

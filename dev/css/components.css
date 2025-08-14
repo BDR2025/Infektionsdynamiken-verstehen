@@ -169,3 +169,122 @@ html[data-mode="uni"]    .mode-toggle [data-mode-target="school"]{opacity:.6}
   padding:24px 16px 32px;border-left:1px solid var(--border,#e2e8f0)}
 .overlay-nav a{display:block;padding:14px 12px;border-radius:10px;font-weight:600;text-decoration:none;color:var(--fg,#0f172a)}
 .overlay-nav a:hover{background:#f8fafc}
+/* Header */
+.site-header{position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0}
+.header-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 16px}
+.brand{display:flex;align-items:center;gap:12px;color:#0f172a;text-decoration:none;min-width:0}
+.logo{width:28px;height:28px;flex:0 0 auto}
+.brand-texts{display:flex;flex-direction:column;min-width:0}
+.brand-title{font-weight:800;letter-spacing:.2px;font-size:clamp(18px,3vw,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tld{opacity:.6;font-weight:700}
+.brand-sub{opacity:.75;font-size:clamp(12px,1.6vw,14px);line-height:1.2}
+
+/* Toggle Pill */
+.mode-toggle{--h:34px;position:relative;display:grid;grid-template-columns:1fr var(--h) 1fr;align-items:center;
+  background:#f3f4f6;border-radius:999px;padding:2px;min-width:210px;border:1px solid #e2e8f0}
+.mode-toggle .toggle-option{height:var(--h);line-height:var(--h);border:0;background:transparent;font-weight:700;cursor:pointer}
+.mode-toggle .toggle-knob{position:absolute;width:50%;height:var(--h);border-radius:999px;left:2px;top:2px;background:var(--accent,#16a34a);
+  transition:transform .2s ease, background .2s ease}
+
+/* Modusfarben (Brand neutral) */
+html{--accent:#16a34a}
+html[data-mode="uni"]{--accent:#2563eb}
+html[data-mode="school"] .mode-toggle .toggle-knob{transform:translateX(0)}
+html[data-mode="uni"]    .mode-toggle .toggle-knob{transform:translateX(100%)}
+html[data-mode="school"] .mode-toggle [data-mode-target="uni"]{opacity:.6}
+html[data-mode="uni"]    .mode-toggle [data-mode-target="school"]{opacity:.6}
+
+/* Hamburger & Overlay */
+.hamburger{width:40px;height:40px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;display:grid;place-items:center;cursor:pointer}
+.hamburger span{display:block;width:18px;height:2px;background:currentColor;margin:2px 0}
+.overlay-menu{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);display:grid;place-items:start;padding-top:70px}
+.overlay-menu[hidden]{display:none}
+.overlay-nav{background:#fff;width:min(520px,90vw);margin-left:auto;height:100%;padding:24px 16px 32px;border-left:1px solid #e2e8f0}
+.overlay-nav a{display:block;padding:14px 12px;border-radius:10px;font-weight:600;text-decoration:none;color:#0f172a}
+.overlay-nav a:hover{background:#f8fafc}
+
+/* Footer + Bottom-Nav */
+.site-footer{background:#fff;text-align:center;padding:12px 16px;border-top:1px solid #e2e8f0}
+.site-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:999;background:#fff;border-top:1px solid #e2e8f0;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:0;padding:4px env(safe-area-inset-left) calc(4px + env(safe-area-inset-bottom)) env(safe-area-inset-right)}
+.site-bottom-nav .tab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;text-decoration:none;color:#334155;font-weight:600}
+.site-bottom-nav .tab svg{width:20px;height:20px}
+.site-bottom-nav .tab.active, .site-bottom-nav .tab:focus{color:var(--accent)}
+
+/* Responsive Umschaltung der Bottom-Nav */
+@media (min-width: 1024px){
+  .site-bottom-nav{
+    position:static; /* nicht mehr sticky */
+    display:flex; justify-content:center; gap:24px;
+    border-top:0; padding:10px 16px 18px;
+  }
+}
+
+/* Responsive Header-Layout: Toggle unter Brand auf schmalen Screens */
+@media (max-width: 640px){
+  .header-row{grid-template-columns:1fr auto;grid-template-areas:
+    "brand hamburger"
+    "toggle toggle";}
+  .brand{grid-area:brand}
+  .hamburger{grid-area:hamburger}
+  .mode-toggle{grid-area:toggle;justify-self:center;margin-top:6px}
+  .brand-sub{max-width:70vw}
+}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0}
+.header-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 16px}
+.brand{display:flex;align-items:center;gap:12px;color:#0f172a;text-decoration:none;min-width:0}
+.logo{width:28px;height:28px;flex:0 0 auto}
+.brand-texts{display:flex;flex-direction:column;min-width:0}
+.brand-title{font-weight:800;letter-spacing:.2px;font-size:clamp(18px,3vw,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tld{opacity:.6;font-weight:700}
+.brand-sub{opacity:.75;font-size:clamp(12px,1.6vw,14px);line-height:1.2}
+
+/* Toggle Pill */
+.mode-toggle{--h:34px;position:relative;display:grid;grid-template-columns:1fr var(--h) 1fr;align-items:center;
+  background:#f3f4f6;border-radius:999px;padding:2px;min-width:210px;border:1px solid #e2e8f0}
+.mode-toggle .toggle-option{height:var(--h);line-height:var(--h);border:0;background:transparent;font-weight:700;cursor:pointer}
+.mode-toggle .toggle-knob{position:absolute;width:50%;height:var(--h);border-radius:999px;left:2px;top:2px;background:var(--accent,#16a34a);
+  transition:transform .2s ease, background .2s ease}
+
+/* Modusfarben (Brand neutral) */
+html{--accent:#16a34a}
+html[data-mode="uni"]{--accent:#2563eb}
+html[data-mode="school"] .mode-toggle .toggle-knob{transform:translateX(0)}
+html[data-mode="uni"]    .mode-toggle .toggle-knob{transform:translateX(100%)}
+html[data-mode="school"] .mode-toggle [data-mode-target="uni"]{opacity:.6}
+html[data-mode="uni"]    .mode-toggle [data-mode-target="school"]{opacity:.6}
+
+/* Hamburger & Overlay */
+.hamburger{width:40px;height:40px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;display:grid;place-items:center;cursor:pointer}
+.hamburger span{display:block;width:18px;height:2px;background:currentColor;margin:2px 0}
+.overlay-menu{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);display:grid;place-items:start;padding-top:70px}
+.overlay-menu[hidden]{display:none}
+.overlay-nav{background:#fff;width:min(520px,90vw);margin-left:auto;height:100%;padding:24px 16px 32px;border-left:1px solid #e2e8f0}
+.overlay-nav a{display:block;padding:14px 12px;border-radius:10px;font-weight:600;text-decoration:none;color:#0f172a}
+.overlay-nav a:hover{background:#f8fafc}
+
+/* Footer + Bottom-Nav */
+.site-footer{background:#fff;text-align:center;padding:12px 16px;border-top:1px solid #e2e8f0}
+.site-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:999;background:#fff;border-top:1px solid #e2e8f0;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:0;padding:4px env(safe-area-inset-left) calc(4px + env(safe-area-inset-bottom)) env(safe-area-inset-right)}
+.site-bottom-nav .tab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;text-decoration:none;color:#334155;font-weight:600}
+.site-bottom-nav .tab svg{width:20px;height:20px}
+.site-bottom-nav .tab.active, .site-bottom-nav .tab:focus{color:var(--accent)}
+
+/* Bottom-Nav ab Desktop unter dem Copyright, nicht sticky */
+@media (min-width:1024px){
+  .site-bottom-nav{position:static;display:flex;justify-content:center;gap:24px;border-top:0;padding:10px 16px 18px}
+}
+
+/* Toggle unter den Brand schieben auf sehr schmalen Screens */
+@media (max-width:640px){
+  .header-row{grid-template-columns:1fr auto;grid-template-areas:
+    "brand hamburger"
+    "toggle toggle";}
+  .brand{grid-area:brand}
+  .hamburger{grid-area:hamburger}
+  .mode-toggle{grid-area:toggle;justify-self:center;margin-top:6px}
+  .brand-sub{max-width:70vw}
+}
