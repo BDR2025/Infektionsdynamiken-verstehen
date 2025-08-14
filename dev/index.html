@@ -5,97 +5,141 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Infektionsdynamiken – Start</title>
 
-  <!-- Globale Styles -->
-  <link rel="stylesheet" href="./css/base.css">
-  <link rel="stylesheet" href="./css/layout.css">
-  <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/modes.css">
+  <!-- Basis-Styles -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/modes.css">
 
-  <!-- Seitenstil -->
-  <link rel="stylesheet" href="./css/pages/index.css">
+  <!-- Startseiten-Styles -->
+  <link rel="stylesheet" href="css/pages/home.css">
 </head>
-<body data-page="index">
+<body data-page="home">
   <div data-include="header"></div>
 
   <main id="content" role="main">
+    <section class="container panel home">
 
-    <!-- HERO -->
-    <section class="hero container">
-      <div class="hero__text">
-        <h1>Infektions&shy;dynamiken <span class="muted">verstehen</span></h1>
-        <p class="lead when-school">
-          Interaktive Modelle für den Unterricht – mit einfachen Begriffen,
-          Beispielen und kurzen Erklärungen.
-        </p>
-        <p class="lead when-uni">
-          Kompartimentmodelle mit Parametern, Gleichungen und Kennzahlen – kompakt und interaktiv.
-        </p>
+      <!-- Willkommensbereich -->
+      <header class="section-head">
+        <h1 class="h">Willkommen</h1>
+      </header>
 
-        <div class="hero__cta">
-          <a class="btn btn-primary" href="modelle.html" data-transition>Zu den Modellen</a>
-          <a class="btn" href="#wie-funktionierts">Wie funktioniert’s?</a>
+      <!-- Intro-Grid: links Coach-Card (Video), rechts Text-Card (3 Spalten) -->
+      <section class="home-intro">
+        <!-- Coach-Card: Ben (School) -->
+        <article class="home-card coach-card coach-school">
+          <button class="audio-toggle" aria-label="Ton umschalten" title="Ton umschalten">🔈</button>
+          <video class="preview" preload="metadata" autoplay muted playsinline loop>
+            <source src="assets/video/Welcome_Ben.mp4" type="video/mp4">
+            Dein Browser unterstützt kein HTML5-Video.
+          </video>
+          <h3 class="name">Ben</h3>
+        </article>
+
+        <!-- Coach-Card: Mila (Uni) -->
+        <article class="home-card coach-card coach-university">
+          <button class="audio-toggle" aria-label="Ton umschalten" title="Ton umschalten">🔈</button>
+          <video class="preview" preload="metadata" autoplay muted playsinline loop>
+            <source src="assets/video/Welcome_Mila.mp4" type="video/mp4">
+            Dein Browser unterstützt kein HTML5-Video.
+          </video>
+          <h3 class="name">Mila</h3>
+        </article>
+
+        <!-- Text-Card (3 Spalten) -->
+        <article class="home-card intro-text">
+          <!-- Ben/School Text -->
+          <div class="intro-copy coach-school">
+            <p><strong>Hi, ich bin Ben – schön, dass du da bist.</strong></p>
+            <p>Bei uns geht es darum, wie sich Krankheiten ausbreiten und wie man eine Welle bremsen kann. Erinnerst du dich an die COVID‑19‑Zeit? Das war spannend – und manchmal auch beunruhigend. Genau solche Themen erkläre ich dir hier Schritt für Schritt und mit einfachen Beispielen.</p>
+            <p>Wenn du unterwegs Lust auf mehr Tiefe hast, kannst du jederzeit zur Uni‑Ansicht wechseln. Dort erwartet dich Mila mit mathematischen Modellen und vielen zusätzlichen Details. Viel Spaß beim Entdecken!</p>
+          </div>
+
+          <!-- Mila/Uni Text -->
+          <div class="intro-copy coach-university">
+            <p><strong>Hallo, ich bin Mila – willkommen.</strong></p>
+            <p>Hier betrachten wir die Ausbreitung von Krankheiten mit wissenschaftlicher Brille. Dabei geht es um Themen wie Übertragungsraten, den Verlauf der Immunität und den Einfluss von Maßnahmen wie Impfen oder Kontaktreduktion. Wir nutzen mathematische Modelle, die oft auf Differentialgleichungen beruhen, um den zeitlichen Verlauf einer Infektion möglichst realitätsnah zu beschreiben.</p>
+            <p>Wenn du einen vereinfachten Einstieg möchtest, wechsle zur School‑Ansicht – dort führt dich Ben ohne viele Formeln Schritt für Schritt durch die Grundlagen.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- Ansicht wählen -->
+      <section class="view-chooser">
+        <h2 class="sr-only">Ansicht wählen</h2>
+        <p class="lead">Wähle die Ansicht:</p>
+        <div class="view-actions">
+          <a class="btn ghost" href="?mode=school" data-mode-target="school">School (Ben)</a>
+          <a class="btn primary" href="?mode=uni" data-mode-target="uni">Uni (Mila)</a>
         </div>
+      </section>
 
-        <div class="hero__mode-tip">
-          <span class="chip">School / University</span>
-          Umschalten oben rechts: Inhalte passen sich an die Zielgruppe an.
-        </div>
-      </div>
+      <!-- Eyecatcher groß -->
+      <section class="hero-eyecatcher" aria-label="Infektionsdynamik Illustration">
+        <img src="assets/img/startingvirus.png" alt="Illustration von Infektionskurven und Viren" loading="lazy">
+      </section>
 
-      <div class="hero__art card">
-        <!-- Illustration: ersetze den Pfad, falls dein Asset woanders liegt -->
-        <img src="visuals/startingvirus.png" alt="" loading="eager" />
-      </div>
     </section>
-
-    <!-- FEATURES -->
-    <section class="container features" id="wie-funktionierts">
-      <article class="card feat">
-        <div class="feat__icon">🎛️</div>
-        <h3>Interaktiv</h3>
-        <p>Parameter anpassen, Verlauf sehen, Zusammenhänge begreifen.</p>
-      </article>
-      <article class="card feat">
-        <div class="feat__icon">🔁</div>
-        <h3>Zwei Perspektiven</h3>
-        <p><span class="when-school">Alltagssprache & Beispiele.</span><span class="when-uni">Formeln, KPIs & Ableitungen.</span></p>
-      </article>
-      <article class="card feat">
-        <div class="feat__icon">🪄</div>
-        <h3>Didaktischer Einstieg</h3>
-        <p>Erst ein kurzer geführter Ablauf, dann „Zum interaktiven Modell“.</p>
-      </article>
-    </section>
-
-    <!-- MODEL-KACHELN (Teaser) -->
-    <section class="container models">
-      <h2>Modelle</h2>
-      <div class="model-grid">
-        <a class="model-card card" href="modell-sir.html" data-transition>
-          <div class="model-card__dot" style="--dot:#009E73"></div>
-          <h4>SIR</h4>
-          <p class="when-school">Grundlage: gesund · erkrankt · genesen.</p>
-          <p class="when-uni">β, γ – Basisverlauf ohne Inkubation.</p>
-        </a>
-
-        <a class="model-card card" href="modell-seir.html" data-transition>
-          <div class="model-card__dot" style="--dot:#f59e0b"></div>
-          <h4>SEIR</h4>
-          <p class="when-school">Mit Inkubations­zeit (exponiert).</p>
-          <p class="when-uni">σ (1/Incubation) ergänzt.</p>
-        </a>
-
-        <a class="model-card card disabled" href="modelle.html" data-transition aria-disabled="true">
-          <div class="model-card__dot" style="--dot:#D55E00"></div>
-          <h4>Weitere</h4>
-          <p>Folgen in Kürze: SIS, SIRS, SIRV …</p>
-        </a>
-      </div>
-    </section>
-
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js?v=7"></script>
+
+  <!-- Wichtig: richtige Datei für Includes -->
+  <script src="/js/includes.js" defer></script>
+
+  <!-- URL-Param/Hash: ?mode=uni | ?mode=school -->
+  <script>
+  (() => {
+    const LSKEY = 'site.mode';
+    const qs = new URLSearchParams(location.search);
+    const hashMode = (location.hash.match(/mode=(\w+)/)||[])[1];
+    const urlMode = (qs.get('mode') || hashMode || '').toLowerCase();
+    const valid = (m) => (m === 'uni' || m === 'school') ? m : null;
+    const picked = valid(urlMode);
+    if (picked) {
+      document.documentElement.setAttribute('data-mode', picked);
+      document.body.setAttribute('data-mode', picked);
+      try { localStorage.setItem(LSKEY, picked); } catch(e){}
+    } else {
+      try {
+        const saved = valid(localStorage.getItem(LSKEY));
+        if (saved) {
+          document.documentElement.setAttribute('data-mode', saved);
+          document.body.setAttribute('data-mode', saved);
+        }
+      } catch(e){}
+    }
+    // Buttons setzen den Modus sofort (ohne Reload nötig)
+    document.addEventListener('click', (ev) => {
+      const a = ev.target.closest('a[data-mode-target]');
+      if (!a) return;
+      ev.preventDefault();
+      const mode = a.dataset.modeTarget;
+      document.documentElement.setAttribute('data-mode', mode);
+      document.body.setAttribute('data-mode', mode);
+      try { localStorage.setItem(LSKEY, mode); } catch(e){}
+      // URL aktualisieren (ohne reload)
+      const url = new URL(location.href);
+      url.searchParams.set('mode', mode);
+      history.replaceState({}, '', url);
+    });
+  })();
+  </script>
+
+  <!-- Mini-Script: Ton-Button (Autoplay bleibt stumm, Klick aktiviert Ton) -->
+  <script>
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.audio-toggle');
+    if (!btn) return;
+    const card = btn.closest('.coach-card');
+    const vid = card?.querySelector('video');
+    if (!vid) return;
+    vid.muted = !vid.muted;
+    if (vid.paused) vid.play().catch(()=>{});
+    btn.textContent = vid.muted ? '🔈' : '🔊';
+    btn.setAttribute('aria-pressed', (!vid.muted).toString());
+  });
+  </script>
 </body>
 </html>
