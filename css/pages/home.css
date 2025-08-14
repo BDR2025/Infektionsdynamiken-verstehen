@@ -1,0 +1,145 @@
+/* ===== Startseite (nur hier wirksam) ===== */
+:root{
+  --card-bg-1:#ffffff;
+  --card-bg-2:#f6f8fb;
+  --card-border:#e5e7eb;
+  --ink:#0f172a;
+  --btn-bg:#2563eb;
+  --btn-ink:#ffffff;
+}
+
+[data-page="index"] .section-head{margin-bottom:1rem;}
+[data-page="index"] .section-head .h{margin:0;}
+[data-page="index"] .lead{margin:.25rem 0 0;color:#64748b;}
+
+/* Intro-Grid: 4 Spalten – Coach links, Text rechts über 3 Spalten */
+[data-page="index"] .home-intro{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(220px,1fr));
+  gap:clamp(14px,2vw,24px);
+  margin:0 0 1rem 0;
+  align-items:stretch;
+}
+@media (max-width:960px){
+  [data-page="index"] .home-intro{ grid-template-columns:1fr; }
+}
+
+/* Karten-Stil (wie Modelle) */
+[data-page="index"] .home-card{
+  position:relative;
+  display:grid;
+  align-content:end;
+  min-height:200px;
+  padding:0 16px 16px; /* oben bündig */
+  border-radius:18px;
+  background:linear-gradient(180deg,var(--card-bg-1),var(--card-bg-2));
+  border:1px solid var(--card-border);
+  box-shadow:0 1px 0 rgba(15,23,42,.03), 0 8px 24px rgba(15,23,42,.08);
+  color:var(--ink);
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* Coach-Card: Video als Preview (oben bündig, leicht gestaucht) */
+[data-page="index"] .coach-card .preview{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover; object-position:top;
+  transform:scaleY(0.9);
+  opacity:.95;
+  filter:contrast(1.02) saturate(1.05);
+  z-index:0;
+}
+
+/* Weiß-Überblendung unten (Textzone) */
+[data-page="index"] .coach-card::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(255,255,255,0) 35%, rgba(255,255,255,.92) 65%, #fff 100%);
+  z-index:1;
+}
+
+/* Name des Coaches klein unten */
+[data-page="index"] .coach-card .name{
+  margin:0; z-index:2;
+  font-size:14px; font-weight:700; opacity:.8;
+}
+
+/* (Legacy) Ton-Button – nicht mehr genutzt, kann entfernt werden */
+[data-page="index"] .audio-toggle{
+  position:absolute; z-index:2;
+  top:10px; left:10px;
+  width:36px; height:36px; line-height:36px;
+  border-radius:999px; border:1px solid var(--card-border);
+  background:#ffffffcc; backdrop-filter:blur(6px);
+  display:grid; place-items:center;
+  cursor:pointer;
+}
+
+/* Text-Karte (nimmt 3 Spalten) */
+[data-page="index"] .intro-text{
+  grid-column:span 3;
+  padding:24px;
+}
+@media (max-width:960px){
+  [data-page="index"] .intro-text{ grid-column:auto; }
+}
+
+/* Fließtexte */
+[data-page="index"] .intro-copy p{
+  margin:.5rem 0;
+  font-size:1rem; line-height:1.5; color:#334155;
+}
+
+/* Sichtbarkeitslogik School/Uni */
+[data-page="index"] .coach-school,
+[data-page="index"] .coach-university{ display:none; }
+
+[data-mode="school"][data-page="index"] .coach-school{ display:block; }
+[data-mode="uni"][data-page="index"]    .coach-university{ display:block; }
+
+/* Ansicht wählen + Buttons */
+[data-page="index"] .view-chooser{ margin:8px 0 12px 0; }
+[data-page="index"] .view-actions{
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:.5rem;
+}
+[data-page="index"] .btn{
+  display:inline-block; padding:.58rem .9rem; border-radius:10px;
+  text-decoration:none; font-weight:700; letter-spacing:.2px;
+  border:1px solid var(--card-border);
+  box-shadow:0 1px 0 rgba(15,23,42,.03), 0 4px 12px rgba(15,23,42,.06);
+}
+[data-page="index"] .btn.primary{ background:var(--btn-bg); color:var(--btn-ink); border-color:transparent; }
+[data-page="index"] .btn.ghost{ background:#fff; color:#0f172a; }
+
+/* Eyecatcher groß */
+[data-page="index"] .hero-eyecatcher{
+  margin-top:10px;
+}
+[data-page="index"] .hero-eyecatcher img{
+  width:100%; height:auto; display:block;
+  border-radius:18px;
+  box-shadow:0 1px 0 rgba(15,23,42,.03), 0 12px 36px rgba(15,23,42,.10);
+  image-rendering:auto;
+}
+
+/* --- Deine Card-Styles (nicht page-gescoped) --- */
+.card--coach {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) 1fr;
+  gap: 24px;
+  align-items: center;
+}
+.card--coach .card-media video {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+@media (max-width: 900px) {
+  .card--coach { grid-template-columns: 1fr; }
+}
+
+/* Falls noch nicht vorhanden: Header/Foooter sichtbar halten */
+.site-header { position: sticky; top: 0; z-index: 1000; background: var(--bg, #fff); }
+.site-footer { background: var(--bg, #fff); }
