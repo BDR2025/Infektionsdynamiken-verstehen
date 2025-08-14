@@ -3,144 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Infektionsdynamiken – Start</title>
+  <title>Infektionsdynamiken.de</title>
 
-  <!-- Basis-Styles -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/modes.css">
-
-  <!-- Startseiten-Styles -->
   <link rel="stylesheet" href="css/pages/home.css">
+
+  <script src="js/core/includes.js" defer></script>
+  <script src="js/core/mode.js" defer></script>
+  <script src="js/pages/page-index.js" defer></script>
 </head>
-<body data-page="home">
+<body data-page="index">
   <div data-include="header"></div>
 
   <main id="content" role="main">
-    <section class="container panel home">
-
-      <!-- Willkommensbereich -->
-      <header class="section-head">
-        <h1 class="h">Willkommen</h1>
-      </header>
-
-      <!-- Intro-Grid: links Coach-Card (Video), rechts Text-Card (3 Spalten) -->
-      <section class="home-intro">
-        <!-- Coach-Card: Ben (School) -->
-        <article class="home-card coach-card coach-school">
-          <button class="audio-toggle" aria-label="Ton umschalten" title="Ton umschalten">🔈</button>
-          <video class="preview" preload="metadata" autoplay muted playsinline loop>
-            <source src="assets/video/Welcome_Ben.mp4" type="video/mp4">
-            Dein Browser unterstützt kein HTML5-Video.
+    <section class="container" style="margin-block:2rem">
+      <article class="card card--coach">
+        <div class="card-media">
+          <video id="coachVideo"
+                 autoplay muted loop playsinline preload="metadata"
+                 poster="assets/img/previews/startingvirus.png">
+            <!-- wird per JS je nach Modus überschrieben -->
+            <source src="assets/Videos/Intro_Toggle_Ben.mp4" type="video/mp4">
           </video>
-          <h3 class="name">Ben</h3>
-        </article>
-
-        <!-- Coach-Card: Mila (Uni) -->
-        <article class="home-card coach-card coach-university">
-          <button class="audio-toggle" aria-label="Ton umschalten" title="Ton umschalten">🔈</button>
-          <video class="preview" preload="metadata" autoplay muted playsinline loop>
-            <source src="assets/video/Welcome_Mila.mp4" type="video/mp4">
-            Dein Browser unterstützt kein HTML5-Video.
-          </video>
-          <h3 class="name">Mila</h3>
-        </article>
-
-        <!-- Text-Card (3 Spalten) -->
-        <article class="home-card intro-text">
-          <!-- Ben/School Text -->
-          <div class="intro-copy coach-school">
-            <p><strong>Hi, ich bin Ben. Schön, dass du da bist.</strong></p>
-            <p>Bei uns geht es darum, wie sich Krankheiten ausbreiten und wie man eine Welle bremsen kann. Erinnerst du dich an die COVID‑19‑Zeit? Das war spannend und manchmal auch beunruhigend. Genau solche Themen erkläre ich dir hier Schritt für Schritt und mit einfachen Beispielen.</p>
-            <p>Wenn du unterwegs Lust auf mehr Tiefe hast, kannst du jederzeit zur Uni‑Ansicht wechseln. Dort erwartet dich Mila mit mathematischen Modellen und vielen zusätzlichen Details. Falls nicht, bleib doch einfach bei mir. Viel Spaß beim Entdecken!</p>
-          </div>
-
-          <!-- Mila/Uni Text -->
-          <div class="intro-copy coach-university">
-            <p><strong>Hallo, ich bin Mila. Willkommen.</strong></p>
-            <p>Hier betrachten wir die Ausbreitung von Krankheiten mit wissenschaftlicher Brille. Dabei geht es um Themen wie Übertragungsraten, den Verlauf der Immunität und den Einfluss von Maßnahmen wie Impfen oder Kontaktreduktion. Wir nutzen mathematische Modelle, die oft auf Differentialgleichungen beruhen, um den zeitlichen Verlauf einer Infektion möglichst realitätsnah zu beschreiben.</p>
-            <p>Wenn du einen vereinfachten Einstieg möchtest, kannst du jederzeit zur Schulebene wechseln. Dort erklärt Dir Ben die Grundlagen. Schritt für Schritt und ohne allzu viele Formeln.</p>
-            <p>Ich freue mich, Dich durch die spannende Welt der Infektionsdynmaik zu begleiten. Viel Spaß!</p>
-			</div>
-        </article>
-      </section>
-
-      <!-- Ansicht wählen -->
-      <section class="view-chooser">
-        <h2 class="sr-only">Ansicht wählen</h2>
-        <p class="lead">Wähle die Ansicht:</p>
-        <div class="view-actions">
-          <a class="btn ghost" href="?mode=school" data-mode-target="school">School (Ben)</a>
-          <a class="btn primary" href="?mode=uni" data-mode-target="uni">Uni (Mila)</a>
         </div>
-      </section>
-
-      <!-- Eyecatcher groß -->
-      <section class="hero-eyecatcher" aria-label="Infektionsdynamik Illustration">
-        <img src="assets/img/startingvirus.png" alt="Illustration von Infektionskurven und Viren" loading="lazy">
-      </section>
-
+        <div class="card-body">
+          <h1 class="h2">Willkommen!</h1>
+          <p class="muted">Der Modus-Umschalter ist oben in der Kopfzeile. Wechsle zwischen <strong>Schule</strong> und <strong>Uni</strong> – die Inhalte passen sich an.</p>
+          <button class="btn btn-primary" id="toModels">Zu den Modellen</button>
+        </div>
+      </article>
     </section>
   </main>
 
   <div data-include="footer"></div>
-
-  <!-- Wichtig: richtige Datei für Includes -->
-  <script src="/js/includes.js" defer></script>
-
-  <!-- URL-Param/Hash: ?mode=uni | ?mode=school -->
-  <script>
-  (() => {
-    const LSKEY = 'site.mode';
-    const qs = new URLSearchParams(location.search);
-    const hashMode = (location.hash.match(/mode=(\w+)/)||[])[1];
-    const urlMode = (qs.get('mode') || hashMode || '').toLowerCase();
-    const valid = (m) => (m === 'uni' || m === 'school') ? m : null;
-    const picked = valid(urlMode);
-    if (picked) {
-      document.documentElement.setAttribute('data-mode', picked);
-      document.body.setAttribute('data-mode', picked);
-      try { localStorage.setItem(LSKEY, picked); } catch(e){}
-    } else {
-      try {
-        const saved = valid(localStorage.getItem(LSKEY));
-        if (saved) {
-          document.documentElement.setAttribute('data-mode', saved);
-          document.body.setAttribute('data-mode', saved);
-        }
-      } catch(e){}
-    }
-    // Buttons setzen den Modus sofort (ohne Reload nötig)
-    document.addEventListener('click', (ev) => {
-      const a = ev.target.closest('a[data-mode-target]');
-      if (!a) return;
-      ev.preventDefault();
-      const mode = a.dataset.modeTarget;
-      document.documentElement.setAttribute('data-mode', mode);
-      document.body.setAttribute('data-mode', mode);
-      try { localStorage.setItem(LSKEY, mode); } catch(e){}
-      // URL aktualisieren (ohne reload)
-      const url = new URL(location.href);
-      url.searchParams.set('mode', mode);
-      history.replaceState({}, '', url);
-    });
-  })();
-  </script>
-
-  <!-- Mini-Script: Ton-Button (Autoplay bleibt stumm, Klick aktiviert Ton) -->
-  <script>
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.audio-toggle');
-    if (!btn) return;
-    const card = btn.closest('.coach-card');
-    const vid = card?.querySelector('video');
-    if (!vid) return;
-    vid.muted = !vid.muted;
-    if (vid.paused) vid.play().catch(()=>{});
-    btn.textContent = vid.muted ? '🔈' : '🔊';
-    btn.setAttribute('aria-pressed', (!vid.muted).toString());
-  });
-  </script>
 </body>
 </html>
