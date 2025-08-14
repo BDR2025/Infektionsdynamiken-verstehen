@@ -1,36 +1,114 @@
 <!doctype html>
 <html lang="de" data-mode="school">
 <head>
-  <title>Modelle</title>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="./css/base.css">
-  <link rel="stylesheet" href="./css/layout.css">
-  <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/pages/model.css">
-  <link rel="stylesheet" href="./css/modes.css">
+  <title>Modelle – Infektionsdynamiken.de</title>
 
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/model.css">
+  <link rel="stylesheet" href="css/modes.css">
 </head>
-<body data-page="modelle">
+<body data-page="modelle" data-phase="intro">
   <div data-include="header"></div>
 
   <main id="content" role="main">
+    <section class="container panel models">
+      <header class="section-head">
+        <h2 class="h">Modelle</h2>
+        <p class="lead">Wähle ein Modell und erkunde die Dynamik.</p>
+      </header>
 
-  <section class="container panel">
-    <h2 style="margin-top:0">Modelle</h2>
-    <div class="controls">
-      <a class="card" href="modell-sir.html" data-transition>• SIR</a>
-      <a class="card" href="modell-seir.html" data-transition>• SEIR</a>
-      <a class="card" href="modell-sis.html" data-transition>• SIS</a>
-      <a class="card" href="modell-sirs.html" data-transition>• SIRS</a>
-      <a class="card" href="modell-sirv.html" data-transition>• SIRV</a>
-    </div>
-  </section>
+      <ul class="model-grid" role="list">
+        <!-- SIR -->
+        <li>
+          <a class="model-card" data-model="sir" href="modell-sir.html" data-transition aria-label="SIR – Grundmodell">
+            <div class="badges">
+              <span class="chip s">S</span>
+              <span class="chip i">I</span>
+              <span class="chip r">R</span>
+            </div>
+            <h3 class="name">SIR</h3>
+            <p class="desc">Grundmodell ohne Latenz</p>
+            <img class="preview" src="assets/img/previews/SIR_preview.png" alt="" loading="lazy" />
+          </a>
+        </li>
 
+        <!-- SEIR -->
+        <li>
+          <a class="model-card" data-model="seir" href="modell-seir.html" data-transition aria-label="SEIR – mit Expositionsphase">
+            <div class="badges">
+              <span class="chip s">S</span>
+              <span class="chip e">E</span>
+              <span class="chip i">I</span>
+              <span class="chip r">R</span>
+            </div>
+            <h3 class="name">SEIR</h3>
+            <p class="desc">Mit Expositionsphase (Latenz)</p>
+            <img class="preview" src="assets/img/previews/SEIR_preview.png" alt="" loading="lazy" />
+          </a>
+        </li>
+
+        <!-- SIS -->
+        <li>
+          <a class="model-card" data-model="sis" href="modell-sis.html" data-transition aria-label="SIS – ohne Immunität">
+            <div class="badges">
+              <span class="chip s">S</span>
+              <span class="chip i">I</span>
+              <span class="chip s">S</span>
+            </div>
+            <h3 class="name">SIS</h3>
+            <p class="desc">Keine dauerhafte Immunität</p>
+            <img class="preview" src="assets/img/previews/SIS_preview.png" alt="" loading="lazy" />
+          </a>
+        </li>
+
+        <!-- SIRD -->
+        <li>
+          <a class="model-card" data-model="sird" href="modell-sird.html" data-transition aria-label="SIRD – mit Todesfällen">
+            <div class="badges">
+              <span class="chip s">S</span>
+              <span class="chip i">I</span>
+              <span class="chip r">R</span>
+              <span class="chip d">D</span>
+            </div>
+            <h3 class="name">SIRD</h3>
+            <p class="desc">Mit Todesfällen (Deceased)</p>
+            <img class="preview" src="assets/img/previews/SIRD_preview.png" alt="" loading="lazy" />
+          </a>
+        </li>
+
+        <!-- SIRV -->
+        <li>
+          <a class="model-card" data-model="sirv" href="modell-sirv.html" data-transition aria-label="SIRV – mit Impfung">
+            <div class="badges">
+              <span class="chip s">S</span>
+              <span class="chip i">I</span>
+              <span class="chip r">R</span>
+              <span class="chip v">V</span>
+            </div>
+            <h3 class="name">SIRV</h3>
+            <p class="desc">Mit Impfkompartiment</p>
+            <img class="preview" src="assets/img/previews/SIRV_preview.png" alt="" loading="lazy" />
+          </a>
+        </li>
+      </ul>
+
+      <div class="legend" aria-hidden="true">
+        <span class="chip s">S</span> Susceptible
+        <span class="chip e">E</span> Exposed
+        <span class="chip i">I</span> Infectious
+        <span class="chip r">R</span> Removed
+        <span class="chip d">D</span> Deceased
+        <span class="chip v">V</span> Vaccinated
+      </div>
+    </section>
   </main>
 
   <div data-include="footer"></div>
-  <script type="module" src="./js/core/app.js"></script>
+
+  <script src="js/include.js"></script>
 </body>
 </html>

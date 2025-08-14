@@ -1,258 +1,111 @@
-/* ---------- Page-specific: model pages ---------- */
-.model-hero{ display:grid; gap: 16px; grid-template-columns: 1fr 1fr; align-items: stretch; }
-@media (max-width: 960px){ .model-hero{ grid-template-columns: 1fr; } }
-
-.model-intro{ display:grid; gap: 12px; }
-.model-intro h2{ margin: 0; font-size: clamp(20px, 3vw, 28px); }
-.model-intro .desc{ color: var(--muted); }
-
-.controls{ display:grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.explain{ display:grid; gap: 12px; }
-
-.pager-hint{ color: var(--muted); font-size: 12px; }
-
-/* SIR-Canvas responsive */
-#sirCanvas {
-  width: 100%;
-  max-width: 1000px;   /* optionaler Deckel, damit es nicht zu breit wird */
-  height: auto;
-  display: block;
-  margin: 0 auto;
+/* ===== Modelle-Übersicht ===== */
+:root{
+  --s:#16a34a; /* green */
+  --e:#10b981; /* teal for E */
+  --i:#e64b40; /* red/orange */
+  --r:#2d6cdf; /* blue */
+  --v:#7c3aed; /* purple */
+  --d:#000000; /* black for Deceased */
+  --card-bg-1:#ffffff;
+  --card-bg-2:#f6f8fb;
+  --card-border:#e5e7eb;
+  --ink:#0f172a;
 }
 
-/* =========================================
-   SIR – Toolbar, Live‑KPI, Canvas
-   ========================================= */
-.model-toolbar{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; margin-bottom:12px; flex-wrap:wrap;
-}
-.preset-bar{ display:flex; gap:8px; }
-.btn-pill{ border-radius:999px; padding:8px 12px; }
+[data-page="modelle"] .section-head{margin-bottom:1rem}
+[data-page="modelle"] .section-head .h{margin:0}
+[data-page="modelle"] .lead{margin:.25rem 0 0;color:#64748b}
 
-.live-kpi{
-  display:flex; align-items:center; gap:8px;
-  padding:6px 10px; border-radius:999px;
-  background:#f3f4f6; color:#374151; /* dezentes Grau */
-  border:1px solid #e5e7eb;
-  font-size:.95rem;
-}
-
-/* SIR-Canvas (Diagramm) – Responsive Layout
-   - Breite flexibel, max. 1000px
-   - Höhe automatisch; JS setzt die interne Pixelauflösung (fitCanvas) */
-#sirCanvas{
-  width:100%;
-  max-width:1000px;
-  height:auto;
-  display:block;
-  margin:0 auto;
-}
-/* =========================================
-   SIR – Intro-Toolbar, Canvas, Interaktiv-Layout
-   ========================================= */
-.model-toolbar{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; margin-bottom:12px; flex-wrap:wrap;
-}
-.preset-bar{ display:flex; gap:8px; }
-.btn-pill{ border-radius:999px; padding:8px 12px; }
-
-/* Intro: großes Chart (ohne Achsen) */
-#sirCanvas{
-  width:100%;
-  max-width:1000px;
-  height:auto;
-  display:block;
-  margin:0 auto;
-}
-
-/* Interaktives Grid */
-.interactive-grid{
+.model-grid{
+  list-style:none;
   display:grid;
-  grid-template-columns: 2fr 1fr;
-  gap:14px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:clamp(14px,2vw,24px);
+  margin:0;
+  padding:0;
 }
-.interactive-chart canvas{
+
+.model-card{
+  position:relative;
+  display:grid;
+  align-content:end;
+  min-height:200px;
+  padding:0 16px 16px; /* oben kein Padding, nur seitlich und unten */
+  border-radius:18px;
+  background:linear-gradient(180deg,var(--card-bg-1),var(--card-bg-2));
+  border:1px solid var(--card-border);
+  box-shadow:0 1px 0 rgba(15,23,42,.03), 0 8px 24px rgba(15,23,42,.08);
+  text-decoration:none;
+  color:var(--ink);
+  overflow:hidden;
+  isolation:isolate;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+/* Subtiles, generisches Linienmuster als Fallback (falls kein <img>) */
+.model-card::before{
+  content:"";
+  position:absolute; inset:-10% -10% auto -10%; height:75%;
+  background:
+    radial-gradient(60% 60% at 0% 40%, rgba(45,108,223,.12), transparent 60%),
+    radial-gradient(70% 70% at 100% 30%, rgba(230,75,64,.10), transparent 60%),
+    radial-gradient(50% 50% at 30% 0%, rgba(22,163,74,.12), transparent 60%);
+  z-index:0;
+  filter:blur(0.2px) saturate(1.1);
+}
+
+.model-card .preview {
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
   width:100%;
-  height:auto;
-  display:block;
-}
-.interactive-side{
-  display:grid;
-  gap:12px;
-}
-.kpi-grid{
-  display:grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap:10px;
-}
-.kpi-card{
-  padding:10px 12px;
-  border:1px solid var(--border, #e5e7eb);
-  border-radius:10px;
-  background:#fff;
-}
-.kpi-title{ font-size:.85rem; color:#6b7280; }
-.kpi-value{ font-size:1.25rem; font-weight:600; }
-
-.controls{ display:grid; gap:10px; }
-.ctrl{ display:grid; gap:6px; }
-.ctrl input[type="range"]{ width:100%; }
-
-/* Mobile: interaktive Ansicht stapeln */
-@media (max-width: 900px){
-  .interactive-grid{ grid-template-columns: 1fr; }
-  .kpi-grid{ grid-template-columns: 1fr 1fr; }
+  height:100%;
+  object-fit:cover;
+  object-position: top;     /* wirklich ganz oben */
+  transform: scaleY(0.85);  /* stärker vertikal stauchen */
+  opacity:.9;
+  z-index:0;
+  filter:contrast(1.02) saturate(1.05);
 }
 
-/* KPI-Farbflächen (dezent) */
-.kpi--green { background: rgba(0,158,115,.06); border-color: rgba(0,158,115,.25); }
-.kpi--blue  { background: rgba(0,114,178,.06); border-color: rgba(0,114,178,.25); }
-.kpi--neutral { background:#fff; }
-
-/* kurze Erläuterung unter dem Faktor */
-.kpi-hint { font-size: .8rem; color:#6b7280; margin-top:2px; }
-
-/* Safety: Notice nie „Wort für Wort“ umbrechen */
-.notice { white-space: normal; word-break: normal; }
-.notice p { margin: 0; }
-
-.chart-panel canvas,
-.chart-box canvas,
-canvas.responsive {
-  display: block;
-  width: 100%;
-  height: auto; /* die echte Höhe setzt fitCanvas */
+.model-card::after{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(255,255,255,.0) 35%, rgba(255,255,255,.92) 65%, #fff 100%);
+  z-index:1;
 }
 
-/* --- Side panel: KPI & Coach/Controls ----------------------------------- */
-.kpi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.kpi-card { border-radius: 12px; padding: 12px; border: 1px solid var(--border); background: #fff; }
-.kpi-title { font-size: 12px; color: var(--muted); }
-.kpi-value { font-size: 24px; font-weight: 700; line-height: 1.2; }
-.kpi-hint  { font-size: 12px; color: var(--muted); }
-
-.kpi--green { background: rgba(0,158,115,.06); border-color: rgba(0,158,115,.2); }
-.kpi--blue  { background: rgba(0,114,178,.06); border-color: rgba(0,114,178,.2); }
-.kpi--neutral { background: #fff; }
-
-#sideBody { display: grid; gap: 12px; }
-
-/* Coach – quadratisch */
-.coach-box { display: grid; gap: 8px; }
-.coach-aspect { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 14px;
-  background: #000; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.15), 0 0 0 1px rgba(0,0,0,.06); }
-.coach-video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.coach-play { position: absolute; inset: 0; display: grid; place-items: center;
-  background: radial-gradient( circle at 50% 50%, rgba(0,0,0,.45), rgba(0,0,0,.65) );
-  color: #fff; font-size: 28px; border: 0; cursor: pointer; }
-.coach-play.is-hidden { display: none; }
-.coach-sync { font-size: 12px; color: var(--muted-strong); display: inline-flex; align-items: center; gap: 6px; }
-
-/* Controls */
-.controls .ctrl { display: grid; gap: 6px; }
-.controls input[type="range"] { width: 100%; }
-
-/* kleine Screens */
-@media (max-width: 900px){
-  .kpi-grid { grid-template-columns: 1fr; }
+.model-card .badges{
+  position:absolute; top:12px; right:12px; z-index:2;
+  display:flex; gap:6px;
 }
 
-/* KPI */
-.kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px; }
-.kpi-card { border-radius:12px; padding:12px; border:1px solid var(--border); background:#fff; }
-.kpi-title{ font-size:12px; color:var(--muted); }
-.kpi-value{ font-size:24px; font-weight:700; line-height:1.2; }
-.kpi-hint { font-size:12px; color:var(--muted); }
-.kpi--green{ background:rgba(0,158,115,.06); border-color:rgba(0,158,115,.2); }
-.kpi--blue { background:rgba(0,114,178,.06); border-color:rgba(0,114,178,.2); }
+.chip{
+  display:inline-grid; place-items:center;
+  min-width:28px; height:28px; padding:0 6px;
+  border-radius:999px;
+  font:700 12px/1 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 4px 10px rgba(15,23,42,.18);
+}
+.chip.s{background:var(--s)}
+.chip.e{background:var(--e)}
+.chip.i{background:var(--i)}
+.chip.r{background:var(--r)}
+.chip.v{background:var(--v)}
+.chip.d{background:var(--d)}
 
-/* Coach (quadratisch, weißer Hintergrund) */
-.coach-box{ display:grid; gap:8px; }
-.coach-aspect{ position:relative; width:100%; aspect-ratio:1/1; border-radius:14px;
-  background:#fff; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.06); }
-.coach-video{ width:100%; height:100%; object-fit:cover; background:#fff; display:block; }
-
-/* Controls */
-.controls .ctrl{ display:grid; gap:6px; }
-.controls input[type="range"]{ width:100%; }
-
-@media (max-width:900px){
-  .kpi-grid{ grid-template-columns:1fr; }
+.model-card .name{
+  margin:0; z-index:2;
+  font-size:20px; font-weight:800; letter-spacing:.2px;
+}
+.model-card .desc{
+  margin:.25rem 0 0; z-index:2; color:#475569; font-size:14px;
 }
 
-/* --- Intro/Interactive phases ------------------------------------------- */
-[data-phase="intro"] #kpiGrid,
-[data-phase="intro"] #controls { display: none !important; }
-[data-phase="interactive"] #coachBlock { display: none !important; }
-
-/* --- Grid stays identical for both phases ------------------------------- */
-.interactive-grid {
-  display: grid;
-  grid-template-columns: 1fr 360px;   /* fixed side width → stable canvas size */
-  gap: 16px;
-  align-items: start;
-}
-.interactive-chart { min-height: 440px; } /* ensures non-zero size for DPR sizing */
-
-/* Coach Dock */
-.coach-dock {
-  display: grid; gap: 8px; align-content: start;
-  margin-top: 10px;
-}
-.coach-video {
-  width: min(360px, 100%);
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(2, 6, 23, .18);
-  border: 1px solid #e5e7eb;
-  background: #000;
-}
-.coach-controls {
-  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-}
-.coach-sync { color:#64748b; font-size: .95rem; display:flex; gap:8px; align-items:center; }
-
-@media (max-width: 900px){
-  .coach-video { width: 100%; }
-}
-
-/* --- Coach video card ---------------------------------------------------- */
-.coach-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 12px;
-}
-.coach-video {
-  width: 100%;
-  aspect-ratio: 1 / 1;      /* square */
-  object-fit: cover;
-  background: #fff;         /* avoid black flash before first frame */
-  border-radius: 12px;
-  display: block;
-}
-/* no controls overlay anywhere */
-.coach-video::-webkit-media-controls { display: none !important; }
-.coach-video::-webkit-media-controls-enclosure { display: none !important; }
-
-/* Canvas sizing (DPR will set the bitmap size) */
-#sirCanvas { width:100%; height:auto; display:block; }
-
-/* Optional: hide the small sync row for now */
-.sync-row { display:none; }
-
-@keyframes tryPulse {
-  0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.8); }
-  50%  { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
-  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-}
-
-.pulse-try {
-  animation: tryPulse 1s ease-in-out infinite;
-  background-color: #ef4444 !important; /* rot */
-  border-color: #dc2626 !important;
-  color: #fff !important;
-}
-
+/* Hover-Effekt */
+.model-card:hover,
+.model-card:focus-visible{
+  transform:translateY(-2px);
