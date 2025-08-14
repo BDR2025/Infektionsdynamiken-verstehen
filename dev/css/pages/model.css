@@ -83,10 +83,9 @@
 [data-mode="school"][data-page="modelle"] .model-card .desc,
 [data-mode="school"][data-page="modelle"] .model-card .badges,
 [data-mode="school"][data-page="modelle"] .legend{display:none!important;}
+[data-page="modelle"] .coach-school,[data-page="modelle"] .coach-university{display:none;}
 [data-mode="school"][data-page="modelle"] .coach-school{display:block;}
-[data-mode="school"][data-page="modelle"] .coach-university{display:none;}
 [data-mode="uni"][data-page="modelle"] .coach-university{display:block;}
-[data-mode="uni"][data-page="modelle"] .coach-school{display:none;}
 [data-mode="uni"][data-page="modelle"] .model-card .desc,
 [data-mode="uni"][data-page="modelle"] .model-card .badges,
 [data-mode="uni"][data-page="modelle"] .legend{display:revert!important;}

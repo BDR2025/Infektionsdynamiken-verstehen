@@ -58,7 +58,6 @@
 
       <!-- Modelle-Grid -->
       <ul class="model-grid" role="list">
-        <!-- SIR -->
         <li>
           <a class="model-card" data-model="sir" href="modell-sir.html">
             <div class="badges"><span class="chip s">S</span><span class="chip i">I</span><span class="chip r">R</span></div>
@@ -67,7 +66,6 @@
             <img class="preview" src="assets/img/previews/SIR_preview.png" alt="" loading="lazy">
           </a>
         </li>
-        <!-- SEIR -->
         <li>
           <a class="model-card" data-model="seir" href="modell-seir.html">
             <div class="badges"><span class="chip s">S</span><span class="chip e">E</span><span class="chip i">I</span><span class="chip r">R</span></div>
@@ -76,7 +74,6 @@
             <img class="preview" src="assets/img/previews/SEIR_preview.png" alt="" loading="lazy">
           </a>
         </li>
-        <!-- SIS -->
         <li>
           <a class="model-card" data-model="sis" href="modell-sis.html">
             <div class="badges"><span class="chip s">S</span><span class="chip i">I</span><span class="chip s">S</span></div>
@@ -85,7 +82,6 @@
             <img class="preview" src="assets/img/previews/SIS_preview.png" alt="" loading="lazy">
           </a>
         </li>
-        <!-- SIRD -->
         <li>
           <a class="model-card" data-model="sird" href="modell-sird.html">
             <div class="badges"><span class="chip s">S</span><span class="chip i">I</span><span class="chip r">R</span><span class="chip d">D</span></div>
@@ -94,7 +90,6 @@
             <img class="preview" src="assets/img/previews/SIRD_preview.png" alt="" loading="lazy">
           </a>
         </li>
-        <!-- SIRV -->
         <li>
           <a class="model-card" data-model="sirv" href="modell-sirv.html">
             <div class="badges"><span class="chip s">S</span><span class="chip i">I</span><span class="chip r">R</span><span class="chip v">V</span></div>
@@ -108,6 +103,32 @@
   </main>
 
   <div data-include="footer"></div>
-  <script src="/js/include.js" defer></script>
+	
+  <script src="/js/includes.js" defer></script>
+
+  <!-- URL-Param/Hash-Handler für mode=uni|school -->
+  <script>
+  (() => {
+    const LSKEY = 'site.mode';
+    const qs = new URLSearchParams(location.search);
+    const hashMode = (location.hash.match(/mode=(\w+)/)||[])[1];
+    const urlMode = (qs.get('mode') || hashMode || '').toLowerCase();
+    const valid = (m) => (m === 'uni' || m === 'school') ? m : null;
+    const picked = valid(urlMode);
+    if (picked) {
+      document.documentElement.setAttribute('data-mode', picked);
+      document.body.setAttribute('data-mode', picked);
+      try { localStorage.setItem(LSKEY, picked); } catch(e){}
+      return;
+    }
+    try {
+      const saved = valid(localStorage.getItem(LSKEY));
+      if (saved) {
+        document.documentElement.setAttribute('data-mode', saved);
+        document.body.setAttribute('data-mode', saved);
+      }
+    } catch(e){}
+  })();
+  </script>
 </body>
 </html>
