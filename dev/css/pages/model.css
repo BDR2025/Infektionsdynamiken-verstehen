@@ -30,7 +30,7 @@
   display:grid;
   align-content:end;
   min-height:200px;
-  padding:0 16px 16px; /* oben kein Padding, Bild liegt bündig an */
+  padding:0 16px 16px; /* oben kein Padding, Bild/Video bündig an */
   border-radius:18px;
   background:linear-gradient(180deg,var(--card-bg-1),var(--card-bg-2));
   border:1px solid var(--card-border);
@@ -42,12 +42,12 @@
   transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
 }
 
-/* dezente Boden-Schattierung als Akzent (ohne color-mix) */
-.model-card[data-model="sir"] { --accent: rgba(45,108,223,.12); }  /* R */
-.model-card[data-model="seir"]{ --accent: rgba(124,58,237,.12); }  /* V */
-.model-card[data-model="sis"] { --accent: rgba(230,75,64,.12); }   /* I */
-.model-card[data-model="sird"]{ --accent: rgba(0,0,0,.10); }       /* D */
-.model-card[data-model="sirv"]{ --accent: rgba(124,58,237,.12); }  /* V */
+/* dezente Boden-Schattierung als Akzent */
+.model-card[data-model="sir"]  { --accent: rgba(45,108,223,.12); }  /* R */
+.model-card[data-model="seir"] { --accent: rgba(124,58,237,.12); }  /* V */
+.model-card[data-model="sis"]  { --accent: rgba(230,75,64,.12); }   /* I */
+.model-card[data-model="sird"] { --accent: rgba(0,0,0,.10); }       /* D */
+.model-card[data-model="sirv"] { --accent: rgba(124,58,237,.12); }  /* V */
 
 .model-card{
   background-image:linear-gradient(to top, var(--accent), transparent 40%);
@@ -69,7 +69,7 @@
   top:0; left:0; right:0; bottom:0;
   width:100%; height:100%;
   object-fit:cover;
-  object-position:top;      /* wirklich oben bündig */
+  object-position:top;      /* bündig oben */
   transform:scaleY(0.85);   /* mehr Kurve unten sichtbar */
   opacity:.9;
   z-index:0;
@@ -129,4 +129,36 @@
 /* Bewegungs- und Barrierefreiheit */
 @media (prefers-reduced-motion: reduce){
   .model-card{transition:none;}
+}
+
+/* ===== Coach-Ben Block auf Modelle-Übersicht ===== */
+.coach{
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  padding:1.5rem;
+  background:#f8fafc;
+  border-radius:12px;
+  margin-top:2rem;
+  box-shadow:0 1px 2px rgba(15,23,42,.04), 0 6px 18px rgba(15,23,42,.06);
+}
+.coach-figure video{
+  max-height:150px; /* gleiche Höhe wie bei Bildversion */
+  height:auto;
+  display:block;
+  border-radius:8px;
+}
+.coach-text{
+  font-size:1rem;
+  line-height:1.5;
+  color:#334155;
+}
+@media (max-width: 640px){
+  .coach{
+    flex-direction:column;
+    text-align:center;
+  }
+  .coach-figure video{
+    max-height:120px;
+  }
 }
