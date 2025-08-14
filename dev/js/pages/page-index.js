@@ -43,3 +43,24 @@
     if (muts.some(m => m.type === 'attributes' && m.attributeName === 'data-mode')) setCoachVideo();
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
 })();
+
+// Ergänzung in js/pages/page-index.js
+function wireUnmute() {
+  const v = document.getElementById('coachVideo');
+  const b = document.getElementById('unmuteBtn');
+  if (!v || !b) return;
+  b.addEventListener('click', async () => {
+    try {
+      v.muted = false;
+      // Kür: von vorne starten, damit nichts verpasst wird
+      if (!isNaN(v.duration)) v.currentTime = 0;
+      await v.play();
+      b.style.display = 'none';
+    } catch { /* Safari/iOS Edge Cases ignorieren */ }
+  });
+}
+document.addEventListener('DOMContentLoaded', wireUnmute, { once:true });
+document.addEventListener('mode:changed', ()=> {
+  // nach Video-Quellenwechsel Overlay wieder zeigen
+  const b = document.getElementById('unmuteBtn'); if (b) b.style.display='';
+});
