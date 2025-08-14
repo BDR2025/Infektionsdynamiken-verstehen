@@ -1,0 +1,2 @@
+body[data-mode="school"]{--accent:#00FF85;--accent-weak:rgba(0,255,133,.15)}
+body[data-mode="university"]{--accent:#00C6FF;--accent-weak:rgba(0,198,255,.15)}

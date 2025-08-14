@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de" data-mode="school">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SIRV Modell</title>
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/layout.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/modes.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body data-page="modell-sirv">
+  <div data-include="header"></div>
+  <main role="main">
+    
+        <section class="container">
+          <div class="coach" data-transcript="Willkommen! Dies ist der Coach-Block. Lege dein MP4 später in assets/video/ und setze die Quelle.">
+            <div class="placeholder">Coach-Video (MP4 später einfügen)</div>
+            <button class="unmute" type="button">Unmute</button>
+            <div class="marquee"><span></span></div>
+          </div>
+        </section>
+        
+    
+<section class="container hero">
+  <h1 class="h1">SIRV</h1>
+  <p class="p">Platz für Erläuterungen (School/University Blöcke möglich).</p>
+</section>
+<section class="container grid" style="grid-template-columns:2fr 1fr">
+  <div class="card" style="min-height:260px">Chart‑Panel (Platzhalter)</div>
+  <div class="card">Steuerung (Slider) – Platzhalter</div>
+</section>
+<section class="container grid" style="grid-template-columns:1fr 1fr">
+  <div class="card" data-mode-block="school"><strong>School:</strong> didaktische Beschreibung.</div>
+  <div class="card" data-mode-block="university"><strong>University:</strong> formaler, ggf. mit Gleichungen.</div>
+</section>
+
+  </main>
+  <div data-include="footer"></div>
+</body>
+</html>
