@@ -1,16 +1,17 @@
 // js/core/includes.js
 (() => {
   const ATTR = 'data-include';
-  const DIRS = (() => {
-    const here = location.pathname.replace(/\/[^/]*$/, '/');
-    return Array.from(new Set([`${here}partials/`, `${here}../partials/`, `/partials/`]));
-  })();
+  const DIRS = [
+    '/partials/',                // absolute vom Root
+    './partials/',               // relativ zum Dokument
+    '../partials/'               // eine Ebene höher
+  ];
 
   async function fetchFirst(file) {
     for (const d of DIRS) {
       try {
-        const r = await fetch(d + file, { cache: 'no-cache' });
-        if (r.ok) return r.text();
+        const res = await fetch(d + file, { cache: 'no-cache' });
+        if (res.ok) return res.text();
       } catch {}
     }
     throw new Error(`Include nicht gefunden: ${file}`);
@@ -27,7 +28,9 @@
         el.insertAdjacentHTML('beforebegin', html);
         el.remove();
         console.info(`[includes] injected ${file}`);
-      } catch (e) { console.error('[includes]', e); }
+      } catch (err) {
+        console.error('[includes]', err);
+      }
     }));
     document.dispatchEvent(new CustomEvent('includes:done'));
   }
