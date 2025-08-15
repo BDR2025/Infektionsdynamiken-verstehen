@@ -4,39 +4,71 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Start · Infektionsdynamiken</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/layout.css">
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/modes.css">
+
+  <!-- App -->
   <script type="module" src="./js/app.js"></script>
 </head>
 <body data-page="home">
   <div data-include="header"></div>
+
   <main role="main">
-    
-        <section class="container">
-          <div class="coach" data-transcript="Willkommen! Dies ist der Coach-Block. Lege dein MP4 später in assets/video/ und setze die Quelle.">
-            <div class="placeholder">Coach-Video (MP4 später einfügen)</div>
-            <button class="unmute" type="button">Unmute</button>
-            <div class="marquee"><span></span></div>
-          </div>
-        </section>
-        
-    
-<section class="container hero">
-  <h1 class="h1">Willkommen!</h1>
-  <p class="p">Der Modus-Umschalter ist oben in der Kopfzeile. Wechsle zwischen <strong>Schule</strong> und <strong>Uni</strong> – die Inhalte passen sich an.</p>
-  <a class="btn" href="./modelle.html">Zu den Modellen</a>
-</section>
-<section class="container">
-  <div class="card">
-    <h2 class="h1" style="font-size:26px">Beispiel-Inhalt</h2>
-    <p class="p">Kopf- und Fußzeilen sind voll responsiv. Dies ist die Lightweight-Version ohne große Medien.</p>
-    <span class="badge">Akzent folgt Modus</span>
-  </div>
-</section>
+
+    <!-- Coach: Ben (Video, Höhe wie Platzhalter: 220px) -->
+    <section class="container">
+      <div class="coach" data-coach="ben"
+           data-transcript="Hi, ich bin Ben. Wir starten mit einer einfachen, anschaulichen Einführung.">
+        <video class="coach-video" playsinline autoplay muted loop
+               style="display:block;width:100%;height:220px;object-fit:cover;background:#000;">
+          <source src="assets/vid/1_Intro_Toggle_Ben.mp4" type="video/mp4">
+          Dein Browser unterstützt kein HTML5-Video.
+        </video>
+        <button class="unmute" type="button">Unmute</button>
+        <div class="marquee"><span>Ben · School-Ansicht · Einfache Einführung</span></div>
+      </div>
+    </section>
+
+    <!-- Beispiel-Inhalt (für Ben) -->
+    <section class="container">
+      <div class="card">
+        <h2 class="h1" style="font-size:26px">Beispiel‑Inhalt (Ben)</h2>
+        <p class="p">Kurze Erklärung und Verweis auf die Modellübersicht. Kopf‑ und Fußzeilen sind responsiv.</p>
+        <a class="btn" href="./modelle.html"
+           style="background: var(--accent); color:#0b1220; border-color: var(--accent);">
+          Zu den Modellen
+        </a>
+      </div>
+    </section>
+
+    <!-- Coach: Mila (vorerst Platzhalter, gleicher Rahmen 220px) -->
+    <section class="container">
+      <div class="coach" data-coach="mila"
+           data-transcript="Hallo, ich bin Mila. In der Uni-Ansicht gehen wir tiefer (z. B. Differentialgleichungen).">
+        <div class="placeholder" style="height:220px">Coach‑Video Mila (MP4 später in <code>assets/vid/</code>)</div>
+        <button class="unmute" type="button">Unmute</button>
+        <div class="marquee"><span>Mila · University‑Ansicht · Vertiefung &amp; Theorie</span></div>
+      </div>
+    </section>
+
+    <!-- Beispiel-Inhalt (für Mila) -->
+    <section class="container">
+      <div class="card">
+        <h2 class="h1" style="font-size:26px">Beispiel‑Inhalt (Mila)</h2>
+        <p class="p">Vertiefende Hinweise für die Uni‑Ansicht. Alle Komponenten folgen dem aktiven Akzentfarbschema.</p>
+        <a class="btn" href="./modelle.html"
+           style="background: var(--accent); color:#0b1220; border-color: var(--accent);">
+          Zu den Modellen
+        </a>
+      </div>
+    </section>
 
   </main>
+
   <div data-include="footer"></div>
 </body>
 </html>
