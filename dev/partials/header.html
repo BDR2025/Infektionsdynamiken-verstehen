@@ -1,0 +1,48 @@
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <!-- Branding -->
+    <a class="brand" href="../index.html" data-transition>
+      <img src="../assets/img/logo-id.svg" alt="ID Logo" style="height:28px;width:28px">
+      <span class="title">
+        Infektionsdynamiken.de
+        <small>5 interaktive Modelle</small>
+      </span>
+    </a>
+
+    <!-- Mode Toggle: mit Knob + data-mode, damit dein CSS greift -->
+    <div class="mode-toggle" role="group" aria-label="Ansicht" data-mode="school">
+      <span class="knob" aria-hidden="true"></span>
+      <button type="button" data-mode="school" aria-pressed="true">School</button>
+      <button type="button" data-mode="university" aria-pressed="false">University</button>
+    </div>
+
+    <!-- Desktop-Navigation -->
+    <nav class="main-nav" aria-label="Hauptnavigation">
+      <a href="../index.html" data-nav="home" data-transition>Start</a>
+      <a href="../modelle.html" data-nav="modelle" data-transition>Modelle</a>
+      <a href="../repository.html" data-nav="repo" data-transition>Repository</a>
+      <a href="../about.html" data-nav="about" data-transition>About</a>
+      <a href="../kontakt.html" data-nav="kontakt" data-transition>Kontakt</a>
+      <a href="../rechtliches.html" data-nav="recht" data-transition>Rechtliches</a>
+    </nav>
+
+    <!-- Hamburger: mit .bars Span, damit es gestylt wird -->
+    <button id="navOpen" class="hamburger" aria-label="Menü öffnen" aria-controls="navMenu" aria-expanded="false">
+      <span class="bars"></span>
+    </button>
+  </div>
+
+  <!-- Drawer: Klasse .panel, weil dein CSS genau die styled -->
+  <div id="navMenu" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Navigation">
+      <nav class="nav-list">
+        <a href="../index.html" data-transition>Start</a>
+        <a href="../modelle.html" data-transition>Modelle</a>
+        <a href="../repository.html" data-transition>Repository</a>
+        <a href="../about.html" data-transition>About</a>
+        <a href="../kontakt.html" data-transition>Kontakt</a>
+        <a href="../rechtliches.html" data-transition>Rechtliches</a>
+      </nav>
+    </div>
+  </div>
+</header>
