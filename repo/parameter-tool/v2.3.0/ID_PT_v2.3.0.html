@@ -1,0 +1,103 @@
+<!doctype html>
+<!--
+  ============================================================================
+  Project:  Understanding Infection Dynamics — Parameter-Tool (Standalone)
+  Projekt:  Infektionsdynamiken verstehen — Parameter-Tool (Standalone)
+  Version:  v2.3.0  ·  Build: 2025-09-19
+  License:  CC BY 4.0  (https://creativecommons.org/licenses/by/4.0/)
+  Authors:  Boris Dominic Rausch, Prof. Dr. Andreas Heinz
+  Contact:  info@infektionsdynamiken.de · info@infectiondynamics.eu
+  Repo:     https://infektionsdynamiken.de/repo/
+  ============================================================================
+-->
+<html lang="de" data-mode="university" data-model="SIR" data-minilab-id="mlX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Parameter-Tool · Standalone</title>
+
+  <!-- MathJax für Brüche & \class -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(','\\)'], ['$', '$']],
+        packages: {'[+]': ['html']}
+      },
+      loader: { load: ['[tex]/html'] },
+      options: { renderActions: { addMenu: [] } }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+  <!-- Tool Skin -->
+  <link rel="stylesheet" href="css/parameter-tool.css">
+
+  <style>
+    body{margin:0;background:#0b1220;color:#e5e7eb;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:1100px;margin:24px auto;padding:16px}
+    h1{font-size:18px;margin:0 0 12px 0}
+    .card{border:1px solid #1f2a3d;border-radius:12px;background:#0e1628;padding:14px}
+    .annotation{margin:0 0 16px;border:1px solid #1f2a3d;border-radius:12px;background:#0c1526;padding:12px}
+    .annotation h2{margin:0 0 8px;font-size:15px}
+    .ann-grid{display:grid;grid-template-columns:160px 1fr;gap:8px 12px}
+    .ann-label{color:#9aa7bd}
+    .ann-value a{color:#a7c4ff;text-decoration:none}
+    @media(max-width:560px){.ann-grid{grid-template-columns:1fr}.ann-label{margin-top:6px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Parameter-Tool · Standalone</h1>
+
+    <!-- BILINGUAL PROJECT ANNOTATION -->
+    <section class="annotation">
+      <h2>Projekt-Annotation · Project Annotation</h2>
+      <div class="ann-grid">
+        <div class="ann-label">Projekt / Project</div>
+        <div class="ann-value">Infektionsdynamiken verstehen · Understanding Infection Dynamics</div>
+
+        <div class="ann-label">Modul / Module</div>
+        <div class="ann-value">Parameter-Tool (Standalone, University-Mode Formel-Ansicht)</div>
+
+        <div class="ann-label">Version</div>
+        <div class="ann-value">v2.3.0 · Build 2025-09-19</div>
+
+        <div class="ann-label">Autoren / Authors</div>
+        <div class="ann-value">Boris Dominic Rausch · Prof. Dr. Andreas Heinz</div>
+
+        <div class="ann-label">Kontakt / Contact</div>
+        <div class="ann-value">info@infektionsdynamiken.de · info@infectiondynamics.eu</div>
+
+        <div class="ann-label">Repository</div>
+        <div class="ann-value"><a href="https://infektionsdynamiken.de/repo/" target="_blank">infektionsdynamiken.de/repo/</a></div>
+
+        <div class="ann-label">Dokumentation</div>
+        <div class="ann-value">
+          <a href="Doku-Tech.pdf" target="_blank">Technische Dokumentation (PDF)</a> · 
+          <a href="Doku-Scrum.pdf" target="_blank">Scrum/Epic Dokumentation (PDF)</a>
+        </div>
+
+        <div class="ann-label">Lizenz / License</div>
+        <div class="ann-value">
+          CC BY 4.0 — <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">creativecommons.org/licenses/by/4.0/</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="card">
+      <!-- Mount-Container -->
+      <div id="parameter-tool" class="pt" data-pt-formula="true"></div>
+    </div>
+  </div>
+
+  <!-- Parameter-Tool -->
+  <script defer src="js/parameter-tool.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      if (window.ParameterTool && typeof window.ParameterTool.mount === 'function') {
+        window.ParameterTool.mount({ target: '#parameter-tool' });
+      }
+    });
+  </script>
+</body>
+</html>
