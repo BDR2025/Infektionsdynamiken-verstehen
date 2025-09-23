@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="de" data-mode="university" data-page="index" data-coach="mila">
+  <head>
+    <!--
+      File: index_mila.html (University · Mila)
+      Project: Infektionsdynamiken verstehen — Landing
+      Authors: B. D. Rausch · A. Heinz
+      License: CC BY 4.0
+      Version: 1.0.1 (2025-09-23)
+      Notes:
+      - Formaler Stil (Sie), präzise/akademische Tonalität
+      - Indentation 2 Spaces; Attribute geordnet; leere Zeilen gestrafft
+    -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Infektionsdynamiken verstehen · Vorschau (University · Mila)</title>
+
+    <!-- Styles (Tokens → Base → Layout → Components → Patterns → Coach/UI) -->
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/patterns.css" />
+    <link rel="stylesheet" href="css/hologrid.css" />
+    <link rel="stylesheet" href="css/coach-chips.css" />
+    <link rel="stylesheet" href="css/coach-text.css" />
+    <link rel="stylesheet" href="css/coach-video.css" />
+    <link rel="stylesheet" href="css/landing.css" />
+  </head>
+
+  <body id="top">
+    <!-- ========== HEADER ========== -->
+    <header class="landing-header" role="banner">
+      <div class="container bar">
+        <a href="#top" class="brand" aria-label="Infektionsdynamiken.de — Startseite">
+          <img class="brand-icon" src="assets/icons/logo-id.svg" alt="Infektionsdynamiken.de" />
+
+          <!-- Lange Version -->
+          <div class="wordmark wordmark-long">
+            <div class="brand-title">Infektionsdynamiken verstehen</div>
+            <div class="brand-claim">Universitätsmodus · präzise &amp; akademisch</div>
+          </div>
+
+          <!-- Kurze Version -->
+          <div class="wordmark wordmark-short">
+            <div class="brand-title">Infektionsdynamiken.de</div>
+            <div class="brand-claim">Universitätsmodus</div>
+          </div>
+        </a>
+
+        <nav class="landing-nav" aria-label="Hauptnavigation Landing">
+          <div class="nav-links">
+            <a href="#intro" class="active" aria-current="page">Vision</a>
+            <a href="#who">Für wen</a>
+            <a href="#peek">Sneak Preview</a>
+            <a href="#legal">Rechtliches</a>
+          </div>
+
+          <div class="nav-actions">
+            <div class="pill" role="group" aria-label="Modus">
+              <a class="segbtn" href="index.html" aria-label="Schule">S</a>
+              <a class="segbtn active" href="index_mila.html" aria-label="Universität">U</a>
+            </div>
+            <a
+              class="iconbtn globe"
+              href="index_archer.html"
+              aria-label="Sprache wechseln"
+              title="Sprache wechseln"
+              data-lang-toggle
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18"></path>
+                <path d="M12 3a15 15 0 0 1 0 18"></path>
+                <path d="M12 3a15 15 0 0 0 0 18"></path>
+              </svg>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ========== MAIN ========== -->
+    <main>
+      <!-- Hero / Intro -->
+      <section id="intro" class="section container hero">
+        <article class="card hero-card">
+          <span class="eyebrow">Worum es geht</span>
+          <hr class="accent-line" />
+          <h1>Krankheitsausbrüche präzise verstehen</h1>
+
+          <!-- Produktvision (ausführlich) -->
+          <p>
+            <em>Understanding Infection Dynamics</em> verfolgt das Ziel, komplexe epidemiologische Modelle mit
+            wissenschaftlicher Genauigkeit und didaktischer Klarheit aufzubereiten. Interaktive Mini-Labs erlauben es,
+            Parameter zu variieren, Simulationen durchzuführen und Resultate unmittelbar in Kennzahlen und
+            Visualisierungen nachzuvollziehen. So entsteht ein theoretisch fundiertes und zugleich praxisnahes
+            Verständnis epidemiologischer Dynamiken.
+          </p>
+
+          <div class="coach-row style-avatar-ring mt-4">
+            <!-- Video-Trigger -->
+            <button
+              class="hint-chip is-video coach-trigger"
+              type="button"
+              data-coach="mila"
+              data-coach-src="media/preview-de-university.mp4"
+              data-coach-poster="media/Preview_MinilabIntro_Mila_poster.png"
+              data-transcript="Guten Tag, ich bin Mila. Im Universitätsmodus erläutere ich Modelle präzise, systematisch und mit klarer Einordnung."
+              aria-label="Videoerklärung abspielen"
+            >
+              <span class="hc-ava" aria-hidden="true"></span>
+              <span class="hc-label">Videoerklärung</span>
+            </button>
+
+            <!-- Text-Overlay Trigger -->
+            <button
+              class="hint-chip is-info"
+              type="button"
+              data-coach-text-open
+              data-coach="mila"
+              data-type="info"
+              data-title="Unsere Vision"
+              data-text="Wir verbinden wissenschaftliche Präzision mit didaktischer Klarheit, um Infektionsdynamiken interaktiv verständlich zu machen."
+              aria-label="Kurz erläutert anzeigen"
+            >
+              <span class="hc-ava" aria-hidden="true"></span>
+              <span class="hc-label">Unsere Vision</span>
+            </button>
+          </div>
+
+          <div class="trust-row" aria-label="Vertrauensmerkmale">
+            <span class="trust-chip">OER CC BY 4.0</span>
+            <span class="trust-chip">Keine Cookies</span>
+            <span class="trust-chip">Preview Frühjahr 2026</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- Zielgruppen -->
+      <section id="who" class="section container section-card">
+        <article class="card pad">
+          <span class="eyebrow">Wer davon profitiert</span>
+          <hr class="accent-line" />
+          <h2>Zielgruppen</h2>
+
+          <div class="grid-2-2 mt-4">
+            <article class="card">
+              <h3>Studierende &amp; Lehrende</h3>
+              <p>arbeiten mit klaren Annahmen, nachvollziehbaren Parametern und reproduzierbaren Simulationen.</p>
+            </article>
+            <article class="card">
+              <h3>Fachpraxis &amp; Behörden</h3>
+              <p>erkunden evidenzbasiert, wie Maßnahmen Wellenverläufe und Schwellenwerte beeinflussen.</p>
+            </article>
+            <article class="card">
+              <h3>Forschung &amp; Methodik</h3>
+              <p>nutzen transparente Modelle, um Hypothesen zu testen und didaktisch aufzubereiten.</p>
+            </article>
+            <article class="card">
+              <h3>Öffentlichkeit &amp; Medien</h3>
+              <p>erhalten Orientierung und Einordnung komplexer Zusammenhänge in verständlicher Form.</p>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <!-- Sneak Preview -->
+      <section id="peek" class="section container">
+        <article class="card pad">
+          <span class="eyebrow">Was Sie erwartet</span>
+          <hr class="accent-line" />
+          <h2>Sneak Preview</h2>
+
+          <figure class="lab-preview mt-4">
+            <div class="peek-carousel" aria-label="Sneak Preview Carousel">
+              <div class="peek-track">
+                <div class="peek-slide">
+                  <video
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    poster="media/poster-mila-minilab-intro.png"
+                    aria-label="SIR Vorschau Video"
+                    style="--zoom:1.20; --origin:50% 50%;"
+                  >
+                    <source src="media/preview_minilab_mila.mp4" type="video/mp4" />
+                    <img
+                      src="media/poster-mila-minilab-intro.png"
+                      alt="SIR Vorschau Poster"
+                      style="--zoom:1.20; --origin:50% 50%;"
+                    />
+                  </video>
+                </div>
+              </div>
+
+              <button class="peek-arrow peek-prev" type="button" aria-label="Vorherige Folie">‹</button>
+              <button class="peek-arrow peek-next" type="button" aria-label="Nächste Folie">›</button>
+              <div class="peek-dots" aria-label="Foliennavigation"></div>
+            </div>
+
+            <figcaption>SIR Vorschau</figcaption>
+          </figure>
+        </article>
+      </section>
+
+      <!-- Warum Coaches -->
+      <section id="coaches" class="section container section-card">
+        <article class="card pad">
+          <span class="eyebrow">Wer Sie begleitet</span>
+          <hr class="accent-line" />
+          <h2>Warum Coaches?</h2>
+          <p class="lead">
+            Unsere Coaches unterstützen Sie mit unterschiedlichen Stilen, die von zugänglichen Einstiegen bis zu
+            präzisen, wissenschaftlich eingeordneten Erläuterungen reichen. Die Sprach- und Modusauswahl rechts in der
+            Navigationsleiste bestimmt, wer spricht.
+          </p>
+
+          <div class="coach-row mt-4">
+            <!-- DE zuerst -->
+            <button
+              class="hint-chip is-merke coach-trigger"
+              type="button"
+              data-coach="mila"
+              data-coach-src="media/about-de-university_whycoaches.mp4"
+              data-transcript="Im deutschen Universitätsmodus erläutere ich die Modelle präzise, Schritt für Schritt und mit wissenschaftlicher Einordnung."
+              aria-label="Coach Mila Video abspielen"
+            >
+              <span class="hc-ava" aria-hidden="true"></span>
+              <span class="hc-label">Mila</span>
+            </button>
+            <button
+              class="hint-chip is-merke coach-trigger"
+              type="button"
+              data-coach="ben"
+              data-coach-src="media/about-de-school_whycoaches.mp4"
+              data-transcript="Im deutschen Schulmodus führt Ben verständlich und praxisnah in die Grundlagen ein."
+              aria-label="Coach Ben Video abspielen"
+            >
+              <span class="hc-ava" aria-hidden="true"></span>
+              <span class="hc-label">Ben</span>
+            </button>
+
+            <!-- EN danach -->
+            <button
+              class="hint-chip is-merke coach-trigger"
+              type="button"
+              data-coach="chloe"
+              data-coach-src="media/about-en-school_whycoaches.mp4"
+              data-transcript="In English School mode, Chloé keeps things clear and approachable."
+              aria-label="Coach Chloé Video abspielen"
+            >
+              <span class="hc-ava" aria-hidden="true"></span>
+              <span class="hc-label">Chloé</span>
+            </button>
+            <button
+              class="hint-chip is-merke coach-trigger"
+              type="button"
+              data-coach="archer"
+              data-coach-src="media/about-en-university_whycoaches.mp4"
+              data-transcript="In English University mode, Archer provides formal, precise explanations with scientific context."
+              aria-label="Coach Archer Video abspielen"
+            >
+              <span class="hc-ava" aria-hidden="true"></span>
+              <span class="hc-label">Archer</span>
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <!-- Projekt -->
+      <section id="project" class="section container section-card">
+        <article class="card pad">
+          <span class="eyebrow">Über das Projekt</span>
+          <hr class="accent-line" />
+          <h2>Offen · Transparent · Wissenschaftlich</h2>
+
+          <p class="mt-2">
+            <em>Infektionsdynamiken verstehen</em> ist ein Open-Educational-Resources-Projekt (OER).
+            Alle Inhalte sind kostenfrei, ohne Anmeldung und ohne Cookies zugänglich.
+            Ziel ist es, Wissen zu Infektionsdynamiken verständlich, unabhängig und zielgruppenorientiert verfügbar zu machen.
+          </p>
+
+          <p class="mt-2">
+            Den Anstoß gab ein einfaches Browser-Tool, das wir als
+            <a href="https://classic.infektionsdynamiken.de" class="trust-chip">CLASSIC</a>
+            weiterhin zugänglich halten.
+          </p>
+
+          <div class="trust-row mt-4" aria-label="Projektmerkmale">
+            <span class="trust-chip">OER CC BY 4.0</span>
+            <span class="trust-chip">Kostenfrei</span>
+            <span class="trust-chip">Keine Anmeldung</span>
+            <span class="trust-chip">Keine Cookies</span>
+          </div>
+
+          <p class="mt-4 muted">Getragen von Fachleuten aus Praxis und Wissenschaft:</p>
+
+          <div class="grid-2 mt-4">
+            <article class="card">
+              <h3>Dr. Andreas Heinz</h3>
+              <p>Professor für Public Health an der IU Internationale Hochschule</p>
+            </article>
+            <article class="card">
+              <h3>Boris Dominic Rausch</h3>
+              <p>Ministerium für Arbeit, Soziales, Frauen und Gesundheit, Saarland</p>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <!-- Rechtliches -->
+      <section id="legal" class="section container">
+        <article class="card pad legal">
+          <span class="eyebrow">Impressum und Datenschutz</span>
+          <hr class="accent-line" />
+          <h2>Rechtliches</h2>
+
+          <h3>Impressum</h3>
+          <p>
+            Verantwortlich gemäß § 5 TMG und § 18 Abs. 2 MStV:<br />
+            <strong>Boris Dominic Rausch</strong><br />
+            c/o Flexdienst #10910<br />
+            Kurt-Schumacher-Straße 76<br />
+            67663 Kaiserslautern<br />
+            Deutschland
+          </p>
+          <p>
+            Kontakt:
+            <a href="mailto:info@infektionsdynamiken.de">info@infektionsdynamiken.de</a>
+          </p>
+
+          <h3>Datenschutzhinweise</h3>
+          <ol>
+            <li>Keine Tracking-Cookies und keine Marketing-Tools.</li>
+            <li>Protokolldaten können beim Hoster anfallen und dienen ausschließlich dem Betrieb.</li>
+            <li>E-Mails werden zur Bearbeitung gespeichert und anschließend gelöscht.</li>
+            <li>Sie haben Rechte nach DSGVO auf Auskunft, Berichtigung, Löschung und Widerspruch.</li>
+          </ol>
+
+          <h3>Open Educational Resources</h3>
+          <p>Sofern nicht anders angegeben, stehen Inhalte unter der Lizenz <strong>CC BY 4.0</strong>.</p>
+
+          <p class="footer-note">Diese Seite ist eine Vorschau. Texte und Inhalte werden bis zum Launch finalisiert.</p>
+        </article>
+      </section>
+    </main>
+
+    <!-- ========== OVERLAYS ========== -->
+
+    <!-- Text Overlay -->
+    <div class="ct-backdrop" id="ct-backdrop" aria-hidden="true">
+      <div class="ct-box ct--info" role="dialog" aria-modal="true" aria-labelledby="ct-title">
+        <div class="ct-head">
+          <div class="ct-ava" data-coach="mila">
+            <div class="ct-ava-fallback" aria-hidden="true">M</div>
+          </div>
+          <div class="ct-title">
+            <h3 id="ct-title">Kurz erläutert</h3>
+          </div>
+          <button class="ct-close" data-close aria-label="Schließen">✕</button>
+        </div>
+        <div class="ct-body">
+          <p></p>
+        </div>
+        <div class="ct-actions">
+          <button class="ct-btn ct-ok" data-close>Alles klar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coach Video Overlay (increment-compatible; siblings) -->
+    <div class="coach-backdrop" aria-hidden="true"></div>
+    <div class="coach-dock" aria-hidden="true">
+      <video
+        id="coachVideo"
+        class="coach-media"
+        preload="metadata"
+        playsinline
+        poster="media/Preview_MinilabIntro_Mila_poster.png"
+      ></video>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script defer src="js/coach-chips.js"></script>
+    <script defer src="js/coach-text.js"></script>
+    <script defer src="js/coach-video.js"></script>
+    <script defer src="js/landing.js"></script>
+  </body>
+</html>

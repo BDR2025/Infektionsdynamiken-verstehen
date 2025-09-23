@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en" data-mode="university" data-page="index" data-coach="archer">
+  <head>
+    <!--
+      File: index_archer.html (University · Archer)
+      Project: Understanding Infection Dynamics — Landing
+      Authors: B. D. Rausch · A. Heinz
+      License: CC BY 4.0
+      Version: 1.0.1 (2025-09-23)
+      Notes:
+      - Formal tone, precise & academic
+      - Indentation 2 spaces; ordered attributes
+    -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Understanding Infection Dynamics · Preview (University · Archer)</title>
+
+    <!-- Styles (Tokens → Base → Layout → Components → Patterns → Coach/UI) -->
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/patterns.css" />
+    <link rel="stylesheet" href="css/hologrid.css" />
+    <link rel="stylesheet" href="css/coach-chips.css" />
+    <link rel="stylesheet" href="css/coach-text.css" />
+    <link rel="stylesheet" href="css/coach-video.css" />
+    <link rel="stylesheet" href="css/landing.css" />
+  </head>
+
+<body id="top">
+    <!-- ========== HEADER ========== -->
+<header class="landing-header" role="banner">
+      <div class="container bar">
+        <a href="#top" class="brand" aria-label="InfectionDynamics.eu — Home">
+          <img class="brand-icon" src="assets/icons/logo-id.svg" alt="InfectionDynamics.eu" />
+
+          <!-- Long version -->
+          <div class="wordmark wordmark-long">
+            <div class="brand-title">Understanding Infection Dynamics</div>
+            <div class="brand-claim">University mode · precise &amp; rigorous</div>
+          </div>
+
+          <!-- Short version -->
+          <div class="wordmark wordmark-short">
+            <div class="brand-title">InfectionDynamics.eu</div>
+            <div class="brand-claim">University mode</div>
+          </div>
+        </a>
+
+        <nav class="landing-nav" aria-label="Landing navigation">
+          <div class="nav-links">
+            <a href="#intro" class="active" aria-current="page">Vision</a>
+            <a href="#who">Who benefits</a>
+            <a href="#peek">Sneak preview</a>
+            <a href="#legal">Legal</a>
+          </div>
+
+          <div class="nav-actions">
+            <div class="pill" role="group" aria-label="Mode">
+              <a class="segbtn" href="index_chloe.html" aria-label="School">S</a>
+              <a class="segbtn active" href="index_archer.html" aria-label="University">U</a>
+            </div>
+            <a
+              class="iconbtn globe"
+              href="index_mila.html"
+              aria-label="Switch language"
+              title="Switch language"
+              data-lang-toggle
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18"></path>
+                <path d="M12 3a15 15 0 0 1 0 18"></path>
+                <path d="M12 3a15 15 0 0 0 0 18"></path>
+              </svg>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+  <!-- ========== MAIN ========== -->
+  <main>
+    <!-- Hero / Intro -->
+    <section id="intro" class="section container hero">
+      <article class="card hero-card">
+        <span class="eyebrow">Scientific vision</span>
+        <hr class="accent-line" />
+        <h1>Understanding infection dynamics</h1>
+
+        <p>
+          <em>Understanding Infection Dynamics</em> presents epidemiological models with scientific rigour and didactic clarity.
+            Modular mini-labs enable parameter control, simulation and direct interpretation through live metrics and curves.
+            This yields transparent and reproducible understanding suited to academic study and practice.
+        </p>
+
+        <div class="coach-row style-avatar-ring mt-4">
+          <!-- Video trigger -->
+          <button
+              class="hint-chip is-video coach-trigger"
+              type="button"
+              data-coach="archer"
+              data-coach-src="media/preview-en-university.mp4"
+              data-coach-poster="media/Preview_MinilabIntro_Archer_poster.png"
+              data-transcript="Good day, I am Archer. I guide the university mode with formal clarity and scientific framing."
+              aria-label="Play video explainer"
+            >
+            <span class="hc-ava" aria-hidden="true"></span>
+            <span class="hc-label">Video explainer</span>
+          </button>
+
+          <!-- Text overlay trigger -->
+          <button
+              class="hint-chip is-info"
+              type="button"
+              data-coach-text-open
+              data-coach="archer"
+              data-type="info"
+              data-title="Our Vision Statement"
+              data-text="We make infection dynamics comprehensible through scientific precision, interactive tools, and clear visualisation."
+              aria-label="Open quick overview"
+            >
+            <span class="hc-ava" aria-hidden="true"></span>
+            <span class="hc-label">Our vision</span>
+          </button>
+        </div>
+
+        <div class="trust-row" aria-label="Trust badges">
+          <span class="trust-chip">OER CC BY 4.0</span>
+          <span class="trust-chip">No cookies</span>
+          <span class="trust-chip">Preview Spring 2026</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Who benefits -->
+    <section id="who" class="section container section-card">
+      <article class="card pad">
+        <span class="eyebrow">Who benefits</span>
+        <hr class="accent-line" />
+        <h2>Target groups</h2>
+
+        <div class="grid-2-2 mt-4">
+          <article class="card">
+            <h3>School</h3>
+            <p>Simplified labs for teaching and self-learning with clear visuals.</p>
+          </article>
+          <article class="card">
+            <h3>University</h3>
+            <p>Precise parameter sets, multiple integrators and live metrics for academic use.</p>
+          </article>
+          <article class="card">
+            <h3>Public health authorities</h3>
+            <p>Scenario exploration with visibility of how measures shift waves and thresholds.</p>
+          </article>
+          <article class="card">
+            <h3>Public and media</h3>
+            <p>Evidence-based curves support orientation and public understanding.</p>
+          </article>
+        </div>
+      </article>
+    </section>
+
+    <!-- Sneak preview -->
+    <section id="peek" class="section container">
+      <article class="card pad">
+        <span class="eyebrow">What to expect</span>
+        <hr class="accent-line" />
+        <h2>Sneak preview</h2>
+
+        <figure class="lab-preview mt-4">
+          <div class="peek-carousel" aria-label="Sneak preview carousel">
+            <div class="peek-track">
+              <div class="peek-slide">
+                <video
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    poster="media/poster-archer-minilab-intro.png"
+                    aria-label="SIR preview video"
+                    style="--zoom:1.20; --origin:50% 50%;">
+                  <source src="media/preview_minilab_archer.mp4" type="video/mp4" />
+                  <img
+                      src="media/poster-archer-minilab-intro.png"
+                      alt="SIR preview poster"
+                      style="--zoom:1.20; --origin:50% 50%;"
+                    />
+                </video>
+              </div>
+            <button class="peek-arrow peek-prev" type="button" aria-label="Previous">‹</button>
+            <button class="peek-arrow peek-next" type="button" aria-label="Next">›</button>
+            <div class="peek-dots" aria-label="Slide navigation"></div>
+          </div>
+
+          <figcaption>SIR preview</figcaption>
+        </figure>
+      </article>
+    </section>
+
+    <!-- Why coaches -->
+    <section id="coaches" class="section container section-card">
+      <article class="card pad">
+        <span class="eyebrow">Who guides you</span>
+        <hr class="accent-line" />
+        <h2>Why coaches</h2>
+        <p class="lead">
+          Our coaches bring different personalities and styles. Each conveys content in their own way and is tuned to the respective audience.
+          The language and mode selection at the top right of the navigation determines which coach is speaking.
+        </p>
+
+        <div class="coach-row mt-4">
+          <button class="hint-chip is-merke coach-trigger" type="button" data-coach="chloe" data-coach-src="media/about-en-school_whycoaches.mp4" aria-label="Play Chloé video"><span class="hc-ava"></span><span class="hc-label">Chloé</span></button>
+          <button class="hint-chip is-merke coach-trigger" type="button" data-coach="ben" data-coach-src="media/about-de-school_whycoaches.mp4" aria-label="Play Ben video"><span class="hc-ava"></span><span class="hc-label">Ben</span></button>
+          <button class="hint-chip is-merke coach-trigger" type="button" data-coach="mila" data-coach-src="media/about-de-university_whycoaches.mp4" aria-label="Play Mila video"><span class="hc-ava"></span><span class="hc-label">Mila</span></button>
+          <button class="hint-chip is-merke coach-trigger" type="button" data-coach="archer" data-coach-src="media/about-en-university_whycoaches.mp4" aria-label="Play Archer video"><span class="hc-ava"></span><span class="hc-label">Archer</span></button>
+        </div>
+      </article>
+    </section>
+
+    <!-- Project -->
+    <section id="project" class="section container section-card">
+      <article class="card pad">
+        <span class="eyebrow">About the project</span>
+        <hr class="accent-line" />
+        <h2>Open · Transparent · Scientific</h2>
+
+        <p class="mt-2">
+          <em>Understanding Infection Dynamics</em> is an Open Educational Resources project.
+            All content is free to use with no sign-up and no cookies.
+            The goal is accessible knowledge on infection dynamics that is independent and easy to understand.
+        </p>
+
+        <p class="mt-2">
+          The spark came from a simple browser tool which we keep available as
+          <a href="https://classic.infektionsdynamiken.de" class="trust-chip">CLASSIC</a>.
+        </p>
+
+        <div class="trust-row mt-4" aria-label="Project badges">
+          <span class="trust-chip">OER CC BY 4.0</span>
+          <span class="trust-chip">Free access</span>
+          <span class="trust-chip">No sign-up</span>
+          <span class="trust-chip">No cookies</span>
+        </div>
+
+        <p class="mt-4 muted">Supported by experts from practice and academia</p>
+
+        <div class="grid-2 mt-4">
+          <article class="card">
+            <h3>Professor Andreas Heinz</h3>
+            <p>Professor of Public Health at IU International University</p>
+          </article>
+          <article class="card">
+            <h3>Boris Dominic Rausch</h3>
+            <p>Ministry of Labour, Social Affairs, Women and Health, Saarland (Germany)</p>
+          </article>
+        </div>
+      </article>
+    </section>
+
+    <!-- Legal -->
+    <section id="legal" class="section container">
+      <article class="card pad legal">
+        <span class="eyebrow">Legal notice and privacy</span>
+        <hr class="accent-line" />
+        <h2>Legal</h2>
+
+        <h3>Imprint</h3>
+        <p>
+          Responsible under § 5 TMG and § 18(2) MStV — <strong>Boris Dominic Rausch</strong><br />
+          c/o Flexdienst #10910<br />
+          Kurt-Schumacher-Straße 76<br />
+          67663 Kaiserslautern<br />
+          Germany
+        </p>
+        <p>Contact <a href="mailto:info@infectiondynamics.eu">info@infectionsynamics.eu</a></p>
+
+        <h3>Privacy</h3>
+        <ol>
+          <li>No tracking cookies and no marketing tools</li>
+          <li>Server logs may be created by the host and are used for operation only</li>
+          <li>E-mails are stored for processing and then deleted</li>
+          <li>GDPR rights apply</li>
+        </ol>
+
+        <h3>Open Educational Resources</h3>
+        <p>Unless stated otherwise content is licensed under <strong>CC BY 4.0</strong>.</p>
+        <p class="footer-note">This page is a preview. Texts and contents will be finalised before launch.</p>
+      </article>
+    </section>
+  </main>
+
+  <!-- ========== OVERLAYS ========== -->
+  <div class="ct-backdrop" id="ct-backdrop" aria-hidden="true">
+      <div class="ct-box ct--info" role="dialog" aria-modal="true" aria-labelledby="ct-title">
+        <div class="ct-head">
+          <div class="ct-ava" data-coach="archer">
+            <div class="ct-ava-fallback" aria-hidden="true">A</div>
+          </div>
+          <div class="ct-title">
+            <h3 id="ct-title">Quick overview</h3>
+          </div>
+          <button class="ct-close" data-close aria-label="Close">✕</button>
+        </div>
+        <div class="ct-body">
+          <p></p>
+        </div>
+        <div class="ct-actions">
+          <button class="ct-btn ct-ok" data-close>OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="coach-backdrop" aria-hidden="true"></div>
+    <div class="coach-dock" aria-hidden="true">
+      <video
+        id="coachVideo"
+        class="coach-media"
+        preload="metadata"
+        playsinline
+        poster="media/Preview_MinilabIntro_Archer_poster.png"
+      ></video>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+<script defer src="js/coach-chips.js"></script>
+<script defer src="js/coach-text.js"></script>
+<script defer src="js/coach-video.js"></script>
+<script defer src="js/landing.js"></script>
+  </body>
+</html>
