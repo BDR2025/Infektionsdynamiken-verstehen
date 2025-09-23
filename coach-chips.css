@@ -14,6 +14,8 @@
    - Keine globalen Overrides, vollständig entkoppelt
 */
 
+@charset "UTF-8";
+
 /* --------------------------- Fallback-Tokens (nur lokal) ----------------- */
 :root{
   --ct-bg:#0b0c10; --ct-ink:#121826; --ct-ink-strong:#0e1726;
@@ -129,16 +131,15 @@ html.ct-open{ overflow:hidden; }
 .coach-coin.lg::after{
   content:""; position:absolute; top:4px; right:4px;
   width:18px; height:18px; border-radius:999px;
-  background:url("../assets/icons/video-camera.svg") center/cover no-repeat;
+  background:url("media/video-camera.svg") center/cover no-repeat;
 }
 
 /* --------------------------- Avatar-Kontext ------------------------------ */
 :root{
-  /* Pfade relativ zu /css/ → gehe eine Ebene hoch in /assets/ */
-  --coach-img-ben:    url("../assets/coaches/avatars/ben-small.png");
-  --coach-img-chloe:  url("../assets/coaches/avatars/chloe-small.png");
-  --coach-img-mila:   url("../assets/coaches/avatars/mila-small.png");
-  --coach-img-archer: url("../assets/coaches/avatars/archer-small.png");
+  --coach-img-ben:    url("media/ben-small.png");
+  --coach-img-chloe:  url("media/chloe-small.png");
+  --coach-img-mila:   url("media/mila-small.png");
+  --coach-img-archer: url("media/archer-small.png");
 }
 html[lang="de"][data-mode="school"]      { --coach-img: var(--coach-img-ben); }
 html[lang="en"][data-mode="school"]      { --coach-img: var(--coach-img-chloe); }
@@ -220,4 +221,3 @@ html[data-mode="school"] .hint-chip{
 html[data-mode="university"] .hint-chip{
   color:#eaf5ff; background:#132b41; border:1px solid #244763;
 }
-/* … Rest der Datei unverändert … */
