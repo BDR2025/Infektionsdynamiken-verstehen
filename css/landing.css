@@ -191,3 +191,30 @@ html[data-mode="university"] .landing-header .iconbtn.globe:focus-visible{
   outline: 2px solid var(--focus-uni, #00C6FF);    /* Brand-Fokus, falls Token fehlt: #00C6FF */
   outline-offset: 2px;
 }
+
+:root{
+  --ribbon-w: 168px;          /* width */
+  --ribbon-h: 28px;           /* visual thickness */
+  --ribbon-top: 8px;          /* offset from rail top */
+  --ribbon-alpha: .92;
+}
+
+/* === Sticky Ribbon (Announcement) ======================= */
+/* Header-Höhe definieren (für Platz unter der Kopfzeile) */
+:root { --header-h: 60px; }                  /* Desktop-Headerhöhe */
+@media (max-width: 680px){ :root { --header-h: 64px; } }  /* Mobile ggf. höher */
+
+.ribbon {
+  position: sticky;
+  top: var(--header-h);          /* klebt direkt UNTER dem Header */
+  z-index: 9;                    /* unter dem Header (der hat z-index 10), über dem Content */
+  text-align: center;
+  background: var(--brand);      /* School = Grün, Uni = Blau (aus Tokens) */
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 2rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
