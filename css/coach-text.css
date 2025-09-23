@@ -26,10 +26,10 @@
   --ct-focus: 2px solid color-mix(in srgb, var(--ct-brand) 45%, transparent);
 
   /* Avatare */
-  --coach-img-ben:    url("media/ben-small.png");
-  --coach-img-chloe:  url("media/chloe-small.png");
-  --coach-img-mila:   url("media/mila-small.png");
-  --coach-img-archer: url("media/archer-small.png");
+  --coach-img-ben:    url("../media/ben-small.png");
+  --coach-img-chloe:  url("../media/chloe-small.png");
+  --coach-img-mila:   url("../media/mila-small.png");
+  --coach-img-archer: url("../media/archer-small.png");
 }
 
 /* Mode-Mapping */

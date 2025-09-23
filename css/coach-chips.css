@@ -136,10 +136,10 @@ html.ct-open{ overflow:hidden; }
 
 /* --------------------------- Avatar-Kontext ------------------------------ */
 :root{
-  --coach-img-ben:    url("media/ben-small.png");
-  --coach-img-chloe:  url("media/chloe-small.png");
-  --coach-img-mila:   url("media/mila-small.png");
-  --coach-img-archer: url("media/archer-small.png");
+  --coach-img-ben:    url("../media/ben-small.png");
+  --coach-img-chloe:  url("../media/chloe-small.png");
+  --coach-img-mila:   url("../media/mila-small.png");
+  --coach-img-archer: url("../media/archer-small.png");
 }
 html[lang="de"][data-mode="school"]      { --coach-img: var(--coach-img-ben); }
 html[lang="en"][data-mode="school"]      { --coach-img: var(--coach-img-chloe); }
