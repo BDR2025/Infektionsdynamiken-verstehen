@@ -26,10 +26,10 @@
   --ct-focus: 2px solid color-mix(in srgb, var(--ct-brand) 45%, transparent);
 
   /* Avatare */
-  --coach-img-ben:    url("/media/coaches/avatars/ben-small.png");
-  --coach-img-chloe:  url("/media/coaches/avatars/chloe-small.png");
-  --coach-img-mila:   url("/media/coaches/avatars/mila-small.png");
-  --coach-img-archer: url("/media/coaches/avatars/archer-small.png");
+  --coach-img-ben:    url("media/ben-small.png");
+  --coach-img-chloe:  url("media/chloe-small.png");
+  --coach-img-mila:   url("media/mila-small.png");
+  --coach-img-archer: url("media/archer-small.png");
 }
 
 /* Mode-Mapping */
@@ -224,5 +224,3 @@ html[data-mode="university"] .ct-box .ct-title h3 {
   color: #fff;   /* klar weiß */
   font-weight: 700;
 }
-
-

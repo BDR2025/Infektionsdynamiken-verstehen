@@ -45,10 +45,10 @@
   .coach-chip.lg::before{ width:32px; height:32px; flex-basis:32px; }
 
   /* Coach-Avatare per data-coach */
-  .coach-chip[data-coach="archer"]::before{ background-image: var(--coach-img, url("/media/coaches/avatars/archer-small.png")); }
-  .coach-chip[data-coach="mila"]::before  { background-image: var(--coach-img, url("/media/coaches/avatars/mila-small.png")); }
-  .coach-chip[data-coach="chloe"]::before { background-image: var(--coach-img, url("/media/coaches/avatars/chloe-small.png")); }
-  .coach-chip[data-coach="ben"]::before   { background-image: var(--coach-img, url("/media/coaches/avatars/ben-small.png")); }
+  .coach-chip[data-coach="archer"]::before{ background-image: var(--coach-img, url("media/archer-small.png")); }
+  .coach-chip[data-coach="mila"]::before  { background-image: var(--coach-img, url("media/mila-small.png")); }
+  .coach-chip[data-coach="chloe"]::before { background-image: var(--coach-img, url("media/chloe-small.png")); }
+  .coach-chip[data-coach="ben"]::before   { background-image: var(--coach-img, url("media/ben-small.png")); }
 
   /* ========= 2) Backdrop =========================================== */
   .coach-backdrop{
@@ -115,10 +115,10 @@
 
   /* ========= 6) Avatar-Kontext ===================================== */
   :root{
-    --coach-img-ben:    url("/media/coaches/avatars/ben-small.png");
-    --coach-img-chloe:  url("/media/coaches/avatars/chloe-small.png");
-    --coach-img-mila:   url("/media/coaches/avatars/mila-small.png");
-    --coach-img-archer: url("/media/coaches/avatars/archer-small.png");
+    --coach-img-ben:    url("media/ben-small.png");
+    --coach-img-chloe:  url("media/chloe-small.png");
+    --coach-img-mila:   url("media/mila-small.png");
+    --coach-img-archer: url("media/archer-small.png");
   }
   /* Defaults by context */
   html[lang="de"][data-mode="school"]      { --coach-img: var(--coach-img-ben); }

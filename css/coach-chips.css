@@ -14,6 +14,8 @@
    - Keine globalen Overrides, vollständig entkoppelt
 */
 
+@charset "UTF-8";
+
 /* --------------------------- Fallback-Tokens (nur lokal) ----------------- */
 :root{
   --ct-bg:#0b0c10; --ct-ink:#121826; --ct-ink-strong:#0e1726;
@@ -129,15 +131,15 @@ html.ct-open{ overflow:hidden; }
 .coach-coin.lg::after{
   content:""; position:absolute; top:4px; right:4px;
   width:18px; height:18px; border-radius:999px;
-  background:url("/assets/icons/video-camera.svg") center/cover no-repeat;
+  background:url("media/video-camera.svg") center/cover no-repeat;
 }
 
 /* --------------------------- Avatar-Kontext ------------------------------ */
 :root{
-  --coach-img-ben:    url("/media/coaches/avatars/ben-small.png");
-  --coach-img-chloe:  url("/media/coaches/avatars/chloe-small.png");
-  --coach-img-mila:   url("/media/coaches/avatars/mila-small.png");
-  --coach-img-archer: url("/media/coaches/avatars/archer-small.png");
+  --coach-img-ben:    url("media/ben-small.png");
+  --coach-img-chloe:  url("media/chloe-small.png");
+  --coach-img-mila:   url("media/mila-small.png");
+  --coach-img-archer: url("media/archer-small.png");
 }
 html[lang="de"][data-mode="school"]      { --coach-img: var(--coach-img-ben); }
 html[lang="en"][data-mode="school"]      { --coach-img: var(--coach-img-chloe); }
@@ -214,18 +216,8 @@ html[data-coach="archer"] { --coach-img: var(--coach-img-archer); }
 
 /* ---------------- Lesbarkeit in den Modi ------------------------------ */
 html[data-mode="school"] .hint-chip{
-  color:#0e1726; background:#f6f8fb; border:1px solid rgba(2,6,23,.08);
-  font-weight:600; letter-spacing:-0.01em;
+  color:#0e1726; background:#f6f8fb; border:1px solid #dfe6ee;
 }
 html[data-mode="university"] .hint-chip{
-  color:#e8f0ff; background:#0e2230; border:1px solid rgba(255,255,255,.12);
-}
-
-/* Fix: Header-Chips – Label immer sichtbar */
-.card-head .coach-row .hint-chip .hc-label{
-  display:inline-flex !important;
-  white-space:nowrap;
-}
-.card-head .coach-row .hint-chip.compact .hc-label{
-  display:inline-flex !important;
+  color:#eaf5ff; background:#132b41; border:1px solid #244763;
 }

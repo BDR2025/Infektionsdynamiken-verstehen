@@ -17,7 +17,7 @@
 
   const DEF = {
     targets: { school: ['measures','gamma','gammaDays'], university: ['R0','gamma','I0'] },
-    avatars: { school: '/media/coaches/avatars/ben-small.png', university: '/media/coaches/avatars/mila-small.png' }
+    avatars: { school: 'media/ben-small.png', university: 'media/mila-small.png' }
   };
   const CFG = Object.assign({}, DEF, (W.IDV && W.IDV.CoachChipsConfig) || {});
   CFG.targets = Object.assign({}, DEF.targets, CFG.targets || {});
